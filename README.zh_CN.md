@@ -178,6 +178,7 @@
   ```
   <h4>
     <a href="https://wmsonline.ikeyly.com">体验地址入口</a>
+    <p>账号：admin，密码：1</p>
   </h4> 
 
   <img src="image0.png" alt="image0" height="auto" />
