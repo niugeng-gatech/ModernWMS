@@ -6,12 +6,12 @@ SET XACT_ABORT ON
 GO
 SET TRANSACTION ISOLATION LEVEL Serializable
 GO
-BEGIN TRANSACTION
-GO
-create database wms
+create database wms 
 go
 use wms
 go
+BEGIN TRANSACTION
+GO
 IF @@ERROR <> 0 SET NOEXEC ON 
 GO 
 IF NOT EXISTS(SELECT 1 FROM sys.objects WHERE name = 'company' AND type = 'U')
@@ -222,7 +222,7 @@ IF @@ERROR <> 0 SET NOEXEC ON
 GO 
 IF NOT EXISTS(SELECT 1 FROM sys.objects WHERE name = 'user' AND type = 'U')
 BEGIN 
-CREATE TABLE user (
+CREATE TABLE [user] (
 	id int IDENTITY(1,1)  NOT NULL CONSTRAINT PK_user_ID PRIMARY KEY CLUSTERED  ,
 	user_num varchar(128)  NOT NULL  CONSTRAINT DF_user_user_num DEFAULT ('') ,
 	user_name varchar(128)  NOT NULL  CONSTRAINT DF_user_user_name DEFAULT ('') ,
@@ -565,9 +565,9 @@ VALUES
 ('deliveryManagement', '', 'deliveryManagement', 'deliveryManagement/deliveryManagement', 1, 5)
 GO
 insert into userrole ( role_name, is_valid, create_time, last_update_time, tenant_id) 
-values('administrator',true,'2022-12-21 10:30:00','2022-12-23 08:26:36','1');
-insert into user (id, user_num, user_name, contact_tel, user_role, sex, is_valid, auth_string, creator, create_time, last_update_time, tenant_id, email) 
-values('1','admin','管理员','18559851','administrator','male',true,'c4ca4238a0b923820dcc509a6f75849b','admin','1000-01-01 00:00:00','2022-12-23 10:55:37','1','');
+values('administrator',1,'2022-12-21 10:30:00','2022-12-23 08:26:36','1');
+insert into [user] ( user_num, user_name, contact_tel, user_role, sex, is_valid, auth_string, creator, create_time, last_update_time, tenant_id, email) 
+values('admin','Administrator','18559851','administrator','male',1,'c4ca4238a0b923820dcc509a6f75849b','admin','2022-12-23 10:55:37','2022-12-23 10:55:37','1','');
 
 GO
 IF @@ERROR <> 0 SET NOEXEC ON
