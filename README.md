@@ -11,7 +11,9 @@
 ![QR Code Support](https://img.shields.io/badge/QR--Code-Support-orange.svg)
 ![Docker Support](https://img.shields.io/badge/Docker-Support-orange.svg)
 ![i18n Support](https://img.shields.io/badge/i18n-Support-orange.svg)
-[![MySQL8](https://img.shields.io/badge/MySQL-8.0%2B-orange)](https://www.mysql.com/downloads/)
+[![MySQL8](https://img.shields.io/badge/MySQL8.0-Support-orange)](https://www.mysql.com/downloads/)
+[![SQL Server](https://img.shields.io/badge/SQL%20Server2017%2B-Support-orange)](https://www.mysql.com/downloads/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL12-Support-orange)](https://www.mysql.com/downloads/)
 
 ![repo size](https://img.shields.io/github/repo-size/fjykTec/ModernWMS)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/fjykTec/ModernWMS)
@@ -31,6 +33,14 @@
 ![VXE Table](https://img.shields.io/badge/VXETable-4.3.7-green)
 ![Vite](https://img.shields.io/badge/Vite-4.0.0-green)
 ![NodeJS](https://img.shields.io/badge/NodeJS-16.13.1-green)
+</div>
+<div align="center">
+  <h3>
+  <a href="../../blob/master/README.zh-CN.md">中文文档</a>
+  </h3>
+  <h3>
+  <a href="https://modernwms.ikeyly.com">Home Page</a>
+  </h3>
 </div>
 
 # Contents
@@ -174,7 +184,10 @@
 ## Usage
 
   ```shell
-  Accessing ip address (http://127.0.0.1 or http://the IP address you depolyed) via web browser
+  Accessing ip address (http://127.0.0.1 or http://the IP address you depolyed) via web browser 
+  
+  Account: admin 
+  Password: 1
   ```
 
   <h4>
@@ -202,4 +215,3 @@
 ## License
 
 Distributed under the [MIT](https://opensource.org/licenses/MIT/) License. See [LICENSE.txt](https://github.com/fjykTec/ModernWMS/master/LICENSE) for more information.This must be observed.
-
