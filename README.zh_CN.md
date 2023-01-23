@@ -36,7 +36,7 @@
 </div>
 <div align="center">
   <h3>
-  <a href="../../blob/master/README.md">English Document</a>
+  <a href="https://gitee.com/modernwms/ModernWMS/blob/master/README.md">English Document</a>
   </h3>
   <h3>
   <a href="https://modernwms.ikeyly.com">官网首页</a>
@@ -117,6 +117,8 @@
   tar -zxvf nginx-1.18.0.tar.gz && cd nginx-1.18.0
   ./configure --prefix=/etc/nginx --with-http_secure_link_module --with-http_stub_status_module --with-http_ssl_module --with-http_realip_module
   make && make install
+  cp -rf /ModernWMS/frontend/* /etc/nginx/html/
+  dotnet /ModernWMS/backend/ModernWMS.dll --urls http://0.0.0.0:20011
   ```  
 ### Windows
 
