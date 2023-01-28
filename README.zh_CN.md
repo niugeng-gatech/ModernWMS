@@ -12,6 +12,8 @@
 ![Docker Support](https://img.shields.io/badge/Docker-Support-orange.svg)
 ![i18n Support](https://img.shields.io/badge/i18n-Support-orange.svg)
 [![MySQL8](https://img.shields.io/badge/MySQL-8.0%2B-orange)](https://www.mysql.com/downloads/)
+[![SQL Server](https://img.shields.io/badge/SQL%20Server2017%2B-Support-orange)](https://www.mysql.com/downloads/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL12-Support-orange)](https://www.mysql.com/downloads/)
 
 ![repo size](https://img.shields.io/github/repo-size/fjykTec/ModernWMS)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/fjykTec/ModernWMS)
@@ -31,6 +33,14 @@
 ![VXE Table](https://img.shields.io/badge/VXETable-4.3.7-green)
 ![Vite](https://img.shields.io/badge/Vite-4.0.0-green)
 ![NodeJS](https://img.shields.io/badge/NodeJS-16.13.1-green)
+</div>
+<div align="center">
+  <h3>
+  <a href="https://gitee.com/modernwms/ModernWMS/blob/master/README.md">English Document</a>
+  </h3>
+  <h3>
+  <a href="https://modernwms.ikeyly.com">官网首页</a>
+  </h3>
 </div>
 
 # 目录 
@@ -107,6 +117,8 @@
   tar -zxvf nginx-1.18.0.tar.gz && cd nginx-1.18.0
   ./configure --prefix=/etc/nginx --with-http_secure_link_module --with-http_stub_status_module --with-http_ssl_module --with-http_realip_module
   make && make install
+  cp -rf /ModernWMS/frontend/* /etc/nginx/html/
+  dotnet /ModernWMS/backend/ModernWMS.dll --urls http://0.0.0.0:20011
   ```  
 ### Windows
 
@@ -174,7 +186,9 @@
 ## 使用方法
 
   ```shell
-  打开浏览器，进入：http://127.0.0.1 或者http://部署电脑的IP地址
+  打开浏览器，进入：http://127.0.0.1 或者http://部署电脑的IP地址  
+  
+  初始账号: admin 密码: 1
   ```
   <h4>
     <a href="https://wmsonline.ikeyly.com">体验地址入口</a>
@@ -206,4 +220,3 @@
 本项目已加入 [dotNET China](https://gitee.com/dotnetchina)  组织。<br/>
 
 ![dotnetchina](https://gitee.com/dotnetchina/home/raw/master/assets/dotnetchina-raw.png "dotNET China LOGO")
-
