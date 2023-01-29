@@ -52,22 +52,34 @@ namespace ModernWMS.Core.Extentions
             });
             var Mysql_connection = configuration.GetConnectionString("MySqlConn");
             var SqlLite_connection = configuration.GetConnectionString("SqlLiteConn");
+            var SqlServer_connection = configuration.GetConnectionString("SqlServerConn");
+            var Postgre_connection = configuration.GetConnectionString("PostGresConn");
             var database_config = configuration.GetSection("Database")["db"];
             services.AddDbContextPool<SqlDBContext>(t =>
             {
-                if(database_config == "SqlLite")
+                if (database_config == "SqlLite")
                 {
                     t.UseSqlite(SqlLite_connection, b => b.MigrationsAssembly("ModernWMS"));
                 }
-                 else
-                 {
-                     t.UseMySql(Mysql_connection, new MySqlServerVersion(new Version(8, 0, 26)));
-                 }
-                
+                else if (database_config == "MySql")
+                {
+                    t.UseMySql(Mysql_connection, new MySqlServerVersion(new Version(8, 0, 26)));
+                }
+                else if (database_config == "SqlServer")
+                {
+                    t.UseSqlServer(SqlServer_connection);
+                }
+
+                else if (database_config == "PostGres")
+                {
+                    t.UseNpgsql(Postgre_connection);
+                    AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+                    AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
+                }
                 t.EnableSensitiveDataLogging();
                 t.UseLoggerFactory(new LoggerFactory(new[] { new DebugLoggerProvider() }));
             }, 100); ;
-            services.AddMemoryCache( );
+            services.AddMemoryCache();
             services.AddScoped<MultiTenancy.ITenantProvider, MultiTenancy.TenantProvider>();            
             services.AddSwaggerService(configuration, AppContext.BaseDirectory);
             services.AddTokenGeneratorService(configuration);
