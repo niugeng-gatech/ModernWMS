@@ -410,9 +410,7 @@ namespace ModernWMS.WMS.Services
         /// <returns></returns>
         public async Task<(bool flag, string msg)> ConfirmProcess(int id, CurrentUser currentUser)
         {
-
             var DBSet = _dBContext.GetDbSet<StockprocessEntity>();
-
             var entity = await DBSet.FirstOrDefaultAsync(t => t.id == id);
             if (entity == null)
             {
