@@ -127,6 +127,7 @@ namespace ModernWMS.WMS.Services
         /// <returns></returns>
         public async Task<StockprocessWithDetailViewModel> GetAsync(int id)
         {
+
             var DbSet = _dBContext.GetDbSet<StockprocessEntity>();
             var entity = await DbSet.AsNoTracking().FirstOrDefaultAsync(t => t.id.Equals(id));
             var details = await (from spd in _dBContext.GetDbSet<StockprocessdetailEntity>().AsNoTracking().Where(t => t.stock_process_id == id)
@@ -149,7 +150,7 @@ namespace ModernWMS.WMS.Services
                                      spu_code = spu.spu_code,
                                      spu_name = spu.spu_name,
                                      unit = sku.unit,
-                                     location_name  = gl.location_name == null?"":gl.location_name
+                                     location_name = gl.location_name == null ? "" : gl.location_name
                                  }).ToListAsync();
             if (entity == null)
             {
@@ -159,10 +160,10 @@ namespace ModernWMS.WMS.Services
             var adjust_DBSet = _dBContext.GetDbSet<StockadjustEntity>().AsNoTracking();
             var adjusted = await (from a in adjust_DBSet
                                   join d in _dBContext.GetDbSet<StockprocessdetailEntity>().AsNoTracking() on a.source_table_id equals d.id
-                                  where a.job_type == 2
+                                  where a.job_type == 2 && d.stock_process_id == id
                                   select a
                            ).AnyAsync();
-            res.adjust_status = adjusted;
+            res.adjust_status = entity.process_status && adjusted;
             res.source_detail_list = details.Where(t => t.is_source == true).ToList();
             res.target_detail_list = details.Where(t => t.is_source == false).ToList();
             return res;
@@ -225,7 +226,7 @@ namespace ModernWMS.WMS.Services
             await DbSet.AddAsync(entity);
             foreach (var d in entity.detailList)
             {
-                d.tenant_id =currentUser.tenant_id;
+                d.tenant_id = currentUser.tenant_id;
                 d.last_update_time = DateTime.Now;
                 d.id = 0;
                 var s = stocks.FirstOrDefault(t => t.sku_id == d.sku_id && t.goods_location_id == d.goods_location_id);
@@ -294,7 +295,7 @@ namespace ModernWMS.WMS.Services
         public async Task<(bool flag, string msg)> DeleteAsync(int id)
         {
             var entity = await _dBContext.GetDbSet<StockprocessEntity>().Where(t => t.id.Equals(id) && t.process_status == false).Include(e => e.detailList).FirstOrDefaultAsync();
-             _dBContext.GetDbSet<StockprocessEntity>().Remove(entity);
+            _dBContext.GetDbSet<StockprocessEntity>().Remove(entity);
             var qty = await _dBContext.SaveChangesAsync();
             if (qty > 0)
             {
@@ -315,13 +316,22 @@ namespace ModernWMS.WMS.Services
         public async Task<(bool flag, string msg)> ConfirmAdjustment(int id, CurrentUser currentUser)
         {
             var DBSet = _dBContext.GetDbSet<StockprocessEntity>();
+            var detail_DBSet = _dBContext.GetDbSet<StockprocessdetailEntity>();
+            var adjust_DBset = _dBContext.GetDbSet<StockadjustEntity>();
             var entity = await DBSet.FirstOrDefaultAsync(t => t.id == id);
             if (entity == null)
             {
                 return (false, _stringLocalizer["not_exists_entity"]);
             }
-            var detail_DBSet = _dBContext.GetDbSet<StockprocessdetailEntity>();
-            var adjust_DBset = _dBContext.GetDbSet<StockadjustEntity>();
+            var adjusted = await (from a in adjust_DBset
+                                  join d in _dBContext.GetDbSet<StockprocessdetailEntity>().AsNoTracking() on a.source_table_id equals d.id
+                                  where a.job_type == 2 && d.stock_process_id == id
+                                  select a
+              ).AnyAsync();
+            if (entity.process_status && adjusted)
+            {
+                return (false, _stringLocalizer["status_changed"]);
+            }
             var details = await detail_DBSet.Where(t => t.stock_process_id == id).ToListAsync();
             var adjusts = (from d in details
                            select new StockadjustEntity
@@ -349,7 +359,7 @@ namespace ModernWMS.WMS.Services
             foreach (var d in details)
             {
                 var stock = stocks.FirstOrDefault(t => t.goods_location_id == d.goods_location_id && t.sku_id == d.sku_id && t.goods_owner_id == d.goods_owner_id);
-                d.is_update_stock= true;
+                d.is_update_stock = true;
                 d.last_update_time = DateTime.Now;
                 if (d.is_source)
                 {
@@ -362,16 +372,16 @@ namespace ModernWMS.WMS.Services
                 }
                 else
                 {
-                    if(stock == null)
+                    if (stock == null)
                     {
                         await stock_DBSet.AddAsync(new StockEntity
                         {
-                            sku_id= d.sku_id,
-                            goods_location_id= d.goods_location_id,
-                            goods_owner_id= d.goods_owner_id,
-                            is_freeze =false,
-                            last_update_time =DateTime.Now,
-                            qty= d.qty,
+                            sku_id = d.sku_id,
+                            goods_location_id = d.goods_location_id,
+                            goods_owner_id = d.goods_owner_id,
+                            is_freeze = false,
+                            last_update_time = DateTime.Now,
+                            qty = d.qty,
                             tenant_id = currentUser.tenant_id
                         });
                     }
@@ -402,6 +412,14 @@ namespace ModernWMS.WMS.Services
         {
             var DBSet = _dBContext.GetDbSet<StockprocessEntity>();
             var entity = await DBSet.FirstOrDefaultAsync(t => t.id == id);
+            if (entity == null)
+            {
+                return (false, _stringLocalizer["not_exists_entity"]);
+            }
+            if (entity.process_status == true)
+            {
+                return (false, _stringLocalizer["status_changed"]);
+            }
             entity.process_status = true;
             entity.processor = currentUser.user_name;
             entity.process_time = DateTime.Now;
@@ -422,8 +440,8 @@ namespace ModernWMS.WMS.Services
         {
             string code;
             string date = DateTime.Now.ToString("yyyy" + "MM" + "dd");
-            string maxNo = await _dBContext.GetDbSet<StockprocessEntity>().AsNoTracking().Where(t=>t.tenant_id == currentUser.tenant_id).MaxAsync(t => t.job_code);
-            if (maxNo == null) 
+            string maxNo = await _dBContext.GetDbSet<StockprocessEntity>().AsNoTracking().Where(t => t.tenant_id == currentUser.tenant_id).MaxAsync(t => t.job_code);
+            if (maxNo == null)
             {
                 code = date + "-0001";
             }
@@ -442,7 +460,7 @@ namespace ModernWMS.WMS.Services
                     code = date + "-0001";
                 }
             }
-            
+
             return code;
         }
         /// <summary>
