@@ -30,6 +30,9 @@ using ModernWMS.Core.DI;
 using Microsoft.Extensions.Localization;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using Microsoft.EntityFrameworkCore.Migrations.Internal;
+using System.Security.AccessControl;
+using Hangfire;
+using Hangfire.MemoryStorage;
 
 namespace ModernWMS.Core.Extentions
 {
@@ -43,6 +46,7 @@ namespace ModernWMS.Core.Extentions
                 var sharedLocalizer = sp.GetRequiredService<IStringLocalizer<MultiLanguage>>();
                 return sharedLocalizer;
             });
+            services.AddHttpClient();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<CacheManager>();
             services.AddSingleton<IMemoryCache>(factory =>
@@ -102,7 +106,15 @@ namespace ModernWMS.Core.Extentions
               }).AddDataAnnotationsLocalization(options => {
                   options.DataAnnotationLocalizerProvider = (type, factory) =>
                       factory.Create(typeof(ModernWMS.Core.MultiLanguage));
-              }); ;
+              });
+
+            // Hangfire
+            services.AddHangfire(x => x.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UseStorage(new MemoryStorage()));
+            services.AddHangfireServer();
+
 
         }
         public static void UseExtensionsConfigure(this IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider, IConfiguration configuration)
@@ -124,6 +136,16 @@ namespace ModernWMS.Core.Extentions
                 .AddSupportedCultures(support_languages)
                 .AddSupportedUICultures(support_languages);
             app.UseRequestLocalization(localization_options);
+
+            var option = new BackgroundJobServerOptions
+            {
+                ServerName = String.Format("{0}.{1}", Environment.MachineName, Guid.NewGuid().ToString()),
+                WorkerCount = Environment.ProcessorCount * 5,
+                Queues = new[] { "wms" }
+            };
+            app.UseHangfireServer(option);
+            app.UseHangfireDashboard();
+            AddHangfireJob(serviceProvider);
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
@@ -295,10 +317,50 @@ namespace ModernWMS.Core.Extentions
             }
 
             services.AddScoped<Services.IAccountService, Services.AccountService>();
+
+            // Register Job
+            var typeJobs = referencedAssemblies
+               .SelectMany(a => a.DefinedTypes)
+            .Select(type => type.AsType())
+               .Where(x => x != typeof(Job.IJob) && typeof(Job.IJob).IsAssignableFrom(x)).ToArray();
+            if (types != null && types.Length > 0)
+            {
+                var implementJobs = typeJobs.Where(x => x.IsClass).ToArray();
+                foreach (var implementType in implementJobs)
+                {
+                    services.AddScoped(implementType);
+                }
+            }
+
             return services;
         }
+        /// <summary>
+        /// AddHangfireJob
+        /// </summary>
+        /// <param name="serviceProvider"></param>
+        private static void AddHangfireJob(IServiceProvider serviceProvider)
+        {
+            var baseType = typeof(Core.Job.IJob);
+            var path = AppDomain.CurrentDomain.RelativeSearchPath ?? AppDomain.CurrentDomain.BaseDirectory;
+            var referencedAssemblies = System.IO.Directory.GetFiles(path, "ModernWMS*.dll").Select(Assembly.LoadFrom).ToArray();
+            var types = referencedAssemblies
+                .SelectMany(a => a.DefinedTypes)
+                .Select(type => type.AsType())
+                .Where(x => x != baseType && baseType.IsAssignableFrom(x)).ToArray();
+            if (types != null && types.Length > 0)
+            {
+                var implementTypes = types.Where(x => x.IsClass).ToArray();
+                foreach (var implementType in implementTypes)
+                {
+                    var job = serviceProvider.GetService(implementType) as Core.Job.IJob;
+                    if (job != null)
+                    {
+                        Hangfire.RecurringJob.AddOrUpdate(() => job.Execute(), job.CronExpression, TimeZoneInfo.Local, "wms");
+                    }
+                }
+            }
+        }
         #endregion
-
 
     }
 }
