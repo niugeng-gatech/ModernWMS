@@ -195,7 +195,9 @@ namespace ModernWMS.WMS.Services
                                    spu_description = spu.spu_description,
                                    spu_name = spu.spu_name,
                                    bar_code = spu.bar_code,
-                                   unpicked_qty = d.qty - d.picked_qty
+                                   unpicked_qty = d.qty - d.picked_qty,
+                                   sku_name = sku.sku_name,
+                                   unit = sku.unit
                                }).ToListAsync();
             return datas;
         }

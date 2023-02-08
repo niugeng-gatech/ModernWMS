@@ -275,6 +275,17 @@ namespace ModernWMS.WMS.Entities.ViewModels
         /// length_unit
         /// </summary>
         public byte length_unit { get; set; } = 0;
+
+        /// <summary>
+        /// sku_name
+        /// </summary>
+        public string sku_name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// unit
+        /// </summary>
+        public string unit { get; set; } = string.Empty;
+
         #endregion
 
     }
