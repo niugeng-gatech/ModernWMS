@@ -748,7 +748,7 @@ namespace ModernWMS.WMS.Services
                             qty = d.qty - d.lock_qty,
                             tenant_id = currentUser.tenant_id
                         });
-                        d.qty = d.qty - d.lock_qty;
+                        d.qty = d.lock_qty;
                     }
                 }
                 else
