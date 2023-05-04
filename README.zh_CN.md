@@ -133,7 +133,7 @@
   + 第一步，下载源码
   ```PowerShell
   cd C:\
-  wget -Uri https://github.com/fjykTec/ModernWMS/archive/refs/heads/master.zip  -OutFile master.zip
+  wget -Uri https://gitee.com/modernwms/ModernWMS/repository/archive/master.zip  -OutFile master.zip
   Expand-Archive -Path C:\master.zip -DestinationPath C:\
   ```
   + 第二步，安装.NET SDK 和 NodeJS
@@ -266,7 +266,7 @@
 </h4>
 
 ## 版权信息
-该项目使用的是 [MIT](https://opensource.org/licenses/MIT/) 协议. 详情查阅[LICENSE.txt](https://github.com/fjykTec/ModernWMS/master/LICENSE).必须遵守此协议。
+该项目使用的是 [MIT](https://opensource.org/licenses/MIT/) 协议. 详情查阅[LICENSE.txt](https://gitee.com/modernwms/ModernWMS/blob/master/LICENSE).必须遵守此协议。
 
 ## 特别声明
 
