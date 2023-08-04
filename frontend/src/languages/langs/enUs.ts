@@ -38,7 +38,9 @@ export default {
       beforeAsnUnload: 'Confirm Unload?',
       beforeAsnSorted: 'Confirm Sorted?',
       requestTimeout: 'Request Timeout!',
-      requestFail: 'Request fail.Please try it again'
+      requestFail: 'Request fail.Please try it again',
+      vaildEmail: 'Please enter the correct email format!',
+      verifyPwd: 'Verification failed. The new password is different from the confirmed one!'
     },
     checkText: {
       checkFormFail: 'Operation failed. Please check the data and try again!',
@@ -52,7 +54,11 @@ export default {
       lengthValid: 'The length should be between '
     },
     homeHeader: {
-      logout: 'Logout'
+      logout: 'Logout',
+      changePwd: 'Change Password',
+      oldPwd: 'Old password',
+      newPwd: 'New password',
+      confrimNewPwd: 'Confirm new password'
     },
     combobox: {
       sex: {
@@ -485,6 +491,8 @@ export default {
       spu_code: 'Commodity Code',
       spu_name: 'Commodity Name',
       sku_code: 'Specification Code',
+      sku_name: 'Specification Name',
+      unit: 'Commodity Unit',
       creator: 'Created By',
       create_time: 'Creation Time',
       confirmOrder: 'Confirm Shipment Doc',

@@ -54,7 +54,7 @@ const data = reactive({
     user_name: '',
     auth_string: '',
     email: '',
-    sex: '',
+    // sex: '',
     is_valid: true
   },
   userNameVaildRules: [(v: string) => !!v || `${ i18n.global.t('system.checkText.mustInput') }${ i18n.global.t('login.userName') }!`],
@@ -133,7 +133,7 @@ const method = reactive({
       user_name: '',
       auth_string: '',
       email: '',
-      sex: '',
+      // sex: '',
       is_valid: true
     }
     data.showDialog = true
@@ -200,6 +200,10 @@ onMounted(() => {
       margin-top: -10px;
       height: 60px;
     }
+  }
+  // There is style pollution Or vuetify itself has problems, replace the required verification color manually
+  :deep(.v-messages) {
+    color: #b00020 !important;
   }
 }
 

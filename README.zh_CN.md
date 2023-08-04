@@ -1,9 +1,9 @@
-# ModernWMS - Warehouse Management System
+# ModernWMS - 仓库管理系统 
 
 <div align="center">
   <img src="logo.png" alt="ModernWMS logo" width="200" height="auto" />
   <h1>ModernWMS</h1>
-  <p>A simple, complete and open source warehouse management system</p>
+  <p>开源的简易完整的仓库管理系统</p>
 
 <!-- Badges -->
 [![License: MIT](https://img.shields.io/badge/license-MIT-orange.svg)](https://opensource.org/licenses/MIT/)
@@ -36,35 +36,36 @@
 </div>
 <div align="center">
   <h3>
-  <a href="https://gitee.com/modernwms/ModernWMS/blob/master/README.zh_CN.md">中文文档</a>
+  <a href="https://gitee.com/modernwms/ModernWMS/blob/master/README.md">English Document</a>
   </h3>
   <h3>
-  <a href="https://modernwms.ikeyly.com">Home Page</a>
+  <a href="https://modernwms.ikeyly.com">官网首页</a>
   </h3>
 </div>
 
-# Contents
+# 目录 
 
-- [ModernWMS - Warehouse Management System](#modernwms---warehouse-management-system)
-- [Contents](#contents)
-  - [Introduction](#introduction)
-  - [Requirements](#requirements)
+- [ModernWMS - 仓库管理系统](#modernwms---仓库管理系统)
+- [目录](#目录)
+  - [介绍](#介绍)
+  - [必要条件](#必要条件)
     - [Linux OS](#linux-os)
     - [Windows OS](#windows-os)
-  - [Installation](#installation)
+  - [安装](#安装)
     - [Linux](#linux)
     - [Windows](#windows)
-    - [Docker(Optional)](#dockeroptional)
-  - [Usage](#usage)
-  - [Contact](#contact)
-  - [License](#license)
-  - [Donate](#donate)
+    - [Docker](#docker)
+  - [使用方法](#使用方法)
+  - [联系我们](#联系我们)
+  - [版权信息](#版权信息)
+  - [特别声明](#特别声明)
+  - [捐赠](#捐赠)
 
-## Introduction 
 
-  The inventory management system is a set of small logistics warehousing supply chain processes that we have summarized from years of ERP system research and development. In the process of work, many of our small and medium-sized enterprises, due to limited IT budget, cannot use the right system for them, but there are real needs in warehouse management, that's how we started the project. To help some people who need it.
+## 介绍
+  该库存管理系统是，我们从多年ERP系统研发中总结出来的一套针对小型物流仓储供应链流程。 在工作过程中我们很多的中小企业，由于IT预算有限，所以无法用上适合他们的系统，却又实实在在存在仓储管理方面的需求，以此我们开始了这个项目。 为了帮助一些有需要的用户。
 
-## Requirements
+## 必要条件
 
 ### Linux OS
 
@@ -76,21 +77,21 @@
 
 ### Windows OS
 
-+ Windows 10(1607+),11(21H2+)
-+ Windows Server 2012+
++ Windows 10 版本 1607 或更高版本
++ Windows Server 2012 或更高版本
 
-## Installation
+## 安装
 
 ### Linux
 
-+ download the source code and compile
-  + Step 1, download the source code
++ 下载源码后编译
+  + 第一步，下载源码
 
   ```bash
   cd /tmp/ && wget https://gitee.com/modernwms/ModernWMS/repository/archive/master.zip
   ```  
 
-  + Step 2, Install .NET SDK and NodeJS
+  + 第二步，安装.NET SDK 和 NodeJS
 
   ```bash
   wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
@@ -102,20 +103,20 @@
   sudo npm install -g yarn
   ```  
 
-  + Step 3, compile frontend and backend
+  + 第三步，编译前端和后端
 
   ```bash
   sudo apt install unzip
   cd /tmp/ && unzip master.zip && cd ./ModernWMS-master
   mkdir -p /ModernWMS/frontend/ /ModernWMS/backend/
   cd /tmp/ModernWMS-master/frontend/ 
-  sed -i 's#http://127.0.0.1#http://IP address#g' ./.env.production
+  sed -i 's#http://127.0.0.1#http://前部署服务器的IP地址#g' ./.env.production
   yarn && yarn build && cp -rf /tmp/ModernWMS-master/frontend/dist/* /ModernWMS/frontend/
   cd /tmp/ModernWMS-master/backend/ && sudo dotnet publish && cp -rf /tmp/ModernWMS-master/backend/ModernWMS/bin/Debug/net7.0/publish/* /ModernWMS/backend/
   cp -rf /tmp/ModernWMS-master/backend/ModernWMS/wms.db /ModernWMS/backend/
   ```  
 
-  + Step 4, Install Nginx
+  + 第四步，安装nginx
 
   ```bash
   cd /tmp/ && wget http://nginx.org/download/nginx-1.18.0.tar.gz 
@@ -126,17 +127,16 @@
   nohup /etc/nginx/sbin/nginx -g 'daemon off;' &
   cd /ModernWMS/backend/ && dotnet ModernWMS.dll --urls http://0.0.0.0:20011
   ```  
-  
 ### Windows
 
-+ download the source code and compile
-  + Step 1, download the source code
++ 下载源码后编译部署
+  + 第一步，下载源码
   ```PowerShell
   cd C:\
   wget -Uri https://gitee.com/modernwms/ModernWMS/repository/archive/master.zip  -OutFile master.zip
   Expand-Archive -Path C:\master.zip -DestinationPath C:\
   ```
-  + Step 2, Install .NET SDK and NodeJS
+  + 第二步，安装.NET SDK 和 NodeJS
   ```CMD
   wget -Uri https://download.visualstudio.microsoft.com/download/pr/35660869-0942-4c5d-8692-6e0d4040137a/4921a36b578d8358dac4c27598519832/dotnet-sdk-7.0.101-win-x64.exe  -OutFile dotnet-sdk-7.0.101-win-x64.exe
   .\dotnet-sdk-7.0.101-win-x64.exe /install /quiet /norestart
@@ -144,7 +144,7 @@
   msiexec /i .\node-v16.13.1-x64.msi /passive /norestart
   npm install -g yarn
   ```
-  + Step 3, compile frontend and backend
+  + 第三步，编译前端和后端
   ```
   md C:\ModernWMS\frontend\
   md C:\ModernWMS\backend\
@@ -157,7 +157,7 @@
   yarn build 
   copy-item -path "C:\ModernWMS-master\frontend\dist\*" -destination "C:\ModernWMS\frontend\" -recurse
   ```
-  + Step 4, Install Nginx
+  + 第四步，安装nginx并启动
   ```
   cd C:\
   wget -Uri http://nginx.org/download/nginx-1.16.1.zip -OutFile nginx-1.16.1.zip
@@ -169,46 +169,45 @@
   dotnet ModernWMS.dll --urls http://0.0.0.0:20011
   ```
 
-### Docker(Optional)
+### Docker
 
-+ Approach 1, download the image from docker hub
-
-  + Step 1, install docker and download the image
++ 方法 1: 直接从dockerhub中下载镜像
+  + Step 1, 安装docker，下载镜像
 
   ```bash
   sudo apt install docker.io
   sudo docker pull modernwms/modernwms:1.0
   ```  
 
-  + Step 2，deploy
+  + Step 2，部署
   
-  ```bash
+  ```bash  
   sudo docker run -d -p 20011:20011 -p 80:80  modernwms/modernwms:1.0 ./run.sh
   sudo docker ps -a | awk 'NR>1 && $2=="modernwms/modernwms:1.0" {print $1}'
   sudo docker exec -it <CONTAINER ID> /bin/bash
   ```
 
-  After entering the Docker container, execute the following command in the container.
+  进入docker容器后，在容器中执行以下命令
 
   ```bash
   grep -rl "http://127.0.0.1:20011" /frontend | xargs sed -i 's#http://127.0.0.1:20011#http://IP address:20011#g'
   exit
   ```
 
-  restart container
+  重启容器
 
   ```bash
   sudo docker restart <CONTAINER ID>
   ```
 
-+ Approach 2, Build your own image
-  + Step 1, download the source code
++ 方法 2: 自行构建镜像
+  + 第一步，下载源码
 
   ```bash
   cd /tmp/ && wget https://gitee.com/modernwms/ModernWMS/repository/archive/master.zip
   ```  
-
-  + Step 2，Install .NET SDK and NodeJS
+  
+  + 第二步，安装.NET SDK 和 NodeJS
 
   ```bash
   wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
@@ -220,61 +219,64 @@
   sudo npm install -g yarn
   ```  
 
-  + Step 3, compile frontend and backend
-  
+  + 第三步，编译前端和后端
+
   ```bash
   sudo apt install unzip
   cd /tmp/ && unzip master.zip && cd ./ModernWMS-master
-  cd /tmp/ModernWMS-master/frontend/ && sed -i 's#http://127.0.0.1#http://IP address#g' ./.env.production
+  cd /tmp/ModernWMS-master/frontend/ && sed -i 's#http://127.0.0.1#http://前部署服务器的IP地址#g' ./.env.production
   yarn && yarn build && cp -rf /tmp/ModernWMS-master/frontend/dist/* /tmp/ModernWMS-master/docker/frontend/
   cd /tmp/ModernWMS-master/backend/ && sudo dotnet publish && cp -rf /tmp/ModernWMS-master/backend/ModernWMS/bin/Debug/net7.0/publish/* /tmp/ModernWMS-master/docker/backend/
   cp -rf /tmp/ModernWMS-master/backend/ModernWMS/wms.db /tmp/ModernWMS-master/docker/backend/
-  ``` 
+  ```  
 
-  + Step 4, deploy
-
-  ```bash
+  + 第四步，部署docker
+ 
+  ```shell
   sudo apt install docker.io
   cd /tmp/ModernWMS-master/docker/
   docker build -t modernwms:1.0 .
   docker run -d -p 20011:20011 -p 80:80  modernwms:1.0 ./run.sh
   ```
 
-## Usage
+## 使用方法
 
   ```shell
-  Accessing ip address (http://127.0.0.1 or http://the IP address you depolyed) via web browser 
+  打开浏览器，进入：http://127.0.0.1 或者http://部署电脑的IP地址  
   
-  Account: admin 
-  Password: 1
+  初始账号: admin 密码: 1
   ```
-
   <h4>
-    <a href="https://wmsonline.ikeyly.com">Demo</a>
+    <a href="https://wmsonline.ikeyly.com">体验地址入口</a>
   </h4> 
-
-  <img src="image2.png" alt="image2" height="auto" />
 
   <img src="image0.png" alt="image0" height="auto" />
 
   <img src="image1.png" alt="image1" height="auto" />
   
-## Contact
+  <img src="image2.png" alt="image2" height="auto" />
+
+## 联系我们
 
 <h4>
-  <a href="https://gitee.com/modernwms/ModernWMS/issues/new?issue%5Bassignee_id%5D=0&issue%5Bmilestone_id%5D=0">Report a BUG</a>
+  <a href="https://gitee.com/leucoon/vue-element-plus-admin/issues/new?issue%5Bassignee_id%5D=0&issue%5Bmilestone_id%5D=0">提交一个Bug</a>
 </h4>
 <h4>
-  <a href="https://gitee.com/leucoon/vue-element-plus-admin/issues/new?issue%5Bassignee_id%5D=0&issue%5Bmilestone_id%5D=0">Submit a suggestion</a>
+  <a href="https://gitee.com/leucoon/vue-element-plus-admin/issues/new?issue%5Bassignee_id%5D=0&issue%5Bmilestone_id%5D=0">提交一个建议</a>
 </h4>
 
-## License
+## 版权信息
+该项目使用的是 [MIT](https://opensource.org/licenses/MIT/) 协议. 详情查阅[LICENSE.txt](https://gitee.com/modernwms/ModernWMS/blob/master/LICENSE).必须遵守此协议。
 
-Distributed under the [MIT](https://opensource.org/licenses/MIT/) License. See [LICENSE.txt](https://gitee.com/modernwms/ModernWMS/blob/master/LICENSE) for more information.This must be observed.
+## 特别声明
 
-## Donate
+本项目已加入 [dotNET China](https://gitee.com/dotnetchina)  组织。<br/>
 
-If it's helpful to you, you can donate us by alipay,by wechat. Your support will encourage us to continue creating
+![dotnetchina](https://gitee.com/dotnetchina/home/raw/master/assets/dotnetchina-raw.png "dotNET China LOGO")
+
+## 捐赠
+
+如果您觉得我的开源库可以帮到您，请我们的作者喝杯咖啡吧，您的支持将鼓励我们继续创作。
 
 <img src="alipay.jpg" alt="image3" height="auto" />
 <img src="wechat.jpg" alt="image4" height="auto" />

@@ -633,4 +633,16 @@
   <data name="process_not_comfirm" xml:space="preserve">
     <value>该库位存在未确认的仓内加工</value>
   </data>
+  <data name="is_incorrect" xml:space="preserve">
+    <value>不正确</value>
+  </data>
+  <data name="old_password" xml:space="preserve">
+    <value>旧密码</value>
+  </data>
+  <data name="location_exist_stock_not_delete" xml:space="preserve">
+    <value>库位存在库存，不能删除</value>
+  </data>
+  <data name="username_existed" xml:space="preserve">
+    <value>用户名已存在</value>
+  </data>
 </root>

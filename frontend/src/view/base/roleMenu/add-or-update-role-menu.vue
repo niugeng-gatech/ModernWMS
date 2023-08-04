@@ -13,11 +13,13 @@
               :rules="data.rules.role_name"
               :label="$t('base.roleMenu.role_name')"
               variant="outlined"
+              :disabled="data.dialogTitle === 'update'"
               clearable
             ></v-select>
             <v-select
               v-model="data.menusSelectedList"
               :items="data.combobox.menu_name"
+              :menu-props="{ maxHeight: 400 }"
               item-title="label"
               item-value="value"
               :label="$t('base.roleMenu.menu_name')"
@@ -204,5 +206,4 @@ watch(
 )
 </script>
 
-<style scoped lang="less">
-</style>
+<style scoped lang="less"></style>
