@@ -69,13 +69,6 @@ namespace ModernWMS.WMS.Entities.ViewModels
         public string spu_description { get; set; } = string.Empty;
 
         /// <summary>
-        /// bar_code
-        /// </summary>
-        [Display(Name = "bar_code")]
-        [MaxLength(64, ErrorMessage = "MaxLength")]
-        public string bar_code { get; set; } = string.Empty;
-
-        /// <summary>
         /// supplier_id
         /// </summary>
         [Display(Name = "supplier_id")]
@@ -141,6 +134,13 @@ namespace ModernWMS.WMS.Entities.ViewModels
         [Required(ErrorMessage = "Required")]
         [MaxLength(200, ErrorMessage = "MaxLength")]
         public string sku_name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// bar_code
+        /// </summary>
+        [Display(Name = "bar_code")]
+        [MaxLength(64, ErrorMessage = "MaxLength")]
+        public string bar_code { get; set; } = string.Empty;
 
         /// <summary>
         /// weight
