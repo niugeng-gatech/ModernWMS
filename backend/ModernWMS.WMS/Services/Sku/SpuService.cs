@@ -80,7 +80,6 @@ namespace ModernWMS.WMS.Services
                             category_id = m.category_id,
                             category_name = c.category_name,
                             spu_description = m.spu_description,
-                            bar_code = m.bar_code,
                             supplier_id = m.supplier_id,
                             supplier_name = m.supplier_name,
                             brand = m.brand,
@@ -99,6 +98,7 @@ namespace ModernWMS.WMS.Services
                                              spu_id = t.spu_id,
                                              sku_code = t.sku_code,
                                              sku_name = t.sku_name,
+                                             bar_code = t.bar_code,
                                              weight = t.weight,
                                              lenght = t.lenght,
                                              width = t.width,
@@ -141,7 +141,6 @@ namespace ModernWMS.WMS.Services
                             category_id = m.category_id,
                             category_name = c.category_name,
                             spu_description = m.spu_description,
-                            bar_code = m.bar_code,
                             supplier_id = m.supplier_id,
                             supplier_name = m.supplier_name,
                             brand = m.brand,
@@ -160,6 +159,7 @@ namespace ModernWMS.WMS.Services
                                              spu_id = t.spu_id,
                                              sku_code = t.sku_code,
                                              sku_name = t.sku_name,
+                                             bar_code = t.bar_code,
                                              weight = t.weight,
                                              lenght = t.lenght,
                                              width = t.width,
@@ -205,7 +205,6 @@ namespace ModernWMS.WMS.Services
                             category_id = m.category_id,
                             category_name = c.category_name,
                             spu_description = m.spu_description,
-                            bar_code = m.bar_code,
                             supplier_id = m.supplier_id,
                             supplier_name = m.supplier_name,
                             brand = m.brand,
@@ -216,6 +215,7 @@ namespace ModernWMS.WMS.Services
                             sku_id = d.id,
                             sku_code = d.sku_code,
                             sku_name = d.sku_name,
+                            bar_code = d.bar_code,
                             weight = d.weight,
                             lenght = d.lenght,
                             width = d.width,
@@ -368,7 +368,6 @@ namespace ModernWMS.WMS.Services
             entity.spu_name = viewModel.spu_name;
             entity.category_id = viewModel.category_id;
             entity.spu_description = viewModel.spu_description;
-            entity.bar_code = viewModel.bar_code;
             entity.supplier_id = viewModel.supplier_id;
             entity.supplier_name = viewModel.supplier_name;
             entity.brand = viewModel.brand;
@@ -389,6 +388,7 @@ namespace ModernWMS.WMS.Services
                     {
                         d.sku_code = vm.sku_code;
                         d.sku_name = vm.sku_name;
+                        d.bar_code = vm.bar_code;
                         d.weight = vm.weight;
                         d.lenght = vm.lenght;
                         d.width = vm.width;

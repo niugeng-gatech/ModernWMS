@@ -48,7 +48,6 @@ onMounted(() => {
   height: 100%;
   display: flex;
   background-color: #fff;
-  position: relative;
   .loginLeft {
     width: 70%;
     display: flex;
