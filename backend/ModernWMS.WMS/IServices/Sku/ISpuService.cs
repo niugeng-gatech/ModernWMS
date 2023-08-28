@@ -56,6 +56,15 @@ using ModernWMS.WMS.Entities.ViewModels;
         /// <returns></returns>
         Task<(bool flag, string msg)> DeleteAsync(int id);
         #endregion
+
+        #region add or update sku_safety_stock
+        /// <summary>
+        /// add or update sku_safety_stock
+        /// </summary>
+        /// <param name="viewModel">args</param>
+        /// <returns></returns>
+        Task<(bool flag, string msg)> InsertOrUpdateSkuSafetyStockAsync(SkuSafetyStockPutViewModel viewModel);
+        #endregion
     }
- }
+}
  

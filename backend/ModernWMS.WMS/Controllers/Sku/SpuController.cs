@@ -159,6 +159,26 @@ namespace ModernWMS.WMS.Controllers
         }
         #endregion
 
+        #region add or update sku_safety_stock
+        /// <summary>
+        /// add or update sku_safety_stock
+        /// </summary>
+        /// <param name="viewModel">args</param>
+        /// <returns></returns>
+        [HttpPut("sku-safty-stock")]
+        public async Task<ResultModel<string>> InsertOrUpdateSkuSafetyStockAsync(SkuSafetyStockPutViewModel viewModel)
+        {
+            var (flag, msg) = await _spuService.InsertOrUpdateSkuSafetyStockAsync(viewModel);
+            if (flag)
+            {
+                return ResultModel<string>.Success(msg);
+            }
+            else
+            {
+                return ResultModel<string>.Error(msg);
+            }
+        }
+        #endregion
     }
 }
  

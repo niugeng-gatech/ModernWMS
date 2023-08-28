@@ -1,8 +1,7 @@
 ﻿/*
- * date：2-23-01-05
- * developer：NoNo
+ * date：2022-12-21
+ * developer：AMo
  */
-
 using System.ComponentModel.DataAnnotations;
 using System.Xml.Linq;
 

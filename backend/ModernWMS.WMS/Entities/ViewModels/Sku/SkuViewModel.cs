@@ -125,5 +125,12 @@ namespace ModernWMS.WMS.Entities.ViewModels
         public DateTime last_update_time { get; set; } = DateTime.Now;
         #endregion
 
+        #region sku safety stock
+        /// <summary>
+        /// sku safety sotck
+        /// </summary>
+        public List<SkuSafetyStockViewModel> detailList { get; set; } = new List<SkuSafetyStockViewModel>();
+
+        #endregion
     }
 }

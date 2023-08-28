@@ -101,5 +101,13 @@ namespace ModernWMS.WMS.Entities.Models
 
         #endregion
 
+        #region Sku Safety Stock
+
+        /// <summary>
+        /// Sku Safety Stock
+        /// </summary>
+        public List<SkuSafetyStockEntity> detailList { get; set; } = new List<SkuSafetyStockEntity>();
+
+        #endregion
     }
 }
