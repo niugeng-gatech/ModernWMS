@@ -204,6 +204,7 @@ namespace ModernWMS.WMS.Services
                     sort = m.sort,
                     menu_actions = JsonHelper.DeserializeObject<List<string>>(m.menu_actions_authority)
                 }).ToList();
+                return result;
             }
             return new List<MenuViewModel>();
         }
