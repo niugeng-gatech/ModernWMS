@@ -180,7 +180,7 @@ namespace ModernWMS.WMS.Services
                               join m in Menus.AsNoTracking() on rm.menu_id equals m.id
                               where rm.userrole_id == userrole_id
                               orderby m.sort, m.menu_name
-                              select new MenuViewModel
+                              select new 
                               {
                                   id = m.id,
                                   menu_name = m.menu_name,
@@ -188,9 +188,24 @@ namespace ModernWMS.WMS.Services
                                   vue_path = m.vue_path,
                                   vue_path_detail = m.vue_path_detail,
                                   vue_directory = m.vue_directory,
-                                  sort = m.sort
+                                  sort = m.sort,
+                                  rm.menu_actions_authority
                               }).ToListAsync();
-            return data;
+            if (data.Any())
+            {
+                var result = data.Select(m => new MenuViewModel
+                {
+                    id = m.id,
+                    menu_name = m.menu_name,
+                    module = m.module,
+                    vue_path = m.vue_path,
+                    vue_path_detail = m.vue_path_detail,
+                    vue_directory = m.vue_directory,
+                    sort = m.sort,
+                    menu_actions = JsonHelper.DeserializeObject<List<string>>(m.menu_actions_authority)
+                }).ToList();
+            }
+            return new List<MenuViewModel>();
         }
         /// <summary>
         /// add a new record
