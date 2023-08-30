@@ -75,7 +75,25 @@ namespace ModernWMS.WMS.Services
                     queries.Add(s);
                 });
             }
-            var DbSet = _dBContext.GetDbSet<DispatchlistEntity>();
+            var DbSet = _dBContext.GetDbSet<DispatchlistEntity>().AsNoTracking();
+            if (pageSearch.sqlTitle.Contains("dispatch_status"))
+            {
+                var dispatch_status = Convert.ToByte(pageSearch.sqlTitle.Trim().ToLower().Replace("dispatch_status", "").Replace("：", "").Replace(":", "").Replace("=", ""));
+                DbSet = DbSet.Where(t => t.dispatch_status.Equals(dispatch_status));
+            }
+            else if (pageSearch.sqlTitle.Equals("package"))
+            {
+                DbSet = DbSet.Where(t => t.picked_qty == t.qty && (t.dispatch_status.Equals(3) || (t.package_qty < t.picked_qty && t.dispatch_status.Equals(5)) || t.dispatch_status.Equals(4)));
+            }
+            else if (pageSearch.sqlTitle.Equals("weight"))
+            {
+                DbSet = DbSet.Where(t => t.picked_qty == t.qty && (t.dispatch_status.Equals(3) || (t.weighing_qty < t.picked_qty && t.dispatch_status.Equals(4)) || t.dispatch_status.Equals(5)));
+            }
+            else if (pageSearch.sqlTitle.Equals("delivery"))
+            {
+                DbSet = DbSet.Where(t => t.picked_qty == t.qty && (t.dispatch_status.Equals(3) || t.dispatch_status.Equals(4) || t.dispatch_status.Equals(5) || t.dispatch_status.Equals(6)));
+            }
+
             var query = from d in DbSet.AsNoTracking()
                         join sku in _dBContext.GetDbSet<SkuEntity>().AsNoTracking() on d.sku_id equals sku.id
                         join spu in _dBContext.GetDbSet<SpuEntity>().AsNoTracking() on sku.spu_id equals spu.id
@@ -122,61 +140,19 @@ namespace ModernWMS.WMS.Services
                             length_unit = spu.length_unit,
                             volume_unit = spu.volume_unit,
                             weight_unit = spu.weight_unit,
+                            is_todo = pageSearch.sqlTitle.Contains("dispatch_status") || (pageSearch.sqlTitle.Equals("package") && d.dispatch_status.Equals(4))
+                                            || (pageSearch.sqlTitle.Equals("weight") && d.dispatch_status.Equals(5))
+                                            || (pageSearch.sqlTitle.Equals("delivery") && d.dispatch_status.Equals(6)) ? false : true,
                         };
             query = query.Where(t => t.tenant_id.Equals(currentUser.tenant_id))
                  .Where(queries.AsExpression<DispatchlistViewModel>());
-            if (pageSearch.sqlTitle.Contains("dispatch_status"))
-            {
-                var dispatch_status = Convert.ToByte(pageSearch.sqlTitle.Trim().ToLower().Replace("dispatch_status", "").Replace("：", "").Replace(":", "").Replace("=", ""));
-                query = query.Where(t => t.dispatch_status.Equals(dispatch_status));
-            }
-            else if (pageSearch.sqlTitle.Equals("package"))
-            {
-                query = query.Where(t => t.picked_qty == t.qty && (t.dispatch_status.Equals(3) || (t.package_qty < t.picked_qty && t.dispatch_status.Equals(5)) || t.dispatch_status.Equals(4)));
-            }
-            else if (pageSearch.sqlTitle.Equals("weight"))
-            {
-                query = query.Where(t => t.picked_qty == t.qty && (t.dispatch_status.Equals(3) || (t.weighing_qty < t.picked_qty && t.dispatch_status.Equals(4)) || t.dispatch_status.Equals(5)));
-            }
-            else if (pageSearch.sqlTitle.Equals("delivery"))
-            {
-                query = query.Where(t => t.picked_qty == t.qty && (t.dispatch_status.Equals(3) || t.dispatch_status.Equals(4) || t.dispatch_status.Equals(5)));
-            }
+
             int totals = await query.CountAsync();
-            var list = await query.OrderByDescending(t => t.create_time)
+            var list = await query.OrderBy(t => t.is_todo == true ? 0 : 1).ThenByDescending(t => t.create_time)
                        .Skip((pageSearch.pageIndex - 1) * pageSearch.pageSize)
                        .Take(pageSearch.pageSize)
                        .ToListAsync();
-            if (pageSearch.sqlTitle.Equals("package"))
-            {
-                list.ForEach(t =>
-                {
-                    if (t.dispatch_status != 4)
-                    {
-                        t.is_todo = true;
-                    }
-                });
-            }
-            else if (pageSearch.sqlTitle.Equals("weight"))
-            {
-                list.ForEach(t =>
-                {
-                    if (t.dispatch_status != 5)
-                    {
-                        t.is_todo = true;
-                    }
-                });
-            }
-            else if (pageSearch.sqlTitle.Equals("delivery"))
-            {
-                list.ForEach(t =>
-                {
-                    if (t.dispatch_status != 6)
-                    {
-                        t.is_todo = true;
-                    }
-                });
-            }
+
             return (list, totals);
         }
 
