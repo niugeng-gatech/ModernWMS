@@ -18,7 +18,7 @@ namespace ModernWMS.WMS.Controllers
     /// </summary>
     [Route("actionlog")]
     [ApiController]
-    [ApiExplorerSettings(GroupName = "wms")]
+    [ApiExplorerSettings(GroupName = "WMS")]
     public class Action_logController : BaseController
     {
         #region Args
