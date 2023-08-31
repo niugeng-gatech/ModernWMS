@@ -2,6 +2,7 @@
  * date：2022-12-27
  * developer：NoNo
  */
+
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +26,7 @@ namespace ModernWMS.WMS.Services
     public class DispatchlistService : BaseService<DispatchlistEntity>, IDispatchlistService
     {
         #region Args
+
         /// <summary>
         /// The DBContext
         /// </summary>
@@ -34,9 +36,11 @@ namespace ModernWMS.WMS.Services
         /// Localizer Service
         /// </summary>
         private readonly IStringLocalizer<ModernWMS.Core.MultiLanguage> _stringLocalizer;
-        #endregion
+
+        #endregion Args
 
         #region constructor
+
         /// <summary>
         ///Dispatchlist  constructor
         /// </summary>
@@ -50,9 +54,11 @@ namespace ModernWMS.WMS.Services
             this._dBContext = dBContext;
             this._stringLocalizer = stringLocalizer;
         }
-        #endregion
+
+        #endregion constructor
 
         #region Api
+
         /// <summary>
         /// page search
         /// </summary>
@@ -69,7 +75,25 @@ namespace ModernWMS.WMS.Services
                     queries.Add(s);
                 });
             }
-            var DbSet = _dBContext.GetDbSet<DispatchlistEntity>();
+            var DbSet = _dBContext.GetDbSet<DispatchlistEntity>().AsNoTracking();
+            if (pageSearch.sqlTitle.Contains("dispatch_status"))
+            {
+                var dispatch_status = Convert.ToByte(pageSearch.sqlTitle.Trim().ToLower().Replace("dispatch_status", "").Replace("：", "").Replace(":", "").Replace("=", ""));
+                DbSet = DbSet.Where(t => t.dispatch_status.Equals(dispatch_status));
+            }
+            else if (pageSearch.sqlTitle.Equals("package"))
+            {
+                DbSet = DbSet.Where(t => t.picked_qty == t.qty && (t.dispatch_status.Equals(3) || (t.package_qty < t.picked_qty && t.dispatch_status.Equals(5)) || t.dispatch_status.Equals(4)));
+            }
+            else if (pageSearch.sqlTitle.Equals("weight"))
+            {
+                DbSet = DbSet.Where(t => t.picked_qty == t.qty && (t.dispatch_status.Equals(3) || (t.weighing_qty < t.picked_qty && t.dispatch_status.Equals(4)) || t.dispatch_status.Equals(5)));
+            }
+            else if (pageSearch.sqlTitle.Equals("delivery"))
+            {
+                DbSet = DbSet.Where(t => t.picked_qty == t.qty && (t.dispatch_status.Equals(3) || t.dispatch_status.Equals(4) || t.dispatch_status.Equals(5) || t.dispatch_status.Equals(6)));
+            }
+
             var query = from d in DbSet.AsNoTracking()
                         join sku in _dBContext.GetDbSet<SkuEntity>().AsNoTracking() on d.sku_id equals sku.id
                         join spu in _dBContext.GetDbSet<SpuEntity>().AsNoTracking() on sku.spu_id equals spu.id
@@ -115,34 +139,23 @@ namespace ModernWMS.WMS.Services
                             unpicked_qty = d.qty - d.picked_qty,
                             length_unit = spu.length_unit,
                             volume_unit = spu.volume_unit,
-                            weight_unit = spu.weight_unit
+                            weight_unit = spu.weight_unit,
+                            is_todo = pageSearch.sqlTitle.Contains("dispatch_status") || (pageSearch.sqlTitle.Equals("package") && d.dispatch_status.Equals(4))
+                                            || (pageSearch.sqlTitle.Equals("weight") && d.dispatch_status.Equals(5))
+                                            || (pageSearch.sqlTitle.Equals("delivery") && d.dispatch_status.Equals(6)) ? false : true,
                         };
             query = query.Where(t => t.tenant_id.Equals(currentUser.tenant_id))
                  .Where(queries.AsExpression<DispatchlistViewModel>());
-            if (pageSearch.sqlTitle.Contains("dispatch_status"))
-            {
-                var dispatch_status = Convert.ToByte(pageSearch.sqlTitle.Trim().ToLower().Replace("dispatch_status", "").Replace("：", "").Replace(":", "").Replace("=", ""));
-                query = query.Where(t => t.dispatch_status.Equals(dispatch_status));
-            }
-            else if (pageSearch.sqlTitle.Equals("to_package"))
-            {
-                query = query.Where(t => (t.picked_qty == t.qty && (t.dispatch_status.Equals(3)) || (t.package_qty < t.picked_qty && t.dispatch_status.Equals(5))));
-            }
-            else if (pageSearch.sqlTitle.Equals("to_weight"))
-            {
-                query = query.Where(t => t.picked_qty == t.qty && (t.dispatch_status.Equals(3) || (t.weighing_qty < t.picked_qty && t.dispatch_status.Equals(4))));
-            }
-            else if (pageSearch.sqlTitle.Equals("to_delivery"))
-            {
-                query = query.Where(t => t.picked_qty == t.qty && (t.dispatch_status.Equals(3) || t.dispatch_status.Equals(4) || t.dispatch_status.Equals(5)));
-            }
+
             int totals = await query.CountAsync();
-            var list = await query.OrderByDescending(t => t.create_time)
+            var list = await query.OrderBy(t => t.is_todo == true ? 0 : 1).ThenByDescending(t => t.create_time)
                        .Skip((pageSearch.pageIndex - 1) * pageSearch.pageSize)
                        .Take(pageSearch.pageSize)
                        .ToListAsync();
+
             return (list, totals);
         }
+
         /// <summary>
         /// get dispatchlist by dispatch_no
         /// </summary>
@@ -201,6 +214,7 @@ namespace ModernWMS.WMS.Services
                                }).ToListAsync();
             return datas;
         }
+
         /// <summary>
         /// update dispatchlist with same dispatch_no
         /// </summary>
@@ -261,7 +275,6 @@ namespace ModernWMS.WMS.Services
                         dispatch_status = dispatch_status,
                         sku_id = vm.sku_id,
                         qty = vm.qty
-
                     };
                     var sku = skus.FirstOrDefault(t => t.id == entity.sku_id);
                     if (sku != null)
@@ -294,6 +307,7 @@ namespace ModernWMS.WMS.Services
                 return (false, _stringLocalizer["save_failed"]);
             }
         }
+
         /// <summary>
         /// get pick list by dispatch_id
         /// </summary>
@@ -332,7 +346,7 @@ namespace ModernWMS.WMS.Services
         }
 
         /// <summary>
-        /// advanced dispatch order page search 
+        /// advanced dispatch order page search
         /// </summary>
         /// <param name="pageSearch">args</param>
         /// <param name="currentUser">currentUser</param>
@@ -349,8 +363,8 @@ namespace ModernWMS.WMS.Services
             }
             var DbSet = _dBContext.GetDbSet<DispatchlistEntity>();
             var query = from d in DbSet.AsNoTracking().Where(t => t.tenant_id.Equals(currentUser.tenant_id))
-                        //join sku in _dBContext.GetDbSet<SkuEntity>().AsNoTracking() on d.sku_id equals sku.id
-                        //join spu in _dBContext.GetDbSet<SpuEntity>().AsNoTracking() on sku.spu_id equals spu.id
+                            //join sku in _dBContext.GetDbSet<SkuEntity>().AsNoTracking() on d.sku_id equals sku.id
+                            //join spu in _dBContext.GetDbSet<SpuEntity>().AsNoTracking() on sku.spu_id equals spu.id
                         group new { d/*, spu*/ } by new { d.dispatch_no, d.dispatch_status, d.customer_id, d.customer_name, d.creator }
                         into dg
                         select new PreDispatchlistViewModel
@@ -381,26 +395,31 @@ namespace ModernWMS.WMS.Services
                        .Skip((pageSearch.pageIndex - 1) * pageSearch.pageSize)
                        .Take(pageSearch.pageSize)
                        .ToListAsync();
-            #region sqlit cannot sum data of decimal type 
+
+            #region sqlit cannot sum data of decimal type
+
             var dispatch_no_list = list.Select(t => t.dispatch_no).Distinct().ToList();
-            var d_datas =await (from d in DbSet.AsNoTracking()
-                               join sku in _dBContext.GetDbSet<SkuEntity>().AsNoTracking() on d.sku_id equals sku.id
-                                join spu in _dBContext.GetDbSet<SpuEntity>().AsNoTracking() on sku.spu_id equals spu.id
-                               where d.tenant_id == currentUser.tenant_id && dispatch_no_list.Contains(d.dispatch_no)
-                               select new
-                                {
-                                   d.dispatch_no,
-                                   volume = spu.volume_unit == 1 ? d.volume : (spu.volume_unit == 0 ? d.volume / 1000 : d.volume * 1000),
-                                   weight = spu.weight_unit == 0 ? d.weight / 1000000 : (spu.weight_unit == 1 ? d.weight / 1000 : d.weight)
-                               }).ToListAsync();
+            var d_datas = await (from d in DbSet.AsNoTracking()
+                                 join sku in _dBContext.GetDbSet<SkuEntity>().AsNoTracking() on d.sku_id equals sku.id
+                                 join spu in _dBContext.GetDbSet<SpuEntity>().AsNoTracking() on sku.spu_id equals spu.id
+                                 where d.tenant_id == currentUser.tenant_id && dispatch_no_list.Contains(d.dispatch_no)
+                                 select new
+                                 {
+                                     d.dispatch_no,
+                                     volume = spu.volume_unit == 1 ? d.volume : (spu.volume_unit == 0 ? d.volume / 1000 : d.volume * 1000),
+                                     weight = spu.weight_unit == 0 ? d.weight / 1000000 : (spu.weight_unit == 1 ? d.weight / 1000 : d.weight)
+                                 }).ToListAsync();
             list.ForEach(t =>
             {
-                t.volume =d_datas.Where(d=>d.dispatch_no == t.dispatch_no).Sum(t=>t.volume);
+                t.volume = d_datas.Where(d => d.dispatch_no == t.dispatch_no).Sum(t => t.volume);
                 t.weight = d_datas.Where(d => d.dispatch_no == t.dispatch_no).Sum(t => t.weight);
             });
-            #endregion
+
+            #endregion sqlit cannot sum data of decimal type
+
             return (list, totals);
         }
+
         /// <summary>
         /// Get dispatchlist by dispatch_no
         /// </summary>
@@ -455,7 +474,7 @@ namespace ModernWMS.WMS.Services
         }
 
         /// <summary>
-        /// add a new Dispatchlist 
+        /// add a new Dispatchlist
         /// </summary>
         /// <param name="viewModel">viewmodel</param>
         /// <param name="currentUser">current user</param>
@@ -594,7 +613,7 @@ namespace ModernWMS.WMS.Services
                                join spu in spu_DBSet on sku.spu_id equals spu.id
                                join owner in owner_DBSet.AsNoTracking() on sg.goods_owner_id equals owner.id into owner_left
                                from owner in owner_left.DefaultIfEmpty()
-                               join gl in location_DBSet.Where(t=>t.warehouse_area_property != 5).AsNoTracking() on sg.goods_location_id equals gl.id into gl_left
+                               join gl in location_DBSet.Where(t => t.warehouse_area_property != 5).AsNoTracking() on sg.goods_location_id equals gl.id into gl_left
                                from gl in gl_left.DefaultIfEmpty()
                                where dl.dispatch_no == dispatch_no && dl.tenant_id == currentUser.tenant_id && (dl.dispatch_status == 0 || dl.dispatch_status == 1)
                                select new
@@ -681,11 +700,10 @@ namespace ModernWMS.WMS.Services
                     pick.pick_qty = (r.qty <= (pick_qty + pick.qty_available)) ? (r.qty - pick_qty) : pick.qty_available;
                     pick_qty += pick.pick_qty;
                 }
-                r.pick_list = picklist.Where(t=>t.qty_available>0).ToList();
+                r.pick_list = picklist.Where(t => t.qty_available > 0).ToList();
             }
-            
-            return res;
 
+            return res;
         }
 
         /// <summary>
@@ -854,7 +872,7 @@ namespace ModernWMS.WMS.Services
         }
 
         /// <summary>
-        ///  cancel order opration 
+        ///  cancel order opration
         /// </summary>
         /// <param name="viewModel">viewmodel</param>
         /// <param name="currentUser">current user</param>
@@ -1312,6 +1330,7 @@ namespace ModernWMS.WMS.Services
                 return (false, _stringLocalizer["operation_failed"]);
             }
         }
+
         /// <summary>
         ///  set dispatchlist freightfee
         /// </summary>
@@ -1357,6 +1376,7 @@ namespace ModernWMS.WMS.Services
                 return (false, _stringLocalizer["operation_failed"]);
             }
         }
+
         /// <summary>
         /// sign for arrival
         /// </summary>
@@ -1389,6 +1409,7 @@ namespace ModernWMS.WMS.Services
                 return (false, _stringLocalizer["operation_failed"]);
             }
         }
+
         /// <summary>
         /// get next order code number
         /// </summary>
@@ -1432,7 +1453,7 @@ namespace ModernWMS.WMS.Services
             long timeStamp = Convert.ToInt32(DateTime.Now.Subtract(_dtStart).TotalSeconds);
             return date + timeStamp.ToString();
         }
-        #endregion
+
+        #endregion Api
     }
 }
-

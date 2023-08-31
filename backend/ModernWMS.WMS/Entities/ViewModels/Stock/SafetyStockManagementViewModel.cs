@@ -4,25 +4,30 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ModernWMS.WMS.Entities.ViewModels
+namespace ModernWMS.WMS.Entities.ViewModels.Stock
 {
     /// <summary>
-    /// StockManagementViewModel
+    /// safety stock mangement viewmodel
     /// </summary>
-    public class StockManagementViewModel
+    public class SafetyStockManagementViewModel
     {
         #region constructor
 
         /// <summary>
         /// constructor
         /// </summary>
-        public StockManagementViewModel()
+        public SafetyStockManagementViewModel()
         {
         }
 
         #endregion constructor
 
         #region Property
+
+        /// <summary>
+        /// warehouse_name
+        /// </summary>
+        public string warehouse_name { get; set; } = string.Empty;
 
         /// <summary>
         /// spu_code
@@ -38,6 +43,11 @@ namespace ModernWMS.WMS.Entities.ViewModels
         /// sku_code
         /// </summary>
         public string sku_code { get; set; } = string.Empty;
+
+        /// <summary>
+        /// sku_name
+        /// </summary>
+        public string sku_name { get; set; } = string.Empty;
 
         /// <summary>
         /// sku_id
@@ -65,29 +75,9 @@ namespace ModernWMS.WMS.Entities.ViewModels
         public int qty_frozen { get; set; } = 0;
 
         /// <summary>
-        /// asn qty
+        /// safety_stock_qty
         /// </summary>
-        public int qty_asn { get; set; } = 0;
-
-        /// <summary>
-        /// qty to be unloaded
-        /// </summary>
-        public int qty_to_unload { get; set; } = 0;
-
-        /// <summary>
-        ///  qty to be sorted
-        /// </summary>
-        public int qty_to_sort { get; set; } = 0;
-
-        /// <summary>
-        /// qty sorted
-        /// </summary>
-        public int qty_sorted { get; set; } = 0;
-
-        /// <summary>
-        /// shortage qty
-        /// </summary>
-        public int shortage_qty { get; set; } = 0;
+        public int safety_stock_qty { get; set; } = 0;
 
         #endregion Property
     }
