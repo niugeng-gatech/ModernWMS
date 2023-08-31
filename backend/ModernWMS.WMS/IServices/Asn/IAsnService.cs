@@ -123,6 +123,46 @@ namespace ModernWMS.WMS.IServices
         /// <returns></returns>
         Task<(bool flag, string msg)> PutAwayAsync(AsnPutAwayInputViewModel viewModel, CurrentUser currentUser);
         #endregion
+
+
+        #region Arrival list 
+        /// <summary>
+        /// Arrival list
+        /// </summary>
+        /// <param name="pageSearch">args</param>
+        /// <param name="currentUser">currentUser</param>
+        /// <returns></returns>
+        Task<(List<AsnmasterBothViewModel> data, int totals)> PageAsnmasterAsync(PageSearch pageSearch, CurrentUser currentUser);
+        /// <summary>
+        /// get Arrival list
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="currentUser"></param>
+        /// <returns></returns>
+        Task<AsnmasterBothViewModel> GetAsnmasterAsync(int id, CurrentUser currentUser);
+
+        /// <summary>
+        /// add a new record
+        /// </summary>
+        /// <param name="viewModel">viewmodel</param>
+        /// <param name="currentUser">currentUser</param>
+        /// <returns></returns>
+        Task<(int id, string msg)> AddAsnmasterAsync(AsnmasterBothViewModel viewModel, CurrentUser currentUser);
+        /// <summary>
+        /// add a new record
+        /// </summary>
+        /// <param name="viewModel">viewmodel</param>
+        /// <param name="currentUser">currentUser</param>
+        /// <returns></returns>
+        Task<(bool flag, string msg)> UpdateAsnmasterAsync(AsnmasterBothViewModel viewModel, CurrentUser currentUser);
+
+        /// <summary>
+        /// delete a record
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <returns></returns>
+        Task<(bool flag, string msg)> DeleteAsnmasterAsync(int id);
+        #endregion
     }
 }
  

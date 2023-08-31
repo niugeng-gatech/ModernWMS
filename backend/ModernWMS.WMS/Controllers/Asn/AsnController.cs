@@ -49,6 +49,100 @@ namespace ModernWMS.WMS.Controllers
         }
         #endregion
 
+
+        #region Arrival list 
+        /// <summary>
+        /// Arrival list
+        /// </summary>
+        /// <param name="pageSearch">args</param>
+        /// <returns></returns>
+        [HttpPost("asnmaster/list")]
+        public async Task<ResultModel<PageData<AsnmasterBothViewModel>>> PageAsnmasterAsync(PageSearch pageSearch)
+        {
+            var (data, totals) = await _asnService.PageAsnmasterAsync(pageSearch, CurrentUser);
+
+            return ResultModel<PageData<AsnmasterBothViewModel>>.Success(new PageData<AsnmasterBothViewModel>
+            {
+                Rows = data,
+                Totals = totals
+            });
+        }
+        /// <summary>
+        /// get Arrival list
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("asnmaster")]
+        public async Task<ResultModel<AsnmasterBothViewModel>> GetAsnmasterAsync(int id)
+        {
+            var data = await _asnService.GetAsnmasterAsync(id, CurrentUser);
+            if (data != null && data.id > 0)
+            {
+                return ResultModel<AsnmasterBothViewModel>.Success(data);
+            }
+            else
+            {
+                return ResultModel<AsnmasterBothViewModel>.Error(_stringLocalizer["not_exists_entity"]);
+            }
+        }
+
+        /// <summary>
+        /// add a new record
+        /// </summary>
+        /// <param name="viewModel">viewmodel</param>
+        /// <returns></returns>
+        [HttpPost("asnmaster")]
+        public async Task<ResultModel<int>> AddAsnmasterAsync(AsnmasterBothViewModel viewModel)
+        {
+            var (id, msg) = await _asnService.AddAsnmasterAsync(viewModel, CurrentUser);
+            if (id > 0)
+            {
+                return ResultModel<int>.Success(id);
+            }
+            else
+            {
+                return ResultModel<int>.Error(msg);
+            }
+        }
+        /// <summary>
+        /// update record
+        /// </summary>
+        /// <param name="viewModel">viewmodel</param>
+        /// <returns></returns>
+        [HttpPut("asnmaster")]
+        public async Task<ResultModel<bool>> UpdateAsnmasterAsync(AsnmasterBothViewModel viewModel)
+        {
+            var (flag, msg) = await _asnService.UpdateAsnmasterAsync(viewModel, CurrentUser);
+            if (flag)
+            {
+                return ResultModel<bool>.Success(flag);
+            }
+            else
+            {
+                return ResultModel<bool>.Error(msg, 400, flag);
+            }
+        }
+
+        /// <summary>
+        /// delete a record
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <returns></returns>
+        [HttpDelete("asnmaster")]
+        public async Task<ResultModel<string>> DeleteAsnmasterAsync(int id)
+        {
+            var (flag, msg) = await _asnService.DeleteAsnmasterAsync(id);
+            if (flag)
+            {
+                return ResultModel<string>.Success(msg);
+            }
+            else
+            {
+                return ResultModel<string>.Error(msg);
+            }
+        }
+        #endregion
+
         #region Api
         /// <summary>
         /// page search, sqlTitle input asn_status:0 ~ 4
