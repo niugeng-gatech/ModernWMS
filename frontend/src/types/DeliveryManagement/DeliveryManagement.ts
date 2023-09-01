@@ -38,6 +38,7 @@ export interface DeliveryManagementDetailVO extends DeliveryManagementVO {
   weight?: number
   volume?: number
   weight_unit?: number
+  is_todo: boolean
 }
 
 export interface addRequestVO {

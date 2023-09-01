@@ -24,7 +24,7 @@ export default {
       import: 'Import',
       chooseFile: 'Choose File',
       exportTemplate: 'Export Template',
-      noData: 'No data',
+      noData: 'No data'
     },
     tips: {
       success: ' success!',
@@ -58,7 +58,8 @@ export default {
       changePwd: 'Change Password',
       oldPwd: 'Old password',
       newPwd: 'New password',
-      confrimNewPwd: 'Confirm new password'
+      confrimNewPwd: 'Confirm new password',
+      log: 'System log'
     },
     combobox: {
       sex: {
@@ -75,6 +76,11 @@ export default {
       goTo: 'Go to',
       total: 'Total',
       record: 'record'
+    },
+    viewLog: {
+      user_name: 'Operator',
+      action_content: 'Operation content',
+      action_time: 'Time'
     }
   },
   router: {
@@ -101,7 +107,9 @@ export default {
       warehouseAdjust: 'Inventory Adjust',
       warehouseTaking: 'Inventory Take',
       deliveryManagement: 'Delivery Management',
-      stockAsn: 'Receiving Management'
+      stockAsn: 'Receiving Management',
+      statisticAnalysis: 'Statistic Analysis',
+      saftyStock: 'Safety Stock'
     }
   },
   login: {
@@ -130,7 +138,7 @@ export default {
       create_time: 'Create Time',
       last_update_time: 'Last Update Time',
       is_valid: 'Valid',
-      freightSelectModal: 'Freight Select Modal',
+      freightSelectModal: 'Freight Select Modal'
     },
     userManagement: {
       user_num: 'User Num',
@@ -151,6 +159,7 @@ export default {
       warehouseSetting: 'Warehouse Setting',
       reservoirSetting: 'Reservoir Setting',
       locationSetting: 'Location Setting',
+      warehourseSelectModal: 'Location Select Modal',
       locationSelectModal: 'Location Select Modal',
       email: 'Email',
       warehouse_name: 'Warehouse Name',
@@ -234,7 +243,66 @@ export default {
     roleMenu: {
       role_name: 'Role Name',
       menu_name: 'Menu Name',
-      beforeUpdateOrDel: 'Please select the data to be processed first!'
+      beforeUpdateOrDel: 'Please select the data to be processed first!',
+      operation: 'Operation permissions',
+      dataEmpty: 'Empty data',
+      expandRow: 'Expand rows',
+      opeartionFunctionName: {
+        warehouseSetting: {
+          warehouse: 'Warehouse Setting',
+          area: 'Reservoir Setting',
+          location: 'Location Setting'
+        },
+        stockManagement: {
+          area: 'Stock Location',
+          stock: 'Stock'
+        },
+        stockAsn: {
+          notice: 'Arrival notice',
+          delivered: 'To Be Delivered',
+          unloaded: 'To Be Unloaded',
+          sorted: 'To Be Sorted',
+          putOnTheShelf: 'To Be Put On The Shelf',
+          detail: 'Receipt Details'
+        },
+        deliveryManagement: {
+          invoice: 'Shipment',
+          picked: 'Picked',
+          packaged: 'Packaged',
+          weighed: 'Weighed',
+          delivered: 'Delivered',
+          signedIn: 'Signed In'
+        }
+      },
+      operationTitle: {
+        add: 'Add',
+        export: 'Export',
+        refresh: 'Refresh',
+        save: 'Save',
+        delete: 'Delete',
+        import: 'Import',
+        resetPwd: 'Reset password',
+        split: 'Split processing',
+        group: 'Combined processing',
+        confirmOpeartion: 'Confirm operation',
+        confirmAdjust: 'Confirm adjustment',
+        confirm: 'Confirm operation',
+        freeze: 'Freeze',
+        unfreeze: 'Unfreeze',
+        editCount: 'Edit quantity',
+        editArrival: 'Edit notice of arrival',
+        revoke: 'Revoke',
+        package: 'Pack',
+        weigh: 'Weigh',
+        delivery: 'Delivery',
+        setCarrier: 'Set carrier',
+        signIn: 'Sign in',
+        saftyStock: 'Safety stock'
+      },
+      modalTitle: {
+        editMenuAction: 'Edit menu operation permissions',
+        actionTitle: 'Operation permissions'
+      }
     },
     commodityManagement: {
       spu_code: 'Commodity Code',
@@ -257,7 +325,8 @@ export default {
       lenght: 'Commodity Length',
       width: 'Commodity Width',
       height: 'Commodity Height',
-      volume: 'Commodity Volume'
+      volume: 'Commodity Volume',
+      saftyStock: 'Safety stock'
     }
   },
   wms: {
@@ -538,7 +607,17 @@ export default {
       arrival_city: 'City of arrival',
       ViewInventoryDetails: 'View product details',
       invalidValue: 'Please enter a valid value',
-      exceedingQuantity: 'Cannot exceed the total quantity'
-    }
+      exceedingQuantity: 'Cannot exceed the total quantity',
+      state: 'State',
+      packageTodo: 'Unpacked',
+      packageReady: 'Packaged',
+      weighTodo: 'Unweighed',
+      weighReady: 'Weighed',
+      deliveryTodo: 'Undelivery',
+      deliveryReady: 'Deliveryed',
+      opeartionCheckboxIsNull: 'No actionable data selected!',
+      warehouse_name: 'Warehouse name'
+    },
+    saftyStock: {}
   }
 }

@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, computed, defineEmits, watch } from 'vue'
+import { reactive, computed, watch } from 'vue'
 import { hookComponent } from '@/components/system/index'
 import { viewInventoryDetails } from '@/api/wms/deliveryManagement'
 import i18n from '@/languages/i18n'

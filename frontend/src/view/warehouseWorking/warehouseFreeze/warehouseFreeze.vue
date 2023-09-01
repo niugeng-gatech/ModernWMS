@@ -11,7 +11,7 @@
                 <v-row no-gutters>
                   <!-- Operate Btn -->
                   <v-col cols="3" class="col">
-                    <tooltip-btn
+                    <!-- <tooltip-btn
                       icon="mdi-lock-open-outline"
                       :tooltip-text="$t('wms.warehouseWorking.warehouseFreeze.freeze')"
                       @click="method.add(FREEZE_JOB_FREEZE)"
@@ -22,7 +22,9 @@
                       @click="method.add(FREEZE_JOB_UNFREEZE)"
                     ></tooltip-btn>
                     <tooltip-btn icon="mdi-refresh" :tooltip-text="$t('system.page.refresh')" @click="method.refresh"></tooltip-btn>
-                    <tooltip-btn icon="mdi-export-variant" :tooltip-text="$t('system.page.export')" @click="method.exportTable"> </tooltip-btn>
+                    <tooltip-btn icon="mdi-export-variant" :tooltip-text="$t('system.page.export')" @click="method.exportTable"> </tooltip-btn> -->
+
+                    <BtnGroup :authority-list="data.authorityList" :btn-list="data.btnList" />
                   </v-col>
 
                   <!-- Search Input -->
@@ -134,7 +136,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, reactive, onActivated, watch, nextTick } from 'vue'
+import { computed, ref, reactive, onActivated, watch, nextTick, onMounted } from 'vue'
 import { VxePagerEvents } from 'vxe-table'
 import { computedCardHeight, computedTableHeight } from '@/constant/style'
 import { WarehouseFreezeVO } from '@/types/WarehouseWorking/WarehouseFreeze'
@@ -144,14 +146,15 @@ import { hookComponent } from '@/components/system'
 import { formatFreezeJobType } from '@/utils/format/formatWarehouseWorking'
 import { getStockFreezeList, getStockFreezeOne } from '@/api/wms/warehouseFreeze'
 import { DEBOUNCE_TIME } from '@/constant/system'
-import { setSearchObject } from '@/utils/common'
-import { SearchObject } from '@/types/System/Form'
+import { setSearchObject, getMenuAuthorityList } from '@/utils/common'
+import { SearchObject, btnGroupItem } from '@/types/System/Form'
 import { formatDate } from '@/utils/format/formatSystem'
 import tooltipBtn from '@/components/tooltip-btn.vue'
 import addOrUpdateDialog from './add-or-update-freeze.vue'
 import i18n from '@/languages/i18n'
 import customPager from '@/components/custom-pager.vue'
 import { exportData } from '@/utils/exportTable'
+import BtnGroup from '@/components/system/btnGroup.vue'
 
 const xTable = ref()
 
@@ -188,7 +191,10 @@ const data = reactive({
     pageIndex: 1,
     pageSize: DEFAULT_PAGE_SIZE,
     searchObjects: ref<Array<SearchObject>>([])
-  })
+  }),
+  btnList: [] as btnGroupItem[],
+  // Menu operation permissions
+  authorityList: getMenuAuthorityList()
 })
 
 const method = reactive({
@@ -317,6 +323,39 @@ const method = reactive({
 
 onActivated(() => {
   method.refresh()
+})
+
+onMounted(() => {
+  data.btnList = [
+    {
+      name: i18n.global.t('wms.warehouseWorking.warehouseFreeze.freeze'),
+      icon: 'mdi-lock-open-outline',
+      code: 'freeze',
+      click: () => {
+        method.add(FREEZE_JOB_FREEZE)
+      }
+    },
+    {
+      name: i18n.global.t('wms.warehouseWorking.warehouseFreeze.unfreeze'),
+      icon: 'mdi-lock-open-variant-outline',
+      code: 'unfreeze',
+      click: () => {
+        method.add(FREEZE_JOB_UNFREEZE)
+      }
+    },
+    {
+      name: i18n.global.t('system.page.refresh'),
+      icon: 'mdi-refresh',
+      code: '',
+      click: method.refresh
+    },
+    {
+      name: i18n.global.t('system.page.export'),
+      icon: 'mdi-export-variant',
+      code: 'export',
+      click: method.exportTable
+    }
+  ]
 })
 
 const cardHeight = computed(() => computedCardHeight({ hasTab: false }))

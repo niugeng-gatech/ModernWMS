@@ -23,9 +23,9 @@ export interface StockAsnVO extends UniformFileNaming {
   weight: number
   volume: number
   supplier_id: number
-  supplier_name: string
+  supplier_name?: string
   goods_owner_id: number
-  goods_owner_name: string
+  goods_owner_name?: string
   is_valid: boolean
 }
 

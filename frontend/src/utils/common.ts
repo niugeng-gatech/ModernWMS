@@ -1,5 +1,7 @@
 import XEUtils from 'xe-utils'
+import { useRoute } from 'vue-router'
 import { SearchObject, SearchOperator } from '@/types/System/Form'
+import { store } from '@/store'
 
 export const setSearchObject = (searchForm: any, preciseSearchCols: string[] = []) => {
   const searchObjects: Array<SearchObject> = []
@@ -54,4 +56,26 @@ export const removeObjectNull = (obj: any) => {
     }
   })
   return copy
+}
+
+// Obtain menu operation permissions
+export const getMenuAuthorityList = () => {
+  let AuthorityList: string[] = []
+
+  const route = useRoute()
+
+  const menu_name = route.path.substring(1)
+
+  const menu_list: any[] = store.getters['user/menulist']
+
+  const filter = menu_list.filter((item: any) => item.menu_name === menu_name)
+
+  // Obtain permission list based on route
+  if (filter.length > 0) {
+    AuthorityList = filter[0].menu_actions
+  } else {
+    AuthorityList = []
+  }
+
+  return AuthorityList
 }

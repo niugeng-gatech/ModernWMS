@@ -24,12 +24,14 @@
         </template>
         <v-list>
           <v-list-item v-for="(item, index) in data.userOperationMenu" :key="index" :value="index" @click="method.operation(item.value)">
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
+            <v-list-item-title :title="item.title">{{ item.title }}</v-list-item-title>
           </v-list-item>
         </v-list>
       </v-menu>
     </div>
     <ChangePwd ref="ChangePwdRef" />
+
+    <ViewLogDialog ref="ViewLogDialogRef" />
   </div>
 </template>
 
@@ -43,9 +45,11 @@ import { router } from '@/router'
 import { store } from '@/store'
 import { DataProps } from '@/types/Home/HomeHeader'
 import ChangePwd from '@/components/system/change-pwd.vue'
+import ViewLogDialog from '@/components/system/view-log-dialog.vue'
 
 const routerInfo = useRouter()
 const ChangePwdRef = ref()
+const ViewLogDialogRef = ref()
 
 const data: DataProps = reactive({
   breadcrumbItems: [],
@@ -54,6 +58,10 @@ const data: DataProps = reactive({
     {
       title: i18n.global.t('system.homeHeader.changePwd'),
       value: 'changePwd'
+    },
+    {
+      title: i18n.global.t('system.homeHeader.log'),
+      value: 'viewLog'
     },
     {
       title: i18n.global.t('system.homeHeader.logout'),
@@ -96,6 +104,8 @@ const method = reactive({
       router.push('/login')
     } else if (value === 'changePwd') {
       ChangePwdRef.value.open()
+    } else if (value === 'viewLog') {
+      ViewLogDialogRef.value.openDialog()
     }
   },
   toGit: (type: string) => {

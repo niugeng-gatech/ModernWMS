@@ -24,7 +24,7 @@ export default {
       import: '导入',
       chooseFile: '选择文件',
       exportTemplate: '导出模板',
-      noData: '暂无数据',
+      noData: '暂无数据'
     },
     tips: {
       success: '成功!',
@@ -58,7 +58,8 @@ export default {
       changePwd: '修改密码',
       oldPwd: '旧密码',
       newPwd: '新密码',
-      confrimNewPwd: '确认新密码'
+      confrimNewPwd: '确认新密码',
+      log: '系统日志'
     },
     combobox: {
       sex: {
@@ -75,6 +76,11 @@ export default {
       goTo: '前往',
       total: '共',
       record: '条记录'
+    },
+    viewLog: {
+      user_name: '操作人',
+      action_content: '操作内容',
+      action_time: '操作时间'
     }
   },
   router: {
@@ -101,7 +107,9 @@ export default {
       warehouseAdjust: '库存调整',
       warehouseTaking: '库存盘点',
       deliveryManagement: '发货管理',
-      stockAsn: '收货管理'
+      stockAsn: '收货管理',
+      statisticAnalysis: '统计分析',
+      saftyStock: '安全库存'
     }
   },
   login: {
@@ -130,7 +138,7 @@ export default {
       create_time: '创建时间',
       last_update_time: '最后更新时间',
       is_valid: '是否有效',
-      freightSelectModal: '运费选择框',
+      freightSelectModal: '运费选择框'
     },
     userManagement: {
       user_num: '员工编号',
@@ -151,6 +159,7 @@ export default {
       warehouseSetting: '仓库设置',
       reservoirSetting: '库区设置',
       locationSetting: '库位设置',
+      warehourseSelectModal: '库位选择框',
       locationSelectModal: '库位选择框',
       email: 'Email',
       warehouse_name: '仓库名称',
@@ -234,7 +243,66 @@ export default {
     roleMenu: {
       role_name: '角色名称',
       menu_name: '菜单名称',
-      beforeUpdateOrDel: '请先选择需要处理的数据!'
+      beforeUpdateOrDel: '请先选择需要处理的数据!',
+      operation: '操作权限',
+      dataEmpty: '暂无权限',
+      expandRow: '展开行',
+      opeartionFunctionName: {
+        warehouseSetting: {
+          warehouse: '仓库设置',
+          area: '库区设置',
+          location: '库位设置'
+        },
+        stockManagement: {
+          area: '库位列表',
+          stock: '库存列表'
+        },
+        stockAsn: {
+          notice: '到货通知',
+          delivered: '待到货',
+          unloaded: '待卸货',
+          sorted: '待分拣',
+          putOnTheShelf: '待上架',
+          detail: '收货明细'
+        },
+        deliveryManagement: {
+          invoice: '发货单',
+          picked: '拣货',
+          packaged: '打包',
+          weighed: '称重',
+          delivered: '出库',
+          signedIn: '已签收'
+        }
+      },
+      operationTitle: {
+        add: '新增',
+        export: '导出',
+        refresh: '刷新',
+        save: '保存',
+        delete: '删除',
+        import: '导入',
+        resetPwd: '重置密码',
+        split: '拆分加工',
+        group: '组合加工',
+        confirmOpeartion: '确认操作',
+        confirmAdjust: '确认调整',
+        confirm: '确认操作',
+        freeze: '冻结',
+        unfreeze: '解冻',
+        editCount: '编辑数量',
+        editArrival: '编辑上架数量',
+        revoke: '撤回',
+        package: '打包',
+        weigh: '称重',
+        delivery: '出库',
+        setCarrier: '设置承运单位',
+        signIn: '签收',
+        saftyStock: '安全库存'
+      },
+      modalTitle: {
+        editMenuAction: '编辑菜单操作权限',
+        actionTitle: '操作权限'
+      }
     },
     commodityManagement: {
       spu_code: '商品编码',
@@ -257,7 +325,8 @@ export default {
       lenght: '商品长度',
       width: '商品宽度',
       height: '商品高度',
-      volume: '商品体积'
+      volume: '商品体积',
+      saftyStock: '安全库存'
     }
   },
   wms: {
@@ -472,13 +541,13 @@ export default {
       picked: '已拣货',
       toBePackaged: '待打包',
       package: '打包',
-      packaged: '已打包',
+      packaged: '打包',
       toBeWeighed: '待称重',
       weigh: '称重',
-      weighed: '已称重',
+      weighed: '称重',
       delivery: '出库',
       toBeDelivered: '待出库',
-      outOfWarehouse: '已出库',
+      outOfWarehouse: '出库',
       signIn: '签收',
       signedIn: '已签收',
       dispatch_no: '发货单号',
@@ -538,7 +607,17 @@ export default {
       arrival_city: '到货城市',
       ViewInventoryDetails: '查看商品明细',
       invalidValue: '请输入有效数值',
-      exceedingQuantity: '不能超过总数量'
-    }
+      exceedingQuantity: '不能超过总数量',
+      state: '状态',
+      packageTodo: '未打包',
+      packageReady: '已打包',
+      weighTodo: '未称重',
+      weighReady: '已称重',
+      deliveryTodo: '未出库',
+      deliveryReady: '已出库',
+      opeartionCheckboxIsNull: '未选中可操作的数据!',
+      warehouse_name: '仓库名称'
+    },
+    saftyStock: {}
   }
 }

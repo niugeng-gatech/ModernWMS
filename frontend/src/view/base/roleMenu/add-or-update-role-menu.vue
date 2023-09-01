@@ -49,6 +49,7 @@ import { hookComponent } from '@/components/system/index'
 import { addRoleMenu, updateRoleMenu, getMenus } from '@/api/base/roleMenu'
 import { getUserRoleAll } from '@/api/base/userRoleSetting'
 import { MenuItem } from '@/types/System/Store'
+import { actionDict } from './actionList'
 
 const formRef = ref()
 const emit = defineEmits(['close', 'saveSuccess'])
@@ -80,6 +81,7 @@ const data = reactive({
     menu_name: {
       label: string
       value: number
+      menu_name: string
     }[]
   }>({
     role_name: [],
@@ -126,7 +128,8 @@ const method = reactive({
     for (const menu of menus) {
       data.combobox.menu_name.push({
         label: i18n.global.t(`router.sideBar.${ menu.menu_name }`),
-        value: menu.id
+        value: menu.id,
+        menu_name: menu.menu_name
       })
     }
   },
@@ -141,7 +144,8 @@ const method = reactive({
       if (data.form.detailList.findIndex((dl) => dl.menu_id === item) < 0) {
         data.form.detailList.push({
           id: 0,
-          menu_id: item
+          menu_id: item,
+          menu_actions_authority: []
         })
       }
     }
@@ -169,9 +173,20 @@ const method = reactive({
     }
     const { valid } = await formRef.value.validate()
     if (valid) {
+      const form = { ...data.form }
+
+      form.detailList = form.detailList.map((item: RoleMenuDetailVo) => {
+        if (!item.id || item.id === 0) {
+          const index = data.combobox.menu_name.findIndex((fi: { value: number }) => fi.value === item.menu_id)
+
+          item.menu_actions_authority = index > -1 ? actionDict[data.combobox.menu_name[index].menu_name] : []
+        }
+        return item
+      })
+
       const { data: res } = data.dialogTitle === 'add'
-          ? await addRoleMenu(data.form)
-          : await updateRoleMenu({ ...data.form, detailList: [...data.form.detailList, ...data.removeDetailList] }) // Merge the deleted list and the original list
+          ? await addRoleMenu(form)
+          : await updateRoleMenu({ ...form, detailList: [...form.detailList, ...data.removeDetailList] }) // Merge the deleted list and the original list
       if (!res.isSuccess) {
         hookComponent.$message({
           type: 'error',

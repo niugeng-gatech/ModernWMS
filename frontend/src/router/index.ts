@@ -45,13 +45,24 @@ const modules = import.meta.glob('../view/*/*/*.vue')
 // load router function
 function loadRouter() {
   dynamicRouter = menusToRouter(store.getters['user/menulist'])
-  dynamicRouter.push({
-    name: 'homepage',
-    path: '/homepage',
-    directory: 'home/homepage',
-    redirect: '',
-    component: null
-  })
+  dynamicRouter.push(
+    {
+      name: 'homepage',
+      path: '/homepage',
+      directory: 'home/homepage',
+      redirect: '',
+      component: null
+    }
+  )
+  // dynamicRouter.push(
+  //   {
+  //     name: 'test',
+  //     path: '/test',
+  //     directory: 'test/test',
+  //     redirect: '',
+  //     component: null
+  //   }
+  // )
   // Clear the loaded routes before creating them, mainly for logged out users
   for (const item of loadedRouter) {
     router.removeRoute(item)
