@@ -457,11 +457,20 @@ namespace ModernWMS.WMS.Services
                     },new MenuEntity
                     {
                         menu_name = "stockManagement",
-                        module = "",
+                        module = "statisticAnalysis ",
                         vue_path = "stockManagement",
                         vue_path_detail = "",
                         vue_directory = "wms/stockManagement",
                         sort = 3,
+                        tenant_id = tenant_id
+                    },new MenuEntity
+                    {
+                        menu_name = "saftyStock",
+                        module = "statisticAnalysis ",
+                        vue_path = "saftyStock",
+                        vue_path_detail = "",
+                        vue_directory = "statisticAnalysis/saftyStock",
+                        sort = 4,
                         tenant_id = tenant_id
                     },new MenuEntity
                     {

@@ -3,9 +3,11 @@
     <v-row no-gutters>
       <!-- Operate Btn -->
       <v-col cols="3" class="col">
-        <tooltip-btn icon="mdi-plus" :tooltip-text="$t('system.page.add')" @click="method.add()"></tooltip-btn>
+        <!-- <tooltip-btn icon="mdi-plus" :tooltip-text="$t('system.page.add')" @click="method.add()"></tooltip-btn>
         <tooltip-btn icon="mdi-refresh" :tooltip-text="$t('system.page.refresh')" @click="method.refresh"></tooltip-btn>
-        <tooltip-btn icon="mdi-export-variant" :tooltip-text="$t('system.page.export')" @click="method.exportTable"> </tooltip-btn>
+        <tooltip-btn icon="mdi-export-variant" :tooltip-text="$t('system.page.export')" @click="method.exportTable"> </tooltip-btn> -->
+
+        <BtnGroup :authority-list="data.authorityList" :btn-list="data.btnList" />
       </v-col>
 
       <!-- Search Input -->
@@ -92,28 +94,32 @@
           <div style="width: 100%; display: flex; justify-content: center">
             <tooltip-btn :flat="true" icon="mdi-eye-outline" :tooltip-text="$t('system.page.view')" @click="method.viewRow(row)"></tooltip-btn>
             <tooltip-btn
-              :disabled="row.dispatch_status !== 0 && row.dispatch_status !== 1"
+              :disabled="!data.authorityList.includes('invoice-confirm') || (row.dispatch_status !== 0 && row.dispatch_status !== 1)"
               :flat="true"
               icon="mdi-clipboard-check-outline"
               :tooltip-text="$t('wms.deliveryManagement.confirmOrder')"
               @click="method.confirmOrder(row)"
             ></tooltip-btn>
             <tooltip-btn
-              :disabled="row.dispatch_status !== 2"
+              :disabled="!data.authorityList.includes('picked-confirm') || row.dispatch_status !== 2"
               :flat="true"
               icon="mdi-cart-arrow-down"
               :tooltip-text="$t('wms.deliveryManagement.confirmPicking')"
               @click="method.confirmPicking(row)"
             ></tooltip-btn>
             <tooltip-btn
-              :disabled="row.dispatch_status !== 2 && row.dispatch_status !== 3"
+              :disabled="
+                (row.dispatch_status === 2 && !data.authorityList.includes('invoice-revoke')) ||
+                  (row.dispatch_status === 3 && !data.authorityList.includes('picked-revoke')) ||
+                  (row.dispatch_status !== 2 && row.dispatch_status !== 3)
+              "
               :flat="true"
               icon="mdi-arrow-u-left-top"
               :tooltip-text="$t('wms.deliveryManagement.backToThePreviousStep')"
               @click="method.backToThePreviousStep(row)"
             ></tooltip-btn>
             <tooltip-btn
-              :disabled="row.dispatch_status !== 0 && row.dispatch_status !== 1"
+              :disabled="!data.authorityList.includes('invoice-delete') || (row.dispatch_status !== 0 && row.dispatch_status !== 1)"
               :flat="true"
               icon="mdi-delete-outline"
               :tooltip-text="$t('system.page.delete')"
@@ -153,7 +159,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, reactive, watch } from 'vue'
+import { computed, ref, reactive, watch, onMounted } from 'vue'
 import { VxePagerEvents } from 'vxe-table'
 import { computedCardHeight, computedTableHeight, errorColor } from '@/constant/style'
 import { DeliveryManagementVO } from '@/types/DeliveryManagement/DeliveryManagement'
@@ -167,11 +173,12 @@ import { getShipmentState } from './shipmentFun'
 import ConfirmOrder from './confirm-order.vue'
 import { GetUnit } from '@/constant/commodityManagement'
 import customPager from '@/components/custom-pager.vue'
-import { setSearchObject } from '@/utils/common'
-import { TablePage } from '@/types/System/Form'
+import { setSearchObject, getMenuAuthorityList } from '@/utils/common'
+import { TablePage, btnGroupItem } from '@/types/System/Form'
 import { exportData } from '@/utils/exportTable'
 import { DEBOUNCE_TIME } from '@/constant/system'
 import SearchDeliveredMainDetail from './search-delivered-main-detail.vue'
+import BtnGroup from '@/components/system/btnGroup.vue'
 
 const xTable = ref()
 
@@ -237,7 +244,10 @@ const data = reactive({
         value: '7'
       }
     ]
-  }
+  },
+  btnList: [] as btnGroupItem[],
+  // Menu operation permissions
+  authorityList: getMenuAuthorityList()
 })
 
 const method = reactive({
@@ -399,6 +409,29 @@ const method = reactive({
     data.tablePage.searchObjects = setSearchObject(data.searchForm, ['dispatch_status'])
     method.getShipment()
   }
+})
+
+onMounted(() => {
+  data.btnList = [
+    {
+      name: i18n.global.t('system.page.add'),
+      icon: 'mdi-plus',
+      code: 'invoice-save',
+      click: method.add
+    },
+    {
+      name: i18n.global.t('system.page.refresh'),
+      icon: 'mdi-refresh',
+      code: '',
+      click: method.refresh
+    },
+    {
+      name: i18n.global.t('system.page.export'),
+      icon: 'mdi-export-variant',
+      code: 'invoice-export',
+      click: method.exportTable
+    }
+  ]
 })
 
 const cardHeight = computed(() => computedCardHeight({}))

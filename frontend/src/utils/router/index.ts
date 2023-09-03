@@ -26,6 +26,7 @@ export function menusToSideBar(): SideBarMenu[] {
     { icon: GetModuleAndIcon('homepage'), lable: i18n.global.t('router.sideBar.homepage'), routerPath: 'homepage', showDetail: false }
   ]
   const menuList: MenuItem[] = store.getters['user/menulist']
+
   for (const menu of menuList) {
     // Get the module index and check whether this group exists
     const moduleIndex = result.findIndex((item) => item.lable === i18n.global.t(`router.sideBar.${ menu.module }`))
@@ -111,6 +112,8 @@ function GetMenuNameAndModule(path: string): string {
       return i18n.global.t('router.sideBar.deliveryManagement')
     case 'stockAsn':
       return i18n.global.t('router.sideBar.stockAsn')
+    case 'saftyStock':
+      return i18n.global.t('router.sideBar.saftyStock')
     default:
       return ''
   }
@@ -157,10 +160,14 @@ function GetModuleAndIcon(name: string) {
       return 'image-auto-adjust'
     case 'warehouseTaking':
       return 'ballot-recount-outline'
-      case 'customer':
+    case 'customer':
       return 'account-box-outline'
     case 'supplier':
       return 'account-badge'
+    case 'statisticAnalysis':
+      return 'chart-pie'
+    case 'saftyStock':
+      return 'alarm-light'
     default:
       return ''
   }

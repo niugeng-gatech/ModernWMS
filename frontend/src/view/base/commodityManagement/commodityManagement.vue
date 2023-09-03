@@ -8,9 +8,12 @@
             <v-row no-gutters>
               <!-- Operate Btn -->
               <v-col cols="12" sm="3" class="col">
-                <tooltip-btn icon="mdi-plus" :tooltip-text="$t('system.page.add')" @click="method.add()"></tooltip-btn>
+                <!-- <tooltip-btn icon="mdi-plus" :tooltip-text="$t('system.page.add')" @click="method.add()"></tooltip-btn>
                 <tooltip-btn icon="mdi-refresh" :tooltip-text="$t('system.page.refresh')" @click="method.refresh()"></tooltip-btn>
-                <tooltip-btn icon="mdi-export-variant" :tooltip-text="$t('system.page.export')" @click="method.exportTable"></tooltip-btn>
+                <tooltip-btn icon="mdi-export-variant" :tooltip-text="$t('system.page.export')" @click="method.exportTable"></tooltip-btn> -->
+
+                <!-- new version -->
+                <BtnGroup :authority-list="data.authorityList" :btn-list="data.btnList" />
               </v-col>
 
               <!-- Search Input -->
@@ -78,7 +81,25 @@
                 {{ i18n.global.t('system.page.noData') }}
               </template>
               <vxe-column type="seq" width="60"></vxe-column>
-              <vxe-column field="spu_code" width="150px" :title="$t('base.commodityManagement.spu_code')" tree-node>
+              <vxe-column tree-node width="60">
+                <template #header>
+                  <div
+                    style="height: 100%; display: flex; align-items: center; justify-content: flex-start; cursor: pointer"
+                    @click="method.expandAllRows()"
+                  >
+                    <v-tooltip location="bottom">
+                      <template #activator="{ props }">
+                        <div v-bind="props">
+                          <v-icon v-if="!isExpandAll" size="large">mdi-menu-right</v-icon>
+                          <v-icon v-else size="large">mdi-menu-down</v-icon>
+                        </div>
+                      </template>
+                      <span>{{ $t('base.roleMenu.expandRow') }}</span>
+                    </v-tooltip>
+                  </div>
+                </template>
+              </vxe-column>
+              <vxe-column field="spu_code" width="150px" :title="$t('base.commodityManagement.spu_code')">
                 <template #default="{ row }">
                   <span v-if="row.parent_id > 0">{{ row.sku_code }}</span>
                   <span v-else>{{ row.spu_code }}</span>
@@ -96,11 +117,11 @@
                   <span v-else>{{ row.category_name }}</span>
                 </template>
               </vxe-column>
-              <vxe-column field="spu_description" :title="$t('base.commodityManagement.spu_description')"> </vxe-column>
-              <vxe-column field="bar_code" :title="$t('base.commodityManagement.bar_code')"> </vxe-column>
+              <vxe-column field="spu_description" width="200" :title="$t('base.commodityManagement.spu_description')"> </vxe-column>
               <vxe-column field="supplier_name" :title="$t('base.commodityManagement.supplier_name')"> </vxe-column>
               <vxe-column field="brand" :title="$t('base.commodityManagement.brand')"> </vxe-column>
 
+              <vxe-column field="bar_code" :title="$t('base.commodityManagement.bar_code')"> </vxe-column>
               <vxe-column field="weight" :title="$t('base.commodityManagement.weight')">
                 <template #default="{ row }">
                   <span v-if="row.parent_id > 0">{{ `${row.weight} ${GetUnit('weight', row.weight_unit)}` }}</span>
@@ -149,6 +170,7 @@
                       :flat="true"
                       icon="mdi-pencil-outline"
                       :tooltip-text="$t('system.page.edit')"
+                      :disabled="!data.authorityList.includes('save')"
                       @click="method.editRow(row)"
                     ></tooltip-btn>
                     <tooltip-btn
@@ -156,7 +178,17 @@
                       icon="mdi-delete-outline"
                       :tooltip-text="$t('system.page.delete')"
                       :icon-color="errorColor"
+                      :disabled="!data.authorityList.includes('delete')"
                       @click="method.deleteRow(row)"
+                    ></tooltip-btn>
+                  </div>
+                  <div v-else>
+                    <tooltip-btn
+                      :flat="true"
+                      icon="mdi-alarm-light"
+                      :tooltip-text="$t('base.commodityManagement.saftyStock')"
+                      :disabled="!data.authorityList.includes('saftyStock')"
+                      @click="method.openUpdateSaftyStockDialog(row)"
                     ></tooltip-btn>
                   </div>
                 </template>
@@ -178,6 +210,8 @@
     </div>
     <!-- Add or modify data mode window -->
     <addOrUpdateDialog :show-dialog="data.showDialog" :form="data.dialogForm" @close="method.closeDialog" @saveSuccess="method.saveSuccess" />
+
+    <update-sku-safty-stock ref="updateSkuSaftyStockRef" @sure="method.updateSkuSaftyStockByRow" />
   </div>
 </template>
 
@@ -186,19 +220,22 @@ import { computed, reactive, onMounted, ref, watch } from 'vue'
 import { VxePagerEvents } from 'vxe-table'
 import { computedCardHeight, computedTableHeight, errorColor } from '@/constant/style'
 import tooltipBtn from '@/components/tooltip-btn.vue'
-import { CommodityVO, DataProps } from '@/types/Base/CommodityManagement'
-import { getSpuList, deleteSpu } from '@/api/base/commodityManagementSetting'
+import { CommodityVO, DataProps, CommodityDetailVO, UpdateSaftyStockReqBodyVO } from '@/types/Base/CommodityManagement'
+import { getSpuList, deleteSpu, updateSaftyStock } from '@/api/base/commodityManagementSetting'
 import { hookComponent } from '@/components/system'
 import addOrUpdateDialog from './add-or-update-commodity.vue'
 import { PAGE_SIZE, PAGE_LAYOUT, DEFAULT_PAGE_SIZE } from '@/constant/vxeTable'
 import i18n from '@/languages/i18n'
 import { GetUnit } from '@/constant/commodityManagement'
 import customPager from '@/components/custom-pager.vue'
-import { setSearchObject } from '@/utils/common'
+import { setSearchObject, getMenuAuthorityList } from '@/utils/common'
 import { exportData } from '@/utils/exportTable'
 import { DEBOUNCE_TIME } from '@/constant/system'
+import BtnGroup from '@/components/system/btnGroup.vue'
+import updateSkuSaftyStock from './update-sku-safty-stock.vue'
 
 const xTable = ref()
+const updateSkuSaftyStockRef = ref()
 
 const data: DataProps = reactive({
   searchForm: {
@@ -236,10 +273,41 @@ const data: DataProps = reactive({
     volume_unit: 0,
     weight_unit: 1,
     detailList: []
-  }
+  },
+  btnList: [],
+  authorityList: getMenuAuthorityList()
 })
 
 const method = reactive({
+  expandAllRows: () => {
+    const expandRows = xTable.value.getTreeExpandRecords()
+    const parentData = data.tableData.filter((item: any) => !item.parent_id)
+
+    if (expandRows.length === parentData.length) {
+      xTable.value.setAllTreeExpand(false)
+    } else {
+      xTable.value.setAllTreeExpand(true)
+    }
+  },
+  updateSkuSaftyStockByRow: async (body: { sku_id: number; detailList: UpdateSaftyStockReqBodyVO[] }) => {
+    const { data: res } = await updateSaftyStock(body)
+    if (!res.isSuccess) {
+      hookComponent.$message({
+        type: 'error',
+        content: res.errorMessage
+      })
+      return
+    }
+    hookComponent.$message({
+      type: 'success',
+      content: `${ i18n.global.t('system.page.submit') }${ i18n.global.t('system.tips.success') }`
+    })
+    updateSkuSaftyStockRef.value.closeDialog()
+    method.refresh()
+  },
+  openUpdateSaftyStockDialog: (row: CommodityDetailVO) => {
+    updateSkuSaftyStockRef.value.openDialog(row)
+  },
   sureSearch: () => {
     data.tablePage.searchObjects = setSearchObject(data.searchForm)
     method.getCompanyList()
@@ -276,7 +344,6 @@ const method = reactive({
       spu_code: '',
       spu_name: '',
       spu_description: '',
-      bar_code: '',
       brand: '',
       length_unit: 1,
       volume_unit: 0,
@@ -345,11 +412,42 @@ const method = reactive({
 
 onMounted(async () => {
   await method.getCompanyList()
+
+  data.btnList = [
+    {
+      name: i18n.global.t('system.page.add'),
+      icon: 'mdi-plus',
+      code: 'save',
+      click: method.add
+    },
+    {
+      name: i18n.global.t('system.page.refresh'),
+      icon: 'mdi-refresh',
+      code: '',
+      click: method.refresh
+    },
+    {
+      name: i18n.global.t('system.page.export'),
+      icon: 'mdi-export-variant',
+      code: 'export',
+      click: method.exportTable
+    }
+  ]
 })
 
 const cardHeight = computed(() => computedCardHeight({ hasTab: false }))
 
 const tableHeight = computed(() => computedTableHeight({ hasTab: false }))
+
+const isExpandAll = computed(() => {
+  const expandRows = xTable.value.getTreeExpandRecords()
+  const parentData = data.tableData.filter((item: any) => !item.parent_id)
+
+  if (expandRows.length === parentData.length) {
+    return true
+  }
+  return false
+})
 
 watch(
   () => data.searchForm,
