@@ -65,32 +65,33 @@ namespace ModernWMS.WMS.IServices
         /// Confirm Delivery
         /// change the asn_status from 0 to 1
         /// </summary>
-        /// <param name="id">id</param>
+        /// <param name="viewModels">args</param>
         /// <returns></returns>
-        Task<(bool flag, string msg)> ConfirmAsync(int id);
+        Task<(bool flag, string msg)> ConfirmAsync(List<AsnConfirmInputViewModel> viewModels);
 
         /// <summary>
         /// Cancel confirm, change asn_status 1 to 0
         /// </summary>
-        /// <param name="id">id</param>
+        /// <param name="idList">id list</param>
         /// <returns></returns>
-        Task<(bool flag, string msg)> ConfirmCancelAsync(int id);
+        Task<(bool flag, string msg)> ConfirmCancelAsync(List<int> idList);
 
         /// <summary>
         /// Unload
         /// change the asn_status from 1 to 2
         /// </summary>
-        /// <param name="id">id</param>
+        /// <param name="viewModels">args</param>
+        /// <param name="user">user</param>
         /// <returns></returns>
-        Task<(bool flag, string msg)> UnloadAsync(int id);
+        Task<(bool flag, string msg)> UnloadAsync(List<AsnUnloadInputViewModel> viewModels, CurrentUser user);
 
         /// <summary>
         /// Cancel unload
         /// change the asn_status from 2 to 1
         /// </summary>
-        /// <param name="id">id</param>
+        /// <param name="idList">id list</param>
         /// <returns></returns>
-        Task<(bool flag, string msg)> UnloadCancelAsync(int id);
+        Task<(bool flag, string msg)> UnloadCancelAsync(List<int> idList);
 
         /// <summary>
         /// sorting， add a new asnsort record and update asn sorted_qty

@@ -256,6 +256,88 @@ namespace ModernWMS.WMS.Controllers
 
         #endregion
 
+        #region New Flow Api
+        /// <summary>
+        /// Confirm Delivery
+        /// change the asn_status from 0 to 1
+        /// </summary>
+        /// <param name="viewModels">args</param>
+        /// <returns></returns>
+        [HttpPut("confirm")]
+        public async Task<ResultModel<string>> ConfirmAsync(List<AsnConfirmInputViewModel> viewModels)
+        {
+            var (flag, msg) = await _asnService.ConfirmAsync(viewModels);
+            if (flag)
+            {
+                return ResultModel<string>.Success(msg);
+            }
+            else
+            {
+                return ResultModel<string>.Error(msg);
+            }
+        }
+
+        /// <summary>
+        /// Cancel confirm, change asn_status 1 to 0
+        /// </summary>
+        /// <param name="idList">id list</param>
+        /// <returns></returns>
+        [HttpPut("confirm-cancel")]
+        public async Task<ResultModel<string>> ConfirmCancelAsync(List<int> idList)
+        {
+            var (flag, msg) = await _asnService.ConfirmCancelAsync(idList);
+            if (flag)
+            {
+                return ResultModel<string>.Success(msg);
+            }
+            else
+            {
+                return ResultModel<string>.Error(msg);
+            }
+        }
+
+        /// <summary>
+        /// Unload
+        /// change the asn_status from 1 to 2
+        /// </summary>
+        /// <param name="viewModels">args</param>
+        /// <returns></returns>
+        [HttpPut("unload")]
+        public async Task<ResultModel<string>> UnloadAsync(List<AsnUnloadInputViewModel> viewModels)
+        {
+            var (flag, msg) = await _asnService.UnloadAsync(viewModels, CurrentUser);
+            if (flag)
+            {
+                return ResultModel<string>.Success(msg);
+            }
+            else
+            {
+                return ResultModel<string>.Error(msg);
+            }
+        }
+
+        /// <summary>
+        /// Cancel unload
+        /// change the asn_status from 2 to 1
+        /// </summary>
+        /// <param name="idList">id list</param>
+        /// <returns></returns>
+        [HttpPut("unload-cancel")]
+        public async Task<ResultModel<string>> UnloadCancelAsync(List<int> idList)
+        {
+            var (flag, msg) = await _asnService.UnloadCancelAsync(idList);
+            if (flag)
+            {
+                return ResultModel<string>.Success(msg);
+            }
+            else
+            {
+                return ResultModel<string>.Error(msg);
+            }
+        }
+
+        #endregion
+
         #region Flow Api
         /// <summary>
         /// Confirm Delivery
@@ -266,7 +348,10 @@ namespace ModernWMS.WMS.Controllers
         [HttpPut("confirm/{id}")]
         public async Task<ResultModel<string>> ConfirmAsync(int id)
         {
-            var (flag, msg) = await _asnService.ConfirmAsync(id);
+            var (flag, msg) = await _asnService.ConfirmAsync(new List<AsnConfirmInputViewModel>
+            {
+                new AsnConfirmInputViewModel{  id = id, arrival_time = DateTime.Now }
+            });
             if (flag)
             {
                 return ResultModel<string>.Success(msg);
@@ -285,7 +370,7 @@ namespace ModernWMS.WMS.Controllers
         [HttpPut("confirm-cancel/{id}")]
         public async Task<ResultModel<string>> ConfirmCancelAsync(int id)
         {
-            var (flag, msg) = await _asnService.ConfirmCancelAsync(id);
+            var (flag, msg) = await _asnService.ConfirmCancelAsync(new List<int> { id });
             if (flag)
             {
                 return ResultModel<string>.Success(msg);
@@ -305,7 +390,9 @@ namespace ModernWMS.WMS.Controllers
         [HttpPut("unload/{id}")]
         public async Task<ResultModel<string>> UnloadAsync(int id)
         {
-            var (flag, msg) = await _asnService.UnloadAsync(id);
+            var (flag, msg) = await _asnService.UnloadAsync(new List<AsnUnloadInputViewModel> {
+             new AsnUnloadInputViewModel{  id = id}
+            }, CurrentUser);
             if (flag)
             {
                 return ResultModel<string>.Success(msg);
@@ -325,7 +412,7 @@ namespace ModernWMS.WMS.Controllers
         [HttpPut("unload-cancel/{id}")]
         public async Task<ResultModel<string>> UnloadCancelAsync(int id)
         {
-            var (flag, msg) = await _asnService.UnloadCancelAsync(id);
+            var (flag, msg) = await _asnService.UnloadCancelAsync(new List<int> { id });
             if (flag)
             {
                 return ResultModel<string>.Success(msg);
