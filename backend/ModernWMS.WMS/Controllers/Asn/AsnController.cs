@@ -367,6 +367,46 @@ namespace ModernWMS.WMS.Controllers
             var data = await _asnService.GetAsnsortsAsync(asn_id);
             return ResultModel<List<AsnsortEntity>>.Success(data);
         }
+
+        /// <summary>
+        /// Sorted
+        /// change the asn_status from 2 to 3
+        /// </summary>
+        /// <param name="idList">id list</param>
+        /// <returns></returns>
+        [HttpPut("sorted")]
+        public async Task<ResultModel<string>> SortedAsync(List<int> idList)
+        {
+            var (flag, msg) = await _asnService.SortedAsync(idList);
+            if (flag)
+            {
+                return ResultModel<string>.Success(msg);
+            }
+            else
+            {
+                return ResultModel<string>.Error(msg);
+            }
+        }
+
+        /// <summary>
+        /// Cancel sorted
+        /// change the asn_status from 3 to 2
+        /// </summary>
+        /// <param name="idList">id list</param>
+        /// <returns></returns>
+        [HttpPut("sorted-cancel")]
+        public async Task<ResultModel<string>> SortedCancelAsync(List<int> idList)
+        {
+            var (flag, msg) = await _asnService.SortedCancelAsync(idList);
+            if (flag)
+            {
+                return ResultModel<string>.Success(msg);
+            }
+            else
+            {
+                return ResultModel<string>.Error(msg);
+            }
+        }
         #endregion
 
         #region Flow Api
@@ -473,45 +513,45 @@ namespace ModernWMS.WMS.Controllers
         //    }
         //}
 
-        /// <summary>
-        /// Sorted
-        /// change the asn_status from 2 to 3
-        /// </summary>
-        /// <param name="id">id</param>
-        /// <returns></returns>
-        [HttpPut("sorted/{id}")]
-        public async Task<ResultModel<string>> SortedAsync(int id)
-        {
-            var (flag, msg) = await _asnService.SortedAsync(id);
-            if (flag)
-            {
-                return ResultModel<string>.Success(msg);
-            }
-            else
-            {
-                return ResultModel<string>.Error(msg);
-            }
-        }
+        ///// <summary>
+        ///// Sorted
+        ///// change the asn_status from 2 to 3
+        ///// </summary>
+        ///// <param name="id">id</param>
+        ///// <returns></returns>
+        //[HttpPut("sorted/{id}")]
+        //public async Task<ResultModel<string>> SortedAsync(int id)
+        //{
+        //    var (flag, msg) = await _asnService.SortedAsync(id);
+        //    if (flag)
+        //    {
+        //        return ResultModel<string>.Success(msg);
+        //    }
+        //    else
+        //    {
+        //        return ResultModel<string>.Error(msg);
+        //    }
+        //}
 
-        /// <summary>
-        /// Cancel sorted
-        /// change the asn_status from 3 to 2
-        /// </summary>
-        /// <param name="id">id</param>
-        /// <returns></returns>
-        [HttpPut("sorted-cancel/{id}")]
-        public async Task<ResultModel<string>> SortedCancelAsync(int id)
-        {
-            var (flag, msg) = await _asnService.SortedCancelAsync(id);
-            if (flag)
-            {
-                return ResultModel<string>.Success(msg);
-            }
-            else
-            {
-                return ResultModel<string>.Error(msg);
-            }
-        }
+        ///// <summary>
+        ///// Cancel sorted
+        ///// change the asn_status from 3 to 2
+        ///// </summary>
+        ///// <param name="id">id</param>
+        ///// <returns></returns>
+        //[HttpPut("sorted-cancel/{id}")]
+        //public async Task<ResultModel<string>> SortedCancelAsync(int id)
+        //{
+        //    var (flag, msg) = await _asnService.SortedCancelAsync(id);
+        //    if (flag)
+        //    {
+        //        return ResultModel<string>.Success(msg);
+        //    }
+        //    else
+        //    {
+        //        return ResultModel<string>.Error(msg);
+        //    }
+        //}
 
         /// <summary>
         /// PutAway
