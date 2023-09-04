@@ -165,7 +165,7 @@ namespace ModernWMS.WMS.Controllers
         /// </summary>
         /// <param name="viewModel">args</param>
         /// <returns></returns>
-        [HttpPut("sku-safty-stock")]
+        [HttpPut("sku-safety-stock")]
         public async Task<ResultModel<string>> InsertOrUpdateSkuSafetyStockAsync(SkuSafetyStockPutViewModel viewModel)
         {
             var (flag, msg) = await _spuService.InsertOrUpdateSkuSafetyStockAsync(viewModel);

@@ -78,7 +78,9 @@ namespace ModernWMS.WMS.Services
             var Spus = _dBContext.GetDbSet<SpuEntity>();
             var Skus = _dBContext.GetDbSet<SkuEntity>();
             var Asns = _dBContext.GetDbSet<AsnEntity>();
+            var Asnmasters = _dBContext.GetDbSet<AsnmasterEntity>();
             var query = from m in Asns.AsNoTracking()
+                        join am in Asnmasters.AsNoTracking() on m.asnmaster_id equals am.id
                         join p in Spus.AsNoTracking() on m.spu_id equals p.id
                         join k in Skus.AsNoTracking() on m.sku_id equals k.id
                         where m.tenant_id == currentUser.tenant_id
@@ -86,7 +88,10 @@ namespace ModernWMS.WMS.Services
                         select new AsnViewModel
                         {
                             id = m.id,
+                            asnmaster_id = m.asnmaster_id,
                             asn_no = m.asn_no,
+                            asn_batch = am.asn_batch,
+                            estimated_arrival_time = am.estimated_arrival_time,
                             asn_status = m.asn_status,
                             spu_id = m.spu_id,
                             spu_code = p.spu_code,
@@ -100,6 +105,10 @@ namespace ModernWMS.WMS.Services
                             weight_unit = p.weight_unit,
                             asn_qty = m.asn_qty,
                             actual_qty = m.actual_qty,
+                            arrival_time = m.arrival_time,
+                            unload_person = m.unload_person,
+                            unload_person_id = m.unload_person_id,
+                            unload_time = m.unload_time,
                             sorted_qty = m.sorted_qty,
                             shortage_qty = m.shortage_qty,
                             more_qty = m.more_qty,
@@ -133,13 +142,18 @@ namespace ModernWMS.WMS.Services
             var Spus = _dBContext.GetDbSet<SpuEntity>();
             var Skus = _dBContext.GetDbSet<SkuEntity>();
             var Asns = _dBContext.GetDbSet<AsnEntity>();
+            var Asnmasters = _dBContext.GetDbSet<AsnmasterEntity>();
             var query = from m in Asns.AsNoTracking()
+                        join am in Asnmasters.AsNoTracking() on m.asnmaster_id equals am.id
                         join p in Spus.AsNoTracking() on m.spu_id equals p.id
                         join k in Skus.AsNoTracking() on m.sku_id equals k.id
                         select new AsnViewModel
                         {
                             id = m.id,
+                            asnmaster_id = m.asnmaster_id,
                             asn_no = m.asn_no,
+                            asn_batch = am.asn_batch,
+                            estimated_arrival_time = am.estimated_arrival_time,
                             asn_status = m.asn_status,
                             spu_id = m.spu_id,
                             spu_code = p.spu_code,
@@ -153,6 +167,10 @@ namespace ModernWMS.WMS.Services
                             weight_unit = p.weight_unit,
                             asn_qty = m.asn_qty,
                             actual_qty = m.actual_qty,
+                            arrival_time = m.arrival_time,
+                            unload_person = m.unload_person,
+                            unload_person_id = m.unload_person_id,
+                            unload_time = m.unload_time,
                             sorted_qty = m.sorted_qty,
                             shortage_qty = m.shortage_qty,
                             more_qty = m.more_qty,
@@ -345,21 +363,30 @@ namespace ModernWMS.WMS.Services
         /// Confirm Delivery
         /// change the asn_status from 0 to 1
         /// </summary>
-        /// <param name="id">id</param>
+        /// <param name="viewModels">args</param>
         /// <returns></returns>
-        public async Task<(bool flag, string msg)> ConfirmAsync(int id)
+        public async Task<(bool flag, string msg)> ConfirmAsync(List<AsnConfirmInputViewModel> viewModels)
         {
+            var idList = viewModels.Where(t => t.id > 0).Select(t => t.id).ToList();
             var Asns = _dBContext.GetDbSet<AsnEntity>();
-            var entity = await Asns.FirstOrDefaultAsync(t => t.id == id);
-            if (entity == null)
+            var entities = await Asns.Where(t => idList.Contains(t.id)).ToListAsync();
+            if (!entities.Any())
             {
                 return (false, _stringLocalizer["not_exists_entity"]);
             }
-            else if (entity.asn_status > 0)
+            else if (entities.Any(t => t.asn_status > 0))
             {
-                return (false, $"{entity.asn_no}{_stringLocalizer["ASN_Status_Is_Not_Pre_Delivery"]}");
+                return (false, $"{_stringLocalizer["ASN_Status_Is_Not_Pre_Delivery"]}");
             }
-            entity.asn_status = 1;
+            entities.ForEach(t =>
+            {
+                 var vm = viewModels.FirstOrDefault(t => t.id == t.id);
+                if (vm != null)
+                {
+                    t.asn_status = 1;
+                    t.arrival_time = vm.arrival_time;
+                }
+            });
             var qty = await _dBContext.SaveChangesAsync();
             if (qty > 0)
             {
@@ -373,21 +400,25 @@ namespace ModernWMS.WMS.Services
         /// <summary>
         /// Cancel confirm, change asn_status 1 to 0
         /// </summary>
-        /// <param name="id">id</param>
+        /// <param name="idList">id list</param>
         /// <returns></returns>
-        public async Task<(bool flag, string msg)> ConfirmCancelAsync(int id)
+        public async Task<(bool flag, string msg)> ConfirmCancelAsync(List<int> idList)
         {
             var Asns = _dBContext.GetDbSet<AsnEntity>();
-            var entity = await Asns.FirstOrDefaultAsync(t => t.id == id);
-            if (entity == null)
+            var entities = await Asns.Where(t => idList.Contains(t.id)).ToListAsync();
+            if (!entities.Any())
             {
                 return (false, _stringLocalizer["not_exists_entity"]);
             }
-            else if (entity.asn_status != (byte)1)
+            if (entities.Any(t => t.asn_status != (byte)1))
             {
-                return (false, $"{entity.asn_no}{_stringLocalizer["ASN_Status_Is_Not_Pre_Delivery"]}");
+                return (false, $"{_stringLocalizer["ASN_Status_Is_Not_Pre_Delivery"]}");
             }
-            entity.asn_status = 0;
+            entities.ForEach(e =>
+            {
+                e.asn_status = 0;
+                e.arrival_time = Core.Utility.UtilConvert.MinDate;
+            });
             var qty = await _dBContext.SaveChangesAsync();
             if (qty > 0)
             {
@@ -403,22 +434,34 @@ namespace ModernWMS.WMS.Services
         /// Unload
         /// change the asn_status from 1 to 2
         /// </summary>
-        /// <param name="id">id</param>
+        /// <param name="viewModels">args</param>
+        /// <param name="user">user</param>
         /// <returns></returns>
-        public async Task<(bool flag, string msg)> UnloadAsync(int id)
+        public async Task<(bool flag, string msg)> UnloadAsync(List<AsnUnloadInputViewModel> viewModels, CurrentUser user)
         {
+            var idList = viewModels.Where(t => t.id > 0).Select(t => t.id).ToList();
             var Asns = _dBContext.GetDbSet<AsnEntity>();
-            var entity = await Asns.FirstOrDefaultAsync(t => t.id == id);
-            if (entity == null)
+            var entities = await Asns.Where(t => idList.Contains(t.id)).ToListAsync();
+            if (!entities.Any())
             {
                 return (false, _stringLocalizer["not_exists_entity"]);
             }
-            else if (entity.asn_status > 1)
+            else if (entities.Any(t => t.asn_status > 1))
             {
-                return (false, $"{entity.asn_no}{_stringLocalizer["ASN_Status_Is_Not_Pre_Load"]}");
+                return (false, $"{_stringLocalizer["ASN_Status_Is_Not_Pre_Load"]}");
             }
-            entity.asn_status = 2; 
-            entity.last_update_time = DateTime.Now;
+            entities.ForEach(t =>
+            {
+                var vm = viewModels.FirstOrDefault(t => t.id == t.id);
+                if (vm != null)
+                {
+                    t.asn_status = 2;
+                    t.last_update_time = DateTime.Now;
+                    t.unload_time = vm.unload_time;
+                    t.unload_person_id = vm.unload_person_id == 0 ? user.user_id : vm.unload_person_id;
+                    t.unload_person = vm.unload_person_id == 0 ? user.user_name : vm.unload_person;
+                }
+            });
             var qty = await _dBContext.SaveChangesAsync();
             if (qty > 0)
             {
@@ -434,22 +477,29 @@ namespace ModernWMS.WMS.Services
         /// Cancel unload
         /// change the asn_status from 2 to 1
         /// </summary>
-        /// <param name="id">id</param>
+        /// <param name="idList">id list</param>
         /// <returns></returns>
-        public async Task<(bool flag, string msg)> UnloadCancelAsync(int id)
+        public async Task<(bool flag, string msg)> UnloadCancelAsync(List<int> idList)
         {
             var Asns = _dBContext.GetDbSet<AsnEntity>();
-            var entity = await Asns.FirstOrDefaultAsync(t => t.id == id);
-            if (entity == null)
+            var entities = await Asns.Where(t => idList.Contains(t.id)).ToListAsync();
+            if (!entities.Any())
             {
                 return (false, _stringLocalizer["not_exists_entity"]);
             }
-            else if (entity.asn_status != (byte)2)
+            if (entities.Any(t => t.asn_status != (byte)2))
             {
-                return (false, $"{entity.asn_no}{_stringLocalizer["ASN_Status_Is_Not_Pre_Load"]}");
+                return (false, $"{_stringLocalizer["ASN_Status_Is_Not_Pre_Load"]}");
             }
-            entity.asn_status = 1;
-            entity.last_update_time = DateTime.Now;
+
+            entities.ForEach(e =>
+            {
+                e.asn_status = 1;
+                e.unload_time = Core.Utility.UtilConvert.MinDate;
+                e.unload_person_id =0;
+                e.unload_person = string.Empty;
+                e.last_update_time = DateTime.Now;
+            });
             var qty = await _dBContext.SaveChangesAsync();
             if (qty > 0)
             {
@@ -463,35 +513,45 @@ namespace ModernWMS.WMS.Services
         /// <summary>
         /// sorting， add a new asnsort record and update asn sorted_qty
         /// </summary>
-        /// <param name="viewModel">args</param>
+        /// <param name="viewModels">args</param>
         /// <param name="currentUser">currentUser</param>
         /// <returns></returns>
-        public async Task<(bool flag, string msg)> SortingAsync(AsnsortInputViewModel viewModel, CurrentUser currentUser)
+        public async Task<(bool flag, string msg)> SortingAsync(List<AsnsortInputViewModel> viewModels, CurrentUser currentUser)
         {
             var Asns = _dBContext.GetDbSet<AsnEntity>();
             var Asnsorts = _dBContext.GetDbSet<AsnsortEntity>();
+            var idList = viewModels.Select(t => t.asn_id).ToList().Distinct().ToList();
+            var entities = await Asns.Where(t => idList.Contains(t.id)).ToListAsync();
 
-            var entity = await Asns.FirstOrDefaultAsync(t => t.id == viewModel.asn_id);
-            if (entity == null)
+            if (!entities.Any())
             {
                 return (false, _stringLocalizer["not_exists_entity"]);
             }
-            else if (entity.asn_status != 2)
+            else if (entities.Any(t => t.asn_status != 2))
             {
-                return (false, $"{entity.asn_no}{_stringLocalizer["ASN_Status_Is_Not_Pre_Sort"]}");
+                return (false, $"{_stringLocalizer["ASN_Status_Is_Not_Pre_Sort"]}");
             }
-            await Asnsorts.AddAsync(new AsnsortEntity
+            var sortEntities = viewModels.Where(v => entities.Select(e => e.id).ToList().Contains(v.asn_id))
+                .Select(v => new AsnsortEntity
+                {
+                    id = 0,
+                    asn_id = v.asn_id,
+                    sorted_qty = v.sorted_qty,
+                    series_number = v.series_number,
+                    create_time = DateTime.Now,
+                    creator = currentUser.user_name,
+                    is_valid = true,
+                    last_update_time = DateTime.Now,
+                    tenant_id = currentUser.tenant_id
+                }).ToList();
+            await Asnsorts.AddRangeAsync(sortEntities);
+
+            entities.ForEach(e =>
             {
-                id = 0,
-                asn_id = viewModel.asn_id,
-                sorted_qty = viewModel.sorted_qty,
-                create_time = DateTime.Now,
-                creator = currentUser.user_name,
-                is_valid = true,
-                last_update_time = DateTime.Now, tenant_id = currentUser.tenant_id
+                int sum_sorted_qty = viewModels.Where(t => t.asn_id.Equals(e.id)).Sum(v => v.sorted_qty);
+                e.sorted_qty += sum_sorted_qty;
+                e.last_update_time = DateTime.Now;
             });
-            entity.sorted_qty += viewModel.sorted_qty;
-            entity.last_update_time = DateTime.Now;
             var qty = await _dBContext.SaveChangesAsync();
             if (qty > 0)
             {
@@ -502,6 +562,25 @@ namespace ModernWMS.WMS.Services
                 return (false, _stringLocalizer["save_failed"]);
             }
         }
+        /// <summary>
+        /// get asnsorts list by asn_id
+        /// </summary>
+        /// <param name="asn_id">asn id</param>
+        /// <returns></returns>
+        public async Task<List<AsnsortEntity>> GetAsnsortsAsync(int asn_id)
+        {
+            var Asnsorts = _dBContext.GetDbSet<AsnsortEntity>();
+            var sortsEntities = await Asnsorts.AsNoTracking().Where(t => t.asn_id == asn_id).ToListAsync();
+            if (sortsEntities.Any())
+            {
+                return sortsEntities;
+            }
+            else
+            {
+                return new List<AsnsortEntity>();
+            }
+        }
+
         /// <summary>
         /// Sorted
         /// change the asn_status from 2 to 3
