@@ -30,6 +30,11 @@ namespace ModernWMS.WMS.Entities.Models
         public int sorted_qty { get; set; } = 0;
 
         /// <summary>
+        /// series_number
+        /// </summary>
+        public string series_number { get; set; } = string.Empty;
+
+        /// <summary>
         /// creator
         /// </summary>
         public string creator { get; set; } = string.Empty;

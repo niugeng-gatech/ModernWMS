@@ -9,6 +9,7 @@
  using ModernWMS.WMS.IServices;
  using Microsoft.Extensions.Localization;
 using ModernWMS.Core.JWT;
+using ModernWMS.WMS.Entities.Models;
 
 namespace ModernWMS.WMS.Controllers
 {
@@ -336,102 +337,15 @@ namespace ModernWMS.WMS.Controllers
             }
         }
 
-        #endregion
-
-        #region Flow Api
-        /// <summary>
-        /// Confirm Delivery
-        /// change the asn_status from 0 to 1
-        /// </summary>
-        /// <param name="id">id</param>
-        /// <returns></returns>
-        [HttpPut("confirm/{id}")]
-        public async Task<ResultModel<string>> ConfirmAsync(int id)
-        {
-            var (flag, msg) = await _asnService.ConfirmAsync(new List<AsnConfirmInputViewModel>
-            {
-                new AsnConfirmInputViewModel{  id = id, arrival_time = DateTime.Now }
-            });
-            if (flag)
-            {
-                return ResultModel<string>.Success(msg);
-            }
-            else
-            {
-                return ResultModel<string>.Error(msg);
-            }
-        }
-
-        /// <summary>
-        /// Cancel confirm, change asn_status 1 to 0
-        /// </summary>
-        /// <param name="id">id</param>
-        /// <returns></returns>
-        [HttpPut("confirm-cancel/{id}")]
-        public async Task<ResultModel<string>> ConfirmCancelAsync(int id)
-        {
-            var (flag, msg) = await _asnService.ConfirmCancelAsync(new List<int> { id });
-            if (flag)
-            {
-                return ResultModel<string>.Success(msg);
-            }
-            else
-            {
-                return ResultModel<string>.Error(msg);
-            }
-        }
-
-        /// <summary>
-        /// Unload
-        /// change the asn_status from 1 to 2
-        /// </summary>
-        /// <param name="id">id</param>
-        /// <returns></returns>
-        [HttpPut("unload/{id}")]
-        public async Task<ResultModel<string>> UnloadAsync(int id)
-        {
-            var (flag, msg) = await _asnService.UnloadAsync(new List<AsnUnloadInputViewModel> {
-             new AsnUnloadInputViewModel{  id = id}
-            }, CurrentUser);
-            if (flag)
-            {
-                return ResultModel<string>.Success(msg);
-            }
-            else
-            {
-                return ResultModel<string>.Error(msg);
-            }
-        }
-
-        /// <summary>
-        /// Cancel unload
-        /// change the asn_status from 2 to 1
-        /// </summary>
-        /// <param name="id">id</param>
-        /// <returns></returns>
-        [HttpPut("unload-cancel/{id}")]
-        public async Task<ResultModel<string>> UnloadCancelAsync(int id)
-        {
-            var (flag, msg) = await _asnService.UnloadCancelAsync(new List<int> { id });
-            if (flag)
-            {
-                return ResultModel<string>.Success(msg);
-            }
-            else
-            {
-                return ResultModel<string>.Error(msg);
-            }
-        }
-
         /// <summary>
         /// sorting， add a new asnsort record and update asn sorted_qty
         /// </summary>
-        /// <param name="viewModel">args</param>
+        /// <param name="viewModels">args</param>
         /// <returns></returns>
         [HttpPut("sorting")]
-        public async Task<ResultModel<string>> SortingAsync(AsnsortInputViewModel viewModel)
+        public async Task<ResultModel<string>> SortingAsync(List<AsnsortInputViewModel> viewModels)
         {
-            var (flag, msg) = await _asnService.SortingAsync(viewModel, CurrentUser);
+            var (flag, msg) = await _asnService.SortingAsync(viewModels, CurrentUser);
             if (flag)
             {
                 return ResultModel<string>.Success(msg);
@@ -441,7 +355,124 @@ namespace ModernWMS.WMS.Controllers
                 return ResultModel<string>.Error(msg);
             }
         }
-        
+
+        /// <summary>
+        /// get asnsorts list by asn_id
+        /// </summary>
+        /// <param name="asn_id">asn id</param>
+        /// <returns></returns>
+        [HttpGet("sorting")]
+        public async Task<ResultModel<List<AsnsortEntity>>> GetAsnsortsAsync(int asn_id)
+        {
+            var data = await _asnService.GetAsnsortsAsync(asn_id);
+            return ResultModel<List<AsnsortEntity>>.Success(data);
+        }
+        #endregion
+
+        #region Flow Api
+        ///// <summary>
+        ///// Confirm Delivery
+        ///// change the asn_status from 0 to 1
+        ///// </summary>
+        ///// <param name="id">id</param>
+        ///// <returns></returns>
+        //[HttpPut("confirm/{id}")]
+        //public async Task<ResultModel<string>> ConfirmAsync(int id)
+        //{
+        //    var (flag, msg) = await _asnService.ConfirmAsync(new List<AsnConfirmInputViewModel>
+        //    {
+        //        new AsnConfirmInputViewModel{  id = id, arrival_time = DateTime.Now }
+        //    });
+        //    if (flag)
+        //    {
+        //        return ResultModel<string>.Success(msg);
+        //    }
+        //    else
+        //    {
+        //        return ResultModel<string>.Error(msg);
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Cancel confirm, change asn_status 1 to 0
+        ///// </summary>
+        ///// <param name="id">id</param>
+        ///// <returns></returns>
+        //[HttpPut("confirm-cancel/{id}")]
+        //public async Task<ResultModel<string>> ConfirmCancelAsync(int id)
+        //{
+        //    var (flag, msg) = await _asnService.ConfirmCancelAsync(new List<int> { id });
+        //    if (flag)
+        //    {
+        //        return ResultModel<string>.Success(msg);
+        //    }
+        //    else
+        //    {
+        //        return ResultModel<string>.Error(msg);
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Unload
+        ///// change the asn_status from 1 to 2
+        ///// </summary>
+        ///// <param name="id">id</param>
+        ///// <returns></returns>
+        //[HttpPut("unload/{id}")]
+        //public async Task<ResultModel<string>> UnloadAsync(int id)
+        //{
+        //    var (flag, msg) = await _asnService.UnloadAsync(new List<AsnUnloadInputViewModel> {
+        //     new AsnUnloadInputViewModel{  id = id}
+        //    }, CurrentUser);
+        //    if (flag)
+        //    {
+        //        return ResultModel<string>.Success(msg);
+        //    }
+        //    else
+        //    {
+        //        return ResultModel<string>.Error(msg);
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Cancel unload
+        ///// change the asn_status from 2 to 1
+        ///// </summary>
+        ///// <param name="id">id</param>
+        ///// <returns></returns>
+        //[HttpPut("unload-cancel/{id}")]
+        //public async Task<ResultModel<string>> UnloadCancelAsync(int id)
+        //{
+        //    var (flag, msg) = await _asnService.UnloadCancelAsync(new List<int> { id });
+        //    if (flag)
+        //    {
+        //        return ResultModel<string>.Success(msg);
+        //    }
+        //    else
+        //    {
+        //        return ResultModel<string>.Error(msg);
+        //    }
+        //}
+
+        ///// <summary>
+        ///// sorting， add a new asnsort record and update asn sorted_qty
+        ///// </summary>
+        ///// <param name="viewModel">args</param>
+        ///// <returns></returns>
+        //[HttpPut("sorting")]
+        //public async Task<ResultModel<string>> SortingAsync(AsnsortInputViewModel viewModel)
+        //{
+        //    var (flag, msg) = await _asnService.SortingAsync(new List<AsnsortInputViewModel> { viewModel }, CurrentUser);
+        //    if (flag)
+        //    {
+        //        return ResultModel<string>.Success(msg);
+        //    }
+        //    else
+        //    {
+        //        return ResultModel<string>.Error(msg);
+        //    }
+        //}
+
         /// <summary>
         /// Sorted
         /// change the asn_status from 2 to 3

@@ -96,10 +96,18 @@ namespace ModernWMS.WMS.IServices
         /// <summary>
         /// sorting， add a new asnsort record and update asn sorted_qty
         /// </summary>
-        /// <param name="viewModel">args</param>
+        /// <param name="viewModels">args</param>
         /// <param name="currentUser">currentUser</param>
         /// <returns></returns>
-        Task<(bool flag, string msg)> SortingAsync(AsnsortInputViewModel viewModel, CurrentUser currentUser);
+        Task<(bool flag, string msg)> SortingAsync(List<AsnsortInputViewModel> viewModels, CurrentUser currentUser);
+
+        /// <summary>
+        /// get asnsorts list by asn_id
+        /// </summary>
+        /// <param name="asn_id">asn id</param>
+        /// <returns></returns>
+        Task<List<AsnsortEntity>> GetAsnsortsAsync(int asn_id);
+
         /// <summary>
         /// Sorted
         /// change the asn_status from 2 to 3
