@@ -59,6 +59,14 @@ namespace ModernWMS.WMS.IServices
         /// <returns></returns>
         Task<(List<SafetyStockManagementViewModel> data, int totals)> SafetyStockPageAsync(PageSearch pageSearch, CurrentUser currentUser);
 
+        /// <summary>
+        /// get stock infomation by phone
+        /// </summary>
+        /// <param name="input">input</param>
+        /// <param name="currentUser">current user</param>
+        /// <returns></returns>
+        Task<List<LocationStockManagementViewModel>> LocationStockForPhoneAsync(LocationStockForPhoneSearchViewModel input, CurrentUser currentUser);
+
         #endregion Api
     }
 }

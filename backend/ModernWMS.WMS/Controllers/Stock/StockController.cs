@@ -10,6 +10,7 @@ using ModernWMS.WMS.Entities.ViewModels;
 using ModernWMS.WMS.IServices;
 using Microsoft.Extensions.Localization;
 using ModernWMS.WMS.Entities.ViewModels.Stock;
+using System.Collections.Generic;
 
 namespace ModernWMS.WMS.Controllers
 {
@@ -138,6 +139,18 @@ namespace ModernWMS.WMS.Controllers
                 Rows = data,
                 Totals = totals
             });
+        }
+
+        /// <summary>
+        /// get stock infomation by phone
+        /// </summary>
+        /// <param name="input">input</param>
+        /// <returns></returns>
+        [HttpPost("qrcode-list")]
+        public async Task<ResultModel<List<LocationStockManagementViewModel>>> LocationStockForPhoneAsync(LocationStockForPhoneSearchViewModel input)
+        {
+            var datas = await _stockService.LocationStockForPhoneAsync(input, CurrentUser);
+            return ResultModel<List<LocationStockManagementViewModel>>.Success(datas);
         }
 
         #endregion Api
