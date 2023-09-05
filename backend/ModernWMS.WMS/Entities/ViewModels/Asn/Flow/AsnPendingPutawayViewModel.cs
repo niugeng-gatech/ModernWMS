@@ -1,23 +1,21 @@
 ﻿/*
- * date：2022-12-30
+ * date：2023-09-05
  * developer：AMo
  */
-using System;
 using System.ComponentModel.DataAnnotations;
-using ModernWMS.Core.Utility;
 
 namespace ModernWMS.WMS.Entities.ViewModels
 {
     /// <summary>
-    /// asn put away input viewModel
+    /// pending putwaay viewModel
     /// </summary>
-    public class AsnPutAwayInputViewModel
+    public class AsnPendingPutawayViewModel
     {
         #region constructor
         /// <summary>
         /// constructor
         /// </summary>
-        public AsnPutAwayInputViewModel()
+        public AsnPendingPutawayViewModel()
         {
 
         }
@@ -38,22 +36,22 @@ namespace ModernWMS.WMS.Entities.ViewModels
         public int goods_owner_id { get; set; } = 0;
 
         /// <summary>
+        /// goods_owner_name
+        /// </summary>
+        [Display(Name = "goods_owner_name")]
+        public string goods_owner_name { get; set; } = string.Empty;
+
+        /// <summary>
         /// series_number
         /// </summary>
         [Display(Name = "series_number")]
         public string series_number { get; set; } = string.Empty;
 
         /// <summary>
-        /// goods_location_id
+        /// sorted_qty
         /// </summary>
-        [Display(Name = "goods_location_id")]
-        public int goods_location_id { get; set; } = 0;
-
-        /// <summary>
-        /// putaway_qty
-        /// </summary>
-        [Display(Name = "putaway_qty")]
-        public int putaway_qty { get; set; } = 0;
+        [Display(Name = "sorted_qty")]
+        public int sorted_qty { get; set; } = 0;
 
         #endregion
     }
