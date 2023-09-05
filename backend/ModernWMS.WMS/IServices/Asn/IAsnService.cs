@@ -112,17 +112,17 @@ namespace ModernWMS.WMS.IServices
         /// Sorted
         /// change the asn_status from 2 to 3
         /// </summary>
-        /// <param name="id">id</param>
+        /// <param name="idList">id list</param>
         /// <returns></returns>
-        Task<(bool flag, string msg)> SortedAsync(int id);
+        Task<(bool flag, string msg)> SortedAsync(List<int> idList);
 
         /// <summary>
         /// Cancel sorted
         /// change the asn_status from 3 to 2
         /// </summary>
-        /// <param name="id">id</param>
+        /// <param name="idList">id list</param>
         /// <returns></returns>
-        Task<(bool flag, string msg)> SortedCancelAsync(int id);
+        Task<(bool flag, string msg)> SortedCancelAsync(List<int> idList);
 
         /// <summary>
         /// PutAway

@@ -585,30 +585,33 @@ namespace ModernWMS.WMS.Services
         /// Sorted
         /// change the asn_status from 2 to 3
         /// </summary>
-        /// <param name="id">id</param>
+        /// <param name="idList">id list</param>
         /// <returns></returns>
-        public async Task<(bool flag, string msg)> SortedAsync(int id)
+        public async Task<(bool flag, string msg)> SortedAsync(List<int> idList)
         {
             var Asns = _dBContext.GetDbSet<AsnEntity>();
-            var entity = await Asns.FirstOrDefaultAsync(t => t.id == id);
-            if (entity == null)
+            var entities = await Asns.Where(t => idList.Contains(t.id)).ToListAsync();
+            if (!entities.Any())
             {
                 return (false, _stringLocalizer["not_exists_entity"]);
             }
-            else if (entity.sorted_qty < 1)
+            else if (entities.Any(t => t.sorted_qty < 1))
             {
-                return (false, $"{entity.asn_no}{_stringLocalizer["ASN_Status_Is_Not_Sorting"]}");
+                return (false, $"{_stringLocalizer["ASN_Status_Is_Not_Sorting"]}");
             }
-            entity.asn_status = 3;
-            if (entity.sorted_qty > entity.asn_qty)
+            entities.ForEach(e =>
             {
-                entity.more_qty = entity.sorted_qty - entity.asn_qty;
-            }
-            else if (entity.sorted_qty < entity.asn_qty)
-            {
-                entity.shortage_qty = entity.asn_qty - entity.sorted_qty;
-            }
-            entity.last_update_time = DateTime.Now;
+                e.asn_status = 3;
+                if (e.sorted_qty > e.asn_qty)
+                {
+                    e.more_qty = e.sorted_qty - e.asn_qty;
+                }
+                else if (e.sorted_qty < e.asn_qty)
+                {
+                    e.shortage_qty = e.asn_qty - e.sorted_qty;
+                }
+                e.last_update_time = DateTime.Now;
+            });
             var qty = await _dBContext.SaveChangesAsync();
             if (qty > 0)
             {
@@ -624,34 +627,37 @@ namespace ModernWMS.WMS.Services
         /// Cancel sorted
         /// change the asn_status from 3 to 2
         /// </summary>
-        /// <param name="id">id</param>
+        /// <param name="idList">id list</param>
         /// <returns></returns>
-        public async Task<(bool flag, string msg)> SortedCancelAsync(int id)
+        public async Task<(bool flag, string msg)> SortedCancelAsync(List<int> idList)
         {
             var Asns = _dBContext.GetDbSet<AsnEntity>();
-            var entity = await Asns.FirstOrDefaultAsync(t => t.id == id);
-            if (entity == null)
+            var entities = await Asns.Where(t => idList.Contains(t.id)).ToListAsync();
+            if (!entities.Any())
             {
                 return (false, _stringLocalizer["not_exists_entity"]);
             }
-            else if (entity.actual_qty > 0)
+            else if (entities.Any(t => t.actual_qty > 0))
             {
-                return (false, $"{entity.asn_no}{_stringLocalizer["ASN_Status_Is_Putaway"]}");
+                return (false, $"{_stringLocalizer["ASN_Status_Is_Putaway"]}");
             }
-            else if (entity.sorted_qty < 1)
+            else if (entities.Any(t => t.sorted_qty < 1))
             {
-                return (false, $"{entity.asn_no}{_stringLocalizer["ASN_Status_Is_Not_Sorting"]}");
+                return (false, $"{_stringLocalizer["ASN_Status_Is_Not_Sorting"]}");
             }
-            entity.asn_status = 2;
-            entity.sorted_qty = 0;
-            entity.more_qty = 0;
-            entity.shortage_qty = 0;
-            entity.last_update_time = DateTime.Now;
+            entities.ForEach(e =>
+            {
+                e.asn_status = 2;
+                e.sorted_qty = 0;
+                e.more_qty = 0;
+                e.shortage_qty = 0;
+                e.last_update_time = DateTime.Now;
+            });
             var qty = await _dBContext.SaveChangesAsync();
             if (qty > 0)
             {
                 var Asnsorts = _dBContext.GetDbSet<AsnsortEntity>();
-                await Asnsorts.Where(t => t.asn_id.Equals(id)).ExecuteDeleteAsync();
+                await Asnsorts.Where(t => idList.Contains(t.asn_id)).ExecuteDeleteAsync();
                 return (true, _stringLocalizer["save_success"]);
             }
             else
