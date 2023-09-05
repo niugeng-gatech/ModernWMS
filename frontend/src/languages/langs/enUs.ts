@@ -83,6 +83,16 @@ export default {
       user_name: 'Operator',
       action_content: 'Operation content',
       action_time: 'Time'
+    },
+    hiprint: {
+      routine: 'routine',
+      text: 'text',
+      customer: 'customer',
+      auxiliary: 'auxiliary',
+      hline: 'horizontalLine',
+      vline: 'verticalLine',
+      rect: 'rectangle',
+      oval: 'oval'
     }
   },
   router: {

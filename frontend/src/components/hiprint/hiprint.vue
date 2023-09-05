@@ -92,7 +92,7 @@ interface tableInterFace {
 }
 const props = defineProps<{
   form: object
-  table: Array<tableInterFace>
+  table?: Array<tableInterFace>
   i18nName: string
   vueName: string
 }>()
@@ -210,8 +210,14 @@ const data = reactive({
 const method = reactive({
   initProvider() {
     const elementList = [
-      new hiprint.PrintElementTypeGroup('常规', [
-        { tid: 'providerModule.customText', title: '文本', customText: '自定义文本', custom: true, type: 'text' },
+      new hiprint.PrintElementTypeGroup(i18n.global.t('system.hiprint.routine'), [
+        {
+          tid: 'providerModule.customText',
+          title: i18n.global.t('system.hiprint.text'),
+          customText: i18n.global.t('system.hiprint.text'),
+          custom: true,
+          type: 'text'
+        }
         // { tid: 'providerModule.image', title: 'Logo', data: '', type: 'image' }
       ])
     ]
@@ -238,7 +244,7 @@ const method = reactive({
       }
     }
     let index = 1
-    props.table.forEach((item) => {
+    props.table?.forEach((item) => {
       const object = {
         tid: `providerModule.table${ index.toString() }`,
         title: item.name,
@@ -269,28 +275,28 @@ const method = reactive({
       index += 1
     })
     if (userList.length > 0) {
-      elementList.push(new hiprint.PrintElementTypeGroup('客户', userList))
+      elementList.push(new hiprint.PrintElementTypeGroup(i18n.global.t('system.hiprint.customer'), userList))
     }
     elementList.push(
-      new hiprint.PrintElementTypeGroup('辅助', [
+      new hiprint.PrintElementTypeGroup(i18n.global.t('system.hiprint.auxiliary'), [
         {
           tid: 'providerModule.hline',
-          title: '横线',
+          title: i18n.global.t('system.hiprint.hline'),
           type: 'hline'
         },
         {
           tid: 'providerModule.vline',
-          title: '竖线',
+          title: i18n.global.t('system.hiprint.vline'),
           type: 'vline'
         },
         {
           tid: 'providerModule.rect',
-          title: '矩形',
+          title: i18n.global.t('system.hiprint.rect'),
           type: 'rect'
         },
         {
           tid: 'providerModule.oval',
-          title: '椭圆',
+          title: i18n.global.t('system.hiprint.oval'),
           type: 'oval'
         }
       ])
@@ -389,7 +395,7 @@ defineExpose({
 })
 </script>
 <style scoped lang="less">
-@import "../../assets/css/bootstrap.min.css";
+@import '../../assets/css/bootstrap.min.css';
 .center-btn-box {
   margin-bottom: 5px;
   display: flex;

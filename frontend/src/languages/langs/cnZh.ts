@@ -83,6 +83,16 @@ export default {
       user_name: '操作人',
       action_content: '操作内容',
       action_time: '操作时间'
+    },
+    hiprint: {
+      routine: '常规',
+      text: '文本',
+      customer: '客户',
+      auxiliary: '辅助',
+      hline: '横线',
+      vline: '竖线',
+      rect: '矩形',
+      oval: '椭圆'
     }
   },
   router: {
