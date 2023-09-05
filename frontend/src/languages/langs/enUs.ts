@@ -16,6 +16,8 @@ export default {
       edit: 'Edit',
       delete: 'Delete',
       close: 'Close',
+      print: 'Print',
+      preView: 'preView',
       submit: 'Submit',
       reset: 'Reset',
       confirm: 'Confirm',

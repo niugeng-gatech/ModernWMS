@@ -16,6 +16,8 @@ export default {
       edit: '编辑',
       delete: '删除',
       close: '关闭',
+      print: '打印',
+      preView: '预览',
       submit: '提交',
       reset: '重置',
       confirm: '确认',
