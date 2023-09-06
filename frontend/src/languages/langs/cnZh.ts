@@ -644,6 +644,19 @@ export default {
       opeartionCheckboxIsNull: '未选中可操作的数据!',
       warehouse_name: '仓库名称'
     },
-    saftyStock: {}
+    saftyStock: {
+      warehouse_name: '仓库名称',
+      // location_name: '库位名称',
+      spu_code: '商品编码',
+      spu_name: '商品名称',
+      sku_id: '规格标识',
+      sku_code: '规格编码',
+      sku_name: '规格名称',
+      qty: '数量',
+      qty_available: '可用数量',
+      qty_locked: '锁定数量',
+      qty_frozen: '冻结数量',
+      safety_stock_qty: '安全库存数量'
+    }
   }
 }
