@@ -16,6 +16,8 @@ export default {
       edit: '编辑',
       delete: '删除',
       close: '关闭',
+      print: '打印',
+      preView: '预览',
       submit: '提交',
       reset: '重置',
       confirm: '确认',
@@ -82,6 +84,16 @@ export default {
       user_name: '操作人',
       action_content: '操作内容',
       action_time: '操作时间'
+    },
+    hiprint: {
+      routine: '常规',
+      text: '文本',
+      customer: '客户',
+      auxiliary: '辅助',
+      hline: '横线',
+      vline: '竖线',
+      rect: '矩形',
+      oval: '椭圆'
     }
   },
   router: {
