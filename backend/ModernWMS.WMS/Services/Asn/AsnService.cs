@@ -665,17 +665,123 @@ namespace ModernWMS.WMS.Services
                 return (false, _stringLocalizer["save_failed"]);
             }
         }
+
+        /// <summary>
+        /// get pending putaway data by asn_id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<List<AsnPendingPutawayViewModel>> GetPendingPutawayDataAsync(int id)
+        {
+            var Asns = _dBContext.GetDbSet<AsnEntity>();
+            var Asnsorts = _dBContext.GetDbSet<AsnsortEntity>();
+
+            var data = await (from m in Asns.AsNoTracking()
+                              join s in Asnsorts.AsNoTracking() on m.id equals s.asn_id
+                              group new { m, s } by new { m.id, m.goods_owner_id, m.goods_owner_name, s.series_number }
+                       into g
+                              select new AsnPendingPutawayViewModel
+                              {
+                                  asn_id = g.Key.id,
+                                  goods_owner_id = g.Key.goods_owner_id,
+                                  goods_owner_name = g.Key.goods_owner_name,
+                                  series_number = g.Key.series_number,
+                                  sorted_qty = g.Sum(o => o.s.sorted_qty)
+                              }).ToListAsync();
+            return data;
+        }
+
         /// <summary>
         /// PutAway
         /// </summary>
-        /// <param name="viewModel">args</param>
+        /// <param name="viewModels">args</param>
         /// <param name="currentUser">currentUser</param>
         /// <returns></returns>
-        public async Task<(bool flag, string msg)> PutAwayAsync(AsnPutAwayInputViewModel viewModel, CurrentUser currentUser)
+        public async Task<(bool flag, string msg)> PutAwayAsync(List<AsnPutAwayInputViewModel> viewModels, CurrentUser currentUser)
         {
+            if (viewModels.Any(t => t.goods_location_id == 0))
+            {
+                return (false, string.Format(_stringLocalizer["Required"], _stringLocalizer["location_name"]));
+            }
             var Asns = _dBContext.GetDbSet<AsnEntity>();
-
             var Goodslocations = _dBContext.GetDbSet<GoodslocationEntity>();
+            var Stocks = _dBContext.GetDbSet<StockEntity>();
+
+            var LocationIdList = viewModels.Where(v => v.goods_location_id > 0)
+                                           .Select(v => v.goods_location_id)
+                                           .Distinct().ToList();
+
+            var Locations = await Goodslocations.Where(t => LocationIdList.Contains(t.id))
+                                                .ToListAsync();
+            if (!Locations.Any() || LocationIdList.Count != Locations.Count)
+            {
+                return (false, string.Format(_stringLocalizer["Required"], _stringLocalizer["location_name"]));
+            }
+            int sumPutawayQty = viewModels.Sum(v => v.putaway_qty);
+            var entity = await Asns.FirstOrDefaultAsync(t => t.id == viewModels[0].asn_id);
+            if (entity == null)
+            {
+                return (false, _stringLocalizer["not_exists_entity"]);
+            }
+            else if (entity.asn_status != 3)
+            {
+                return (false, $"{entity.asn_no}{_stringLocalizer["ASN_Status_Is_Not_Sorted"]}");
+            }
+            else if (entity.actual_qty + sumPutawayQty > entity.sorted_qty)
+            {
+                return (false, $"{entity.asn_no}{_stringLocalizer["ASN_Total_PutAway_Qty_Greater_Than_Sorted_Qty"]}");
+            }
+            entity.actual_qty += sumPutawayQty;
+            if (entity.actual_qty.Equals(entity.sorted_qty))
+            {
+                entity.asn_status = 4;
+            }
+            entity.last_update_time = DateTime.Now;
+            viewModels.ForEach(async viewModel =>
+            {
+                var Location = Locations.FirstOrDefault(t => t.id == viewModel.goods_location_id);
+                if (Location != null && Location.warehouse_area_property.Equals(5))
+                {
+                    entity.damage_qty += viewModel.putaway_qty;
+                }
+                var stockEntity = await Stocks.FirstOrDefaultAsync(t => t.sku_id.Equals(entity.sku_id) 
+                                                                              && t.goods_location_id.Equals(viewModel.goods_location_id)
+                                                                              && t.goods_owner_id.Equals(viewModel.goods_owner_id)
+                                                                              && t.series_number.Equals(viewModel.series_number)
+                                                                              );
+                if (stockEntity == null)
+                {
+                    stockEntity = new StockEntity
+                    {
+                        sku_id = entity.sku_id,
+                        goods_location_id = viewModel.goods_location_id,
+                        goods_owner_id = entity.goods_owner_id,
+                        series_number = viewModel.series_number,
+                        qty = viewModel.putaway_qty,
+                        is_freeze = false,
+                        last_update_time = DateTime.Now,
+                        tenant_id = currentUser.tenant_id,
+                        id = 0
+                    };
+                    await Stocks.AddAsync(stockEntity);
+                }
+                else
+                {
+                    stockEntity.qty += viewModel.putaway_qty;
+                    stockEntity.last_update_time = DateTime.Now;
+                }
+            });
+            var qty = await _dBContext.SaveChangesAsync();
+            if (qty > 0)
+            {
+                return (true, _stringLocalizer["putaway_success"]);
+            }
+            else
+            {
+                return (false, _stringLocalizer["putaway_failed"]);
+            }
+            /*
+
             var Location = await Goodslocations.FirstOrDefaultAsync(t => t.id.Equals(viewModel.goods_location_id));
             if (Location == null)
             {
@@ -737,6 +843,7 @@ namespace ModernWMS.WMS.Services
             {
                 return (false, _stringLocalizer["putaway_failed"]);
             }
+            */
         }
         #endregion
 

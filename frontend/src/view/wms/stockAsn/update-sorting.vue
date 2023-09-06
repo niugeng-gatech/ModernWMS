@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="isShow" :width="'30%'" transition="dialog-top-transition" :persistent="true">
+  <v-dialog v-model="data.showDialog" :width="'50%'" transition="dialog-top-transition" :persistent="true">
     <template #default>
       <v-card>
         <v-toolbar color="white" :title="`${$t('wms.stockAsn.tabNotice')}`"></v-toolbar>
@@ -11,6 +11,37 @@
               :rules="data.rules.sorted_qty"
               variant="outlined"
             ></v-text-field>
+            <template v-for="(snNum, index) of data.SNList" :key="index">
+              <v-row>
+                <v-col :cols="10">
+                  <v-text-field
+                    v-model="snNum.snNum"
+                    :label="$t('wms.stockAsnInfo.series_number')"
+                    :rules="data.rules.series_number"
+                    variant="outlined"
+                  ></v-text-field>
+                </v-col>
+                <v-col :cols="2">
+                  <div class="detailBtnContainer">
+                    <tooltip-btn
+                      :flat="true"
+                      icon="mdi-delete-outline"
+                      :tooltip-text="$t('system.page.delete')"
+                      :icon-color="errorColor"
+                      @click="method.removeItem(index)"
+                    ></tooltip-btn>
+                  </div>
+                </v-col>
+              </v-row>
+            </template>
+            <v-btn
+              style="font-size: 20px; margin-bottom: 15px; margin-top: 10px; float: right"
+              color="primary"
+              :width="40"
+              @click="method.insertSNData()"
+            >
+              +
+            </v-btn>
           </v-form>
         </v-card-text>
         <v-card-actions class="justify-end">
@@ -23,84 +54,119 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, computed, ref, watch } from 'vue'
-import { StockAsnVO, SortingVo } from '@/types/WMS/StockAsn'
+import { reactive, ref } from 'vue'
+import { SortingVo } from '@/types/WMS/StockAsn'
 import i18n from '@/languages/i18n'
 import { hookComponent } from '@/components/system/index'
-import { sortingAsn } from '@/api/wms/stockAsn'
+import { IsInteger, StringLength } from '@/utils/dataVerification/formRule'
+import { errorColor } from '@/constant/style'
+import tooltipBtn from '@/components/tooltip-btn.vue'
+import { getSorting } from '@/api/wms/stockAsn'
 
 const formRef = ref()
-const emit = defineEmits(['close', 'saveSuccess'])
-
-const props = defineProps<{
-  showDialog: boolean
-  form: StockAsnVO
-}>()
-
-const isShow = computed(() => props.showDialog)
-
-const dialogTitle = computed(() => 'update')
+const emit = defineEmits(['sure'])
 
 const data = reactive({
-  form: ref<StockAsnVO>({
-    id: 0,
-    asn_no: '',
-    asn_status: 0,
-    spu_id: 0,
-    spu_code: '',
-    spu_name: '',
-    sku_id: 0,
-    sku_code: '',
-    sku_name: '',
-    origin: '',
-    length_unit: 0,
-    volume_unit: 0,
-    weight_unit: 0,
-    asn_qty: 0,
-    actual_qty: 0,
-    sorted_qty: 0,
-    shortage_qty: 0,
-    more_qty: 0,
-    damage_qty: 0,
-    weight: 0,
-    volume: 0,
-    supplier_id: 0,
-    supplier_name: '',
-    goods_owner_id: 0,
-    goods_owner_name: '',
-    is_valid: true
-  }),
-  formSorting: ref<SortingVo>({
+  showDialog: false,
+  form: ref<SortingVo>({
     asn_id: 0,
     sorted_qty: 0
   }),
+  SNList: [] as { snNum: string }[],
   rules: {
-    sorted_qty: [(val: string) => !!val || `${ i18n.global.t('system.checkText.mustInput') }${ i18n.global.t('wms.stockAsnInfo.sorted_qty') }!`]
+    sorted_qty: [
+      (val: string) => !!val || `${ i18n.global.t('system.checkText.mustInput') }${ i18n.global.t('wms.stockAsnInfo.sorted_qty') }!`,
+      (val: number) => IsInteger(val, 'greaterThanZero') === '' || IsInteger(val, 'greaterThanZero')
+    ],
+    series_number: [
+      (val: string) => !!val || `${ i18n.global.t('system.checkText.mustInput') }${ i18n.global.t('wms.stockAsnInfo.series_number') }!`,
+      (val: string) => StringLength(val, 0, 64) === '' || StringLength(val, 0, 64)
+    ]
   }
 })
 
 const method = reactive({
+  // 初始化数据
+  initDialogData: async (id: number) => {
+    const { data: res } = await getSorting(id)
+    if (!res.isSuccess) {
+      hookComponent.$message({
+        type: 'error',
+        content: res.errorMessage
+      })
+      method.closeDialog()
+      return
+    }
+
+    let qty = 0
+    const snList = []
+
+    // 解构
+    for (const item of res.data) {
+      qty += item.sorted_qty
+      if (item.series_number) {
+        snList.push({ snNum: item.series_number })
+      }
+    }
+
+    data.form = {
+      asn_id: id,
+      sorted_qty: qty
+    }
+
+    data.SNList = snList
+  },
+  // 删除数据
+  removeItem: (index: number) => {
+    hookComponent.$dialog({
+      content: i18n.global.t('system.tips.beforeDeleteDetailMessage'),
+      handleConfirm: async () => {
+        data.SNList.splice(index, 1)
+      }
+    })
+  },
+  insertSNData: () => {
+    data.SNList.push({ snNum: '' })
+  },
+  openDialog: async (id: number) => {
+    await method.initDialogData(id)
+
+    data.showDialog = true
+  },
   closeDialog: () => {
-    emit('close')
+    data.showDialog = false
   },
   submit: async () => {
+    if (data.SNList.length > data.form.sorted_qty) {
+      hookComponent.$message({
+        type: 'error',
+        content: i18n.global.t('wms.stockAsnInfo.exceedingPrompt')
+      })
+      return
+    }
     const { valid } = await formRef.value.validate()
     if (valid) {
-      data.formSorting.asn_id = data.form.id
-      data.formSorting.sorted_qty = data.form.sorted_qty
-      const { data: res } = await sortingAsn(data.formSorting)
-      if (!res.isSuccess) {
-        hookComponent.$message({
-          type: 'error',
-          content: res.errorMessage
+      const reqData = []
+
+      for (const item of data.SNList) {
+        reqData.push({
+          asn_id: data.form.asn_id,
+          series_number: item.snNum,
+          sorted_qty: 1
         })
-        return
       }
-      hookComponent.$message({
-        type: 'success',
-        content: `${ i18n.global.t('system.page.submit') }${ i18n.global.t('system.tips.success') }`
-      })
-      emit('saveSuccess')
+
+      // 如果去除sn码还有剩余则添加没有sn码的明细
+      if (data.SNList.length !== data.form.sorted_qty) {
+        const margin = data.form.sorted_qty - data.SNList.length
+        reqData.push({
+          asn_id: data.form.asn_id,
+          series_number: '',
+          sorted_qty: margin
+        })
+      }
+
+      emit('sure', reqData)
     } else {
       hookComponent.$message({
         type: 'error',
@@ -110,14 +176,10 @@ const method = reactive({
   }
 })
 
-watch(
-  () => isShow.value,
-  (val) => {
-    if (val) {
-      data.form = props.form
-    }
-  }
-)
+defineExpose({
+  openDialog: method.openDialog,
+  closeDialog: method.closeDialog
+})
 </script>
 
 <style scoped lang="less">
@@ -125,5 +187,11 @@ watch(
   div {
     margin-bottom: 7px;
   }
+}
+.detailBtnContainer {
+  height: 56px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

@@ -16,6 +16,8 @@ export default {
       edit: '编辑',
       delete: '删除',
       close: '关闭',
+      print: '打印',
+      preView: '预览',
       submit: '提交',
       reset: '重置',
       confirm: '确认',
@@ -40,7 +42,8 @@ export default {
       requestTimeout: '请求超时！',
       requestFail: '接口请求失败，请重试',
       vaildEmail: '请输入正确的邮箱格式!',
-      verifyPwd: '校验失败, 新密码与确认新密码不同!'
+      verifyPwd: '校验失败, 新密码与确认新密码不同!',
+      beforeOperation: '您确定要进行此操作吗?'
     },
     checkText: {
       checkFormFail: '操作失败, 请检查数据后重试!',
@@ -81,6 +84,16 @@ export default {
       user_name: '操作人',
       action_content: '操作内容',
       action_time: '操作时间'
+    },
+    hiprint: {
+      routine: '常规',
+      text: '文本',
+      customer: '客户',
+      auxiliary: '辅助',
+      hline: '横线',
+      vline: '竖线',
+      rect: '矩形',
+      oval: '椭圆'
     }
   },
   router: {
@@ -153,7 +166,8 @@ export default {
       afterResetPwd: '重置密码成功, 新密码为: ',
       user_register_name: '用户名',
       email: 'Email',
-      auth_string: '密码'
+      auth_string: '密码',
+      userModalTitle: '用户选择框'
     },
     warehouseSetting: {
       warehouseSetting: '仓库设置',
@@ -504,7 +518,19 @@ export default {
       supplier_name: '供应商名称',
       goods_owner_id: '货主标识',
       goods_owner_name: '货主名称',
-      is_valid: '是否有效'
+      is_valid: '是否有效',
+      asn_batch: '批次',
+      estimated_arrival_time: '预计到达时间',
+      arrival_time: '到达时间',
+      mustInputErrorMsg: '请填写到货时间!',
+      confirmArrival: '确认到货',
+      selectOne: '请至少选择一条数据!',
+      unloadTime: '卸货时间',
+      confirmUnload: '确认卸货',
+      unloadPerson: '卸货人',
+      revoke: '撤销',
+      series_number: '序列号',
+      exceedingPrompt: '序列号数量不能超过分拣数量!'
     },
     skuInfo: {
       spu_id: '商品spu标识',
