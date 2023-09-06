@@ -748,7 +748,7 @@ namespace ModernWMS.WMS.Services
                                   goods_owner_id = g.Key.goods_owner_id,
                                   goods_owner_name = g.Key.goods_owner_name,
                                   series_number = g.Key.series_number,
-                                  sorted_qty = g.Sum(o => o.s.sorted_qty)
+                                  sorted_qty = g.Sum(o => o.s.sorted_qty - o.s.putaway_qty)
                               }).ToListAsync();
             return data;
         }
@@ -761,6 +761,7 @@ namespace ModernWMS.WMS.Services
         /// <returns></returns>
         public async Task<(bool flag, string msg)> PutAwayAsync(List<AsnPutAwayInputViewModel> viewModels, CurrentUser currentUser)
         {
+            viewModels.RemoveAll(v => v.putaway_qty < 1);
             if (viewModels.Any(t => t.goods_location_id == 0))
             {
                 return (false, string.Format(_stringLocalizer["Required"], _stringLocalizer["location_name"]));
