@@ -211,7 +211,7 @@
     <!-- Add or modify data mode window -->
     <addOrUpdateDialog :show-dialog="data.showDialog" :form="data.dialogForm" @close="method.closeDialog" @saveSuccess="method.saveSuccess" />
 
-    <update-sku-safty-stock ref="updateSkuSaftyStockRef" @sure="method.updateSkuSaftyStockByRow" />
+    <update-sku-safety-stock ref="updateSkuSaftyStockRef" @sure="method.updateSkuSaftyStockByRow" />
   </div>
 </template>
 
@@ -232,7 +232,7 @@ import { setSearchObject, getMenuAuthorityList } from '@/utils/common'
 import { exportData } from '@/utils/exportTable'
 import { DEBOUNCE_TIME } from '@/constant/system'
 import BtnGroup from '@/components/system/btnGroup.vue'
-import updateSkuSaftyStock from './update-sku-safty-stock.vue'
+import updateSkuSafetyStock from './update-sku-safety-stock.vue'
 
 const xTable = ref()
 const updateSkuSaftyStockRef = ref()

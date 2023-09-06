@@ -86,14 +86,14 @@
             :disabled="!data.authorityList.includes('sorted-confirm')"
             @click="method.editRow(row)"
           ></tooltip-btn>
-          <tooltip-btn
+          <!-- <tooltip-btn
             :flat="true"
             icon="mdi-delete-outline"
             :tooltip-text="$t('system.page.delete')"
             :icon-color="errorColor"
             :disabled="!data.authorityList.includes('sorted-delete')"
             @click="method.deleteRow(row)"
-          ></tooltip-btn>
+          ></tooltip-btn> -->
         </template>
       </vxe-column>
     </vxe-table>
@@ -108,7 +108,7 @@
     >
     </custom-pager>
   </div>
-  <updateSorting :show-dialog="data.showDialog" :form="data.dialogForm" @close="method.closeDialog" @saveSuccess="method.saveSuccess" />
+  <updateSorting ref="updateSortingRef" @sure="method.updateSortingSure" />
   <skuInfo :show-dialog="data.showDialogShowInfo" :form="data.dialogForm" @close="method.closeDialogShowInfo" />
 </template>
 
@@ -122,7 +122,7 @@ import { hookComponent } from '@/components/system'
 import { DEBOUNCE_TIME } from '@/constant/system'
 import { setSearchObject, getMenuAuthorityList } from '@/utils/common'
 import { SearchObject, btnGroupItem } from '@/types/System/Form'
-import { getStockAsnList, sortedAsn, unloadAsnCancel } from '@/api/wms/stockAsn'
+import { editSorting, getStockAsnList, revokeUnload, confirmSorted, unloadAsnCancel } from '@/api/wms/stockAsn'
 import tooltipBtn from '@/components/tooltip-btn.vue'
 import i18n from '@/languages/i18n'
 import updateSorting from './update-sorting.vue'
@@ -132,9 +132,9 @@ import { exportData } from '@/utils/exportTable'
 import BtnGroup from '@/components/system/btnGroup.vue'
 
 const xTableStockLocation = ref()
+const updateSortingRef = ref()
 
 const data = reactive({
-  showDialog: false,
   showDialogShowInfo: false,
   searchForm: {
     supplier_name: '',
@@ -144,30 +144,17 @@ const data = reactive({
   dialogForm: ref<StockAsnVO>({
     id: 0,
     asn_no: '',
-    asn_status: 0,
-    spu_id: 0,
-    spu_code: '',
-    spu_name: '',
-    sku_id: 0,
-    sku_code: '',
-    sku_name: '',
-    origin: '',
-    length_unit: 0,
-    volume_unit: 0,
-    weight_unit: 0,
-    asn_qty: 0,
-    actual_qty: 0,
-    sorted_qty: 0,
-    shortage_qty: 0,
-    more_qty: 0,
-    damage_qty: 0,
-    weight: 0,
-    volume: 0,
-    supplier_id: 0,
-    supplier_name: '',
-    goods_owner_id: 0,
-    goods_owner_name: '',
-    is_valid: true
+    asn_batch: '',
+    estimated_arrival_time: '',
+    // asn_status: 0,
+    // weight: 0,
+    // volume: 0,
+    // goods_owner_id: 0,
+    // goods_owner_name: '',
+    // creator: '',
+    // create_time: '',
+    // last_update_time: '',
+    detailList: []
   }),
   tableData: ref<StockAsnVO[]>([]),
   tablePage: reactive({
@@ -184,6 +171,54 @@ const data = reactive({
 })
 
 const method = reactive({
+  // 撤回流程
+  handleRevoke: () => {
+    const checkRecords = xTableStockLocation.value.getCheckboxRecords()
+    if (checkRecords.length > 0) {
+      const idList = checkRecords.map((item: StockAsnVO) => item.id)
+      hookComponent.$dialog({
+        content: i18n.global.t('system.tips.beforeOperation'),
+        handleConfirm: async () => {
+          const { data: res } = await revokeUnload(idList)
+          if (!res.isSuccess) {
+            hookComponent.$message({
+              type: 'error',
+              content: res.errorMessage
+            })
+            return
+          }
+          hookComponent.$message({
+            type: 'success',
+            content: `${ i18n.global.t('system.page.delete') }${ i18n.global.t('system.tips.success') }`
+          })
+          method.refresh()
+        }
+      })
+    } else {
+      hookComponent.$message({
+        type: 'error',
+        content: i18n.global.t('wms.stockAsnInfo.selectOne')
+      })
+    }
+  },
+  // 修改分拣信息后的回调
+  updateSortingSure: async (reqData: { asn_id: number; series_number: string; sorted_qty: number }[]) => {
+    const { data: res } = await editSorting(reqData)
+    if (!res.isSuccess) {
+      hookComponent.$message({
+        type: 'error',
+        content: res.errorMessage
+      })
+      return
+    }
+    hookComponent.$message({
+      type: 'success',
+      content: `${ i18n.global.t('system.page.submit') }${ i18n.global.t('system.tips.success') }`
+    })
+
+    updateSortingRef.value.closeDialog()
+    method.refresh()
+  },
   closeDialogShowInfo: () => {
     data.showDialogShowInfo = false
   },
@@ -191,25 +226,15 @@ const method = reactive({
     data.dialogForm = JSON.parse(JSON.stringify(row))
     data.showDialogShowInfo = true
   },
-  // Shut add or update dialog
-  closeDialog: () => {
-    data.showDialog = false
-  },
-  // After add or update success.
-  saveSuccess: () => {
-    method.refresh()
-    method.closeDialog()
-  },
   editRowEdit(row: StockAsnVO) {
-    data.dialogForm = JSON.parse(JSON.stringify(row))
-    data.showDialog = true
+    updateSortingRef.value.openDialog(row.id)
   },
   editRow(row: StockAsnVO) {
     hookComponent.$dialog({
       content: i18n.global.t('system.tips.beforeAsnSorted'),
       handleConfirm: async () => {
         if (row.id) {
-          const { data: res } = await sortedAsn(row.id)
+          const { data: res } = await confirmSorted(row.id)
           if (!res.isSuccess) {
             hookComponent.$message({
               type: 'error',
@@ -299,6 +324,12 @@ onMounted(() => {
       icon: 'mdi-export-variant',
       code: 'sorted-export',
       click: method.exportTable
+    },
+    {
+      name: i18n.global.t('wms.stockAsnInfo.revoke'),
+      icon: 'mdi-arrow-left-top',
+      code: 'sorted-delete',
+      click: method.handleRevoke
     }
   ]
 })

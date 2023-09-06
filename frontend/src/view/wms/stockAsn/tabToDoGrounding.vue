@@ -81,14 +81,14 @@
             :disabled="!data.authorityList.includes('putOnTheShelf-editArrival')"
             @click="method.editRow(row)"
           ></tooltip-btn>
-          <tooltip-btn
+          <!-- <tooltip-btn
             :flat="true"
             icon="mdi-delete-outline"
             :tooltip-text="$t('system.page.delete')"
             :icon-color="errorColor"
             :disabled="!data.authorityList.includes('putOnTheShelf-delete')"
             @click="method.deleteRow(row)"
-          ></tooltip-btn>
+          ></tooltip-btn> -->
         </template>
       </vxe-column>
     </vxe-table>
@@ -117,7 +117,7 @@ import { hookComponent } from '@/components/system'
 import { DEBOUNCE_TIME } from '@/constant/system'
 import { setSearchObject, getMenuAuthorityList } from '@/utils/common'
 import { SearchObject, btnGroupItem } from '@/types/System/Form'
-import { getStockAsnList, sortedAsnCancel } from '@/api/wms/stockAsn'
+import { getStockAsnList, sortedAsnCancel, revokeSorting } from '@/api/wms/stockAsn'
 import tooltipBtn from '@/components/tooltip-btn.vue'
 import i18n from '@/languages/i18n'
 import updateGrounding from './update-grounding.vue'
@@ -139,30 +139,17 @@ const data = reactive({
   dialogForm: ref<StockAsnVO>({
     id: 0,
     asn_no: '',
-    asn_status: 0,
-    spu_id: 0,
-    spu_code: '',
-    spu_name: '',
-    sku_id: 0,
-    sku_code: '',
-    sku_name: '',
-    origin: '',
-    length_unit: 0,
-    volume_unit: 0,
-    weight_unit: 0,
-    asn_qty: 0,
-    actual_qty: 0,
-    sorted_qty: 0,
-    shortage_qty: 0,
-    more_qty: 0,
-    damage_qty: 0,
-    weight: 0,
-    volume: 0,
-    supplier_id: 0,
-    supplier_name: '',
-    goods_owner_id: 0,
-    goods_owner_name: '',
-    is_valid: true
+    asn_batch: '',
+    estimated_arrival_time: '',
+    // asn_status: 0,
+    // weight: 0,
+    // volume: 0,
+    // goods_owner_id: 0,
+    // goods_owner_name: '',
+    // creator: '',
+    // create_time: '',
+    // last_update_time: '',
+    detailList: []
   }),
   tableData: ref<StockAsnVO[]>([]),
   tablePage: reactive({
@@ -179,6 +166,36 @@ const data = reactive({
 })
 
 const method = reactive({
+  // 撤回流程
+  handleRevoke: () => {
+    const checkRecords = xTableStockLocation.value.getCheckboxRecords()
+    if (checkRecords.length > 0) {
+      const idList = checkRecords.map((item: StockAsnVO) => item.id)
+      hookComponent.$dialog({
+        content: i18n.global.t('system.tips.beforeOperation'),
+        handleConfirm: async () => {
+          const { data: res } = await revokeSorting(idList)
+          if (!res.isSuccess) {
+            hookComponent.$message({
+              type: 'error',
+              content: res.errorMessage
+            })
+            return
+          }
+          hookComponent.$message({
+            type: 'success',
+            content: `${ i18n.global.t('system.page.delete') }${ i18n.global.t('system.tips.success') }`
+          })
+          method.refresh()
+        }
+      })
+    } else {
+      hookComponent.$message({
+        type: 'error',
+        content: i18n.global.t('wms.stockAsnInfo.selectOne')
+      })
+    }
+  },
   closeDialogShowInfo: () => {
     data.showDialogShowInfo = false
   },
@@ -272,6 +289,12 @@ onMounted(() => {
       icon: 'mdi-export-variant',
       code: 'putOnTheShelf-export',
       click: method.exportTable
+    },
+    {
+      name: i18n.global.t('wms.stockAsnInfo.revoke'),
+      icon: 'mdi-arrow-left-top',
+      code: 'putOnTheShelf-delete',
+      click: method.handleRevoke
     }
   ]
 })
