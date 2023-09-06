@@ -530,7 +530,14 @@ export default {
       unloadPerson: '卸货人',
       revoke: '撤销',
       series_number: '序列号',
-      exceedingPrompt: '序列号数量不能超过分拣数量!'
+      exceedingPrompt: '序列号数量不能超过分拣数量!',
+      addSorting: '分拣',
+      editSorting: '编辑分拣数据',
+      putaway_qty: '上架数量',
+      can_putaway_qty: '可上架数量',
+      exceedTip: '上架数量不可超过可上架数量！',
+      notLocation: '请选择库位后进行上架!',
+      selectLocation: '选择库位编码'
     },
     skuInfo: {
       spu_id: '商品spu标识',

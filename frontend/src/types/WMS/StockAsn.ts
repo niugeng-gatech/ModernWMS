@@ -78,3 +78,15 @@ export interface SkuInfoVo {
   cost: number
   price: number
 }
+
+export interface UpdateSortingVo {
+  id: number
+  asn_id: number
+  sorted_qty: number
+  series_number: string
+  creator: string
+  create_time: string
+  last_update_time: string
+  is_valid: boolean
+  tenant_id: number
+}
