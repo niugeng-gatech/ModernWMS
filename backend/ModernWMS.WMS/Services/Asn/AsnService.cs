@@ -739,7 +739,7 @@ namespace ModernWMS.WMS.Services
 
             var data = await (from m in Asns.AsNoTracking()
                               join s in Asnsorts.AsNoTracking() on m.id equals s.asn_id
-                              where m.id == id
+                              where m.id == id && s.putaway_qty < s.sorted_qty
                               group new { m, s } by new { m.id, m.goods_owner_id, m.goods_owner_name, s.series_number }
                        into g
                               select new AsnPendingPutawayViewModel
@@ -768,6 +768,7 @@ namespace ModernWMS.WMS.Services
             var Asns = _dBContext.GetDbSet<AsnEntity>();
             var Goodslocations = _dBContext.GetDbSet<GoodslocationEntity>();
             var Stocks = _dBContext.GetDbSet<StockEntity>();
+            var Asnsorts = _dBContext.GetDbSet<AsnsortEntity>();
 
             var LocationIdList = viewModels.Where(v => v.goods_location_id > 0)
                                            .Select(v => v.goods_location_id)
@@ -799,8 +800,36 @@ namespace ModernWMS.WMS.Services
                 entity.asn_status = 4;
             }
             entity.last_update_time = DateTime.Now;
+
+            // 获取已上架数小于分拣数的分拣记录
+            var sortEntities = await Asnsorts.Where(t => t.asn_id == viewModels[0].asn_id && t.sorted_qty > t.putaway_qty).ToListAsync();
+
             viewModels.ForEach(async viewModel =>
             {
+                // 根据sn码，将本次上架数量反写到分拣记录中。如果sn码是空的，则分摊进去
+                var sortList = sortEntities.Where(s => s.series_number == viewModel.series_number).ToList();                
+                if (sortList.Any())
+                {
+                    int left_putaway_qty = viewModel.putaway_qty;
+                    sortList.ForEach(s =>
+                    {
+                        if (left_putaway_qty > 0)
+                        {
+                            int can_putaway_qty = s.sorted_qty - s.putaway_qty;
+                            if (left_putaway_qty > can_putaway_qty)
+                            {
+                                s.putaway_qty += can_putaway_qty;
+                                left_putaway_qty -= can_putaway_qty;
+                            }
+                            else
+                            {
+                                s.putaway_qty += left_putaway_qty;
+                                left_putaway_qty = 0;
+                            }
+                        }
+                    });
+                }
+
                 var Location = Locations.FirstOrDefault(t => t.id == viewModel.goods_location_id);
                 if (Location != null && Location.warehouse_area_property.Equals(5))
                 {
