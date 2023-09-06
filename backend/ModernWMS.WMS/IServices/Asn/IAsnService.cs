@@ -109,6 +109,14 @@ namespace ModernWMS.WMS.IServices
         Task<List<AsnsortEntity>> GetAsnsortsAsync(int asn_id);
 
         /// <summary>
+        /// update or delete asnsorts data
+        /// </summary>
+        /// <param name="entities">data</param>
+        /// <param name="user">CurrentUser</param>
+        /// <returns></returns>
+        Task<(bool flag, string msg)> ModifyAsnsortsAsync(List<AsnsortEntity> entities, CurrentUser user);
+
+        /// <summary>
         /// Sorted
         /// change the asn_status from 2 to 3
         /// </summary>
