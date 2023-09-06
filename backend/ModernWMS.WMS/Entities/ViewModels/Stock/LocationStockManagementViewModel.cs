@@ -72,5 +72,12 @@ namespace ModernWMS.WMS.Entities.ViewModels
         /// goods owner name
         /// </summary>
         public string goods_owner_name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// series_number
+        /// </summary>
+        [Display(Name = "series_number")]
+        [MaxLength(64, ErrorMessage = "MaxLength")]
+        public string series_number { get; set; } = string.Empty;
     }
 }
