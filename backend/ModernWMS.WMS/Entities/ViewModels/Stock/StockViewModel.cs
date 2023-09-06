@@ -125,6 +125,8 @@ namespace ModernWMS.WMS.Entities.ViewModels
         /// <summary>
         /// series_number
         /// </summary>
+        [Display(Name = "series_number")]
+        [MaxLength(64, ErrorMessage = "MaxLength")]
         public string series_number { get; set; } = string.Empty;
 
         #endregion Property
