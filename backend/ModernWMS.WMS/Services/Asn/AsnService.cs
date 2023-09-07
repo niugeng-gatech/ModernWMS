@@ -805,10 +805,10 @@ namespace ModernWMS.WMS.Services
             // 获取已上架数小于分拣数的分拣记录
             var sortEntities = await Asnsorts.Where(t => t.asn_id == viewModels[0].asn_id && t.sorted_qty > t.putaway_qty).ToListAsync();
 
-            viewModels.ForEach(async viewModel =>
+            foreach (var viewModel in viewModels)
             {
                 // 根据sn码，将本次上架数量反写到分拣记录中。如果sn码是空的，则分摊进去
-                var sortList = sortEntities.Where(s => s.series_number == viewModel.series_number).ToList();                
+                var sortList = sortEntities.Where(s => s.series_number == viewModel.series_number).ToList();
                 if (sortList.Any())
                 {
                     int left_putaway_qty = viewModel.putaway_qty;
@@ -836,7 +836,7 @@ namespace ModernWMS.WMS.Services
                 {
                     entity.damage_qty += viewModel.putaway_qty;
                 }
-                var stockEntity = await Stocks.FirstOrDefaultAsync(t => t.sku_id.Equals(entity.sku_id) 
+                var stockEntity = await Stocks.FirstOrDefaultAsync(t => t.sku_id.Equals(entity.sku_id)
                                                                               && t.goods_location_id.Equals(viewModel.goods_location_id)
                                                                               && t.goods_owner_id.Equals(viewModel.goods_owner_id)
                                                                               && t.series_number.Equals(viewModel.series_number)
@@ -862,7 +862,7 @@ namespace ModernWMS.WMS.Services
                     stockEntity.qty += viewModel.putaway_qty;
                     stockEntity.last_update_time = DateTime.Now;
                 }
-            });
+            }
             var qty = await _dBContext.SaveChangesAsync();
             if (qty > 0)
             {
