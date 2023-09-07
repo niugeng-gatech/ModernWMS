@@ -12,7 +12,7 @@
               variant="outlined"
             ></v-text-field>
             <v-row v-for="(snNum, index) of data.SNList" :key="index" style="margin-top: 5px">
-              <v-col :cols="7">
+              <v-col :cols="10">
                 <v-text-field
                   v-model="snNum.snNum"
                   :label="$t('wms.stockAsnInfo.series_number')"
@@ -20,9 +20,9 @@
                   variant="outlined"
                 ></v-text-field>
               </v-col>
-              <v-col :cols="3">
+              <!-- <v-col :cols="3">
                 <v-text-field v-model="data.staticDetailQty" readonly :label="$t('wms.stockAsnInfo.sorted_qty')" variant="outlined"></v-text-field>
-              </v-col>
+              </v-col> -->
               <v-col :cols="2">
                 <div class="detailBtnContainer">
                   <tooltip-btn

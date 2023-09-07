@@ -72,7 +72,12 @@
                     :title="$t('wms.warehouseWorking.warehouseAdjust.handle_time')"
                   ></vxe-column> -->
                   <vxe-column field="creator" :title="$t('wms.warehouseWorking.warehouseAdjust.creator')"></vxe-column>
-                  <vxe-column field="create_time" width="170px" :title="$t('wms.warehouseWorking.warehouseAdjust.create_time')"></vxe-column>
+                  <vxe-column
+                    field="create_time"
+                    width="170px"
+                    :formatter="['formatDate', 'yyyy-MM-dd HH:mm']"
+                    :title="$t('wms.warehouseWorking.warehouseAdjust.create_time')"
+                  ></vxe-column>
                   <!-- <vxe-column field="operate" :title="$t('system.page.operate')" width="200" :resizable="false" show-overflow>
                     <template #default="{ row }">
                       <tooltip-btn
@@ -138,7 +143,6 @@ import { DEBOUNCE_TIME } from '@/constant/system'
 import { setSearchObject, getMenuAuthorityList } from '@/utils/common'
 import { SearchObject, btnGroupItem } from '@/types/System/Form'
 import { formatAdjustJobType } from '@/utils/format/formatWarehouseWorking'
-import tooltipBtn from '@/components/tooltip-btn.vue'
 import addOrUpdateDialog from './add-or-update-adjust.vue'
 import i18n from '@/languages/i18n'
 import customPager from '@/components/custom-pager.vue'

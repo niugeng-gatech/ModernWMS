@@ -2,7 +2,7 @@
   <v-dialog v-model="data.showDialog" :width="'70%'" transition="dialog-top-transition" :persistent="true">
     <template #default>
       <v-card>
-        <v-toolbar color="white" :title="`${$t('wms.stockAsnInfo.editSorting')}`"></v-toolbar>
+        <v-toolbar color="white" :title="`${$t('wms.stockAsnInfo.editGrounding')}`"></v-toolbar>
         <v-card-text>
           <v-row no-gutters>
             <v-col cols="12" class="col">
@@ -161,7 +161,7 @@ const method = reactive({
     }
     data.tableData = res.data.map((item: any) => ({
       ...item,
-      putaway_qty: 0
+      putaway_qty: item.sorted_qty
     }))
   },
 

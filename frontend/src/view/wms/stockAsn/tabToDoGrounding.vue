@@ -76,8 +76,8 @@
         <template #default="{ row }">
           <tooltip-btn
             :flat="true"
-            icon="mdi-pencil-outline"
-            :tooltip-text="$t('system.page.edit')"
+            icon="mdi-package-up"
+            :tooltip-text="$t('wms.stockAsnInfo.grounding')"
             :disabled="!data.authorityList.includes('putOnTheShelf-editArrival')"
             @click="method.editRow(row)"
           ></tooltip-btn>
@@ -113,7 +113,7 @@
 <script lang="ts" setup>
 import { computed, ref, reactive, watch, onMounted } from 'vue'
 import { VxePagerEvents } from 'vxe-table'
-import { computedCardHeight, computedTableHeight, errorColor } from '@/constant/style'
+import { computedCardHeight, computedTableHeight } from '@/constant/style'
 import { StockAsnVO } from '@/types/WMS/StockAsn'
 import { PAGE_SIZE, PAGE_LAYOUT, DEFAULT_PAGE_SIZE } from '@/constant/vxeTable'
 import { hookComponent } from '@/components/system'
@@ -256,7 +256,7 @@ const method = reactive({
           }
           hookComponent.$message({
             type: 'success',
-            content: `${ i18n.global.t('system.page.delete') }${ i18n.global.t('system.tips.success') }`
+            content: `${ i18n.global.t('system.page.revoke') }${ i18n.global.t('system.tips.success') }`
           })
           method.refresh()
         }

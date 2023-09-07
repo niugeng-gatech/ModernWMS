@@ -26,7 +26,8 @@ export default {
       import: '导入',
       chooseFile: '选择文件',
       exportTemplate: '导出模板',
-      noData: '暂无数据'
+      noData: '暂无数据',
+      revoke: '撤回'
     },
     tips: {
       success: '成功!',
@@ -467,7 +468,8 @@ export default {
       qty: '数量',
       qty_available: '可用数量',
       qty_locked: '锁定数量',
-      qty_frozen: '冻结数量'
+      qty_frozen: '冻结数量',
+      series_number: '序列号'
     },
     stockList: {
       spu_code: '商品编码',
@@ -533,11 +535,14 @@ export default {
       exceedingPrompt: '序列号数量不能超过分拣数量!',
       addSorting: '分拣',
       editSorting: '编辑分拣数据',
+      editGrounding: '编辑上架数据',
       putaway_qty: '上架数量',
       can_putaway_qty: '可上架数量',
       exceedTip: '上架数量不可超过可上架数量！',
       notLocation: '请选择库位后进行上架!',
-      selectLocation: '选择库位编码'
+      selectLocation: '选择库位编码',
+      viewDetail: '查看明细',
+      grounding: '上架'
     },
     skuInfo: {
       spu_id: '商品spu标识',
