@@ -31,6 +31,12 @@
               disabled
             ></v-text-field>
             <v-text-field
+              v-model="data.form.series_number"
+              :label="$t('wms.stockLocation.series_number')"
+              variant="outlined"
+              disabled
+            ></v-text-field>
+            <v-text-field
               v-model="data.form.location_name"
               :label="$t('wms.warehouseWorking.warehouseFreeze.location_name')"
               :rules="data.rules.location_name"
@@ -112,6 +118,7 @@ const data = reactive({
     spu_code: '',
     spu_name: '',
     sku_code: '',
+    series_number: '',
     creator: '',
     create_time: ''
   }),
@@ -160,6 +167,7 @@ const method = reactive({
       data.form.spu_code = selectRecords[0].spu_code
       data.form.spu_name = selectRecords[0].spu_name
       data.form.sku_code = selectRecords[0].sku_code
+      data.form.series_number = selectRecords[0].series_number
 
       data.form.goods_owner_id = selectRecords[0].goods_owner_id
       data.form.goods_location_id = selectRecords[0].goods_location_id

@@ -217,7 +217,7 @@ const method = reactive({
           }
           hookComponent.$message({
             type: 'success',
-            content: `${ i18n.global.t('system.page.delete') }${ i18n.global.t('system.tips.success') }`
+            content: `${ i18n.global.t('system.page.revoke') }${ i18n.global.t('system.tips.success') }`
           })
           method.refresh()
         }
