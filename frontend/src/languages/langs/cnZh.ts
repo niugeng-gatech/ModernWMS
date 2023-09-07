@@ -312,7 +312,9 @@ export default {
         delivery: '出库',
         setCarrier: '设置承运单位',
         signIn: '签收',
-        saftyStock: '安全库存'
+        saftyStock: '安全库存',
+        printQrCode: '打印二维码',
+        printBarCode: '打印条码'
       },
       modalTitle: {
         editMenuAction: '编辑菜单操作权限',
@@ -341,7 +343,9 @@ export default {
       width: '商品宽度',
       height: '商品高度',
       volume: '商品体积',
-      saftyStock: '安全库存'
+      saftyStock: '安全库存',
+      printQrCode: '打印二维码',
+      printBarCode: '打印条码'
     }
   },
   wms: {

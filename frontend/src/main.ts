@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import './style.css' // Global Styles
+import print from 'vue3-print-nb'
 import { VXETable } from '@/plugins/VXETable/index'
 import { vuetify } from '@/plugins/vuetify/index'
 import i18n from './languages/i18n'
@@ -16,6 +17,7 @@ VXETable.setup({
   i18n: (key, args) => i18n.global.t(key, args)
 })
 
+app.use(print)
 app.use(router)
 app.use(store)
 app.use(vuetify)
