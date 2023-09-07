@@ -1,48 +1,49 @@
 <template>
-  <v-dialog v-model="data.showDialog" :width="'50%'" transition="dialog-top-transition" :persistent="true">
+  <v-dialog v-model="data.showDialog" :width="'70%'" transition="dialog-top-transition" :persistent="true">
     <template #default>
       <v-card>
-        <v-toolbar color="white" :title="`${$t('wms.stockAsn.tabNotice')}`"></v-toolbar>
+        <v-toolbar color="white" :title="`${$t('wms.stockAsnInfo.editSorting')}`"></v-toolbar>
         <v-card-text>
-          <v-form ref="formRef">
-            <v-text-field
-              v-model="data.form.sorted_qty"
-              :label="$t('wms.stockAsnInfo.sorted_qty')"
-              :rules="data.rules.sorted_qty"
-              variant="outlined"
-            ></v-text-field>
-            <template v-for="(snNum, index) of data.SNList" :key="index">
-              <v-row>
-                <v-col :cols="10">
-                  <v-text-field
-                    v-model="snNum.snNum"
-                    :label="$t('wms.stockAsnInfo.series_number')"
-                    :rules="data.rules.series_number"
-                    variant="outlined"
-                  ></v-text-field>
-                </v-col>
-                <v-col :cols="2">
-                  <div class="detailBtnContainer">
-                    <tooltip-btn
-                      :flat="true"
-                      icon="mdi-delete-outline"
-                      :tooltip-text="$t('system.page.delete')"
-                      :icon-color="errorColor"
-                      @click="method.removeItem(index)"
-                    ></tooltip-btn>
-                  </div>
-                </v-col>
-              </v-row>
+          <vxe-table
+            ref="xTable"
+            keep-source
+            :column-config="{ minWidth: '100px' }"
+            :data="data.tableData"
+            :height="SYSTEM_HEIGHT.SELECT_TABLE"
+            align="center"
+            :edit-rules="data.validRules"
+            :edit-config="{ trigger: 'click', mode: 'cell', activeMethod: method.activeMethod }"
+            :mouse-config="{ selected: true }"
+            :keyboard-config="{ isArrow: true, isDel: true, isEnter: true, isTab: true, isEdit: true, isChecked: true }"
+          >
+            <template #empty>
+              {{ i18n.global.t('system.page.noData') }}
             </template>
-            <v-btn
-              style="font-size: 20px; margin-bottom: 15px; margin-top: 10px; float: right"
-              color="primary"
-              :width="40"
-              @click="method.insertSNData()"
-            >
-              +
-            </v-btn>
-          </v-form>
+            <vxe-column type="seq" width="60"></vxe-column>
+            <vxe-column field="series_number" :title="$t('wms.stockAsnInfo.series_number')" :edit-render="{ autofocus: '.vxe-input--inner' }">
+              <template #edit="{ row }">
+                <vxe-input v-model="row.series_number" type="text"></vxe-input>
+              </template>
+            </vxe-column>
+            <vxe-column field="sorted_qty" :title="$t('wms.stockAsnInfo.sorted_qty')" :edit-render="{ autofocus: '.vxe-input--inner' }">
+              <template #edit="{ row }">
+                <vxe-input v-model="row.sorted_qty" type="text"></vxe-input>
+              </template>
+            </vxe-column>
+            <vxe-column field="creator" :title="$t('wms.deliveryManagement.creator')"> </vxe-column>
+            <vxe-column field="create_time" :formatter="['formatDate', 'yyyy-MM-dd']" :title="$t('wms.deliveryManagement.create_time')"> </vxe-column>
+            <vxe-column field="operate" :title="$t('system.page.operate')" width="100" :resizable="false" show-overflow>
+              <template #default="{ row }">
+                <tooltip-btn
+                  :flat="true"
+                  icon="mdi-delete-outline"
+                  :tooltip-text="$t('system.page.delete')"
+                  :icon-color="errorColor"
+                  @click="method.deleteRow(row)"
+                ></tooltip-btn>
+              </template>
+            </vxe-column>
+          </vxe-table>
         </v-card-text>
         <v-card-actions class="justify-end">
           <v-btn variant="text" @click="method.closeDialog">{{ $t('system.page.close') }}</v-btn>
@@ -55,38 +56,61 @@
 
 <script lang="ts" setup>
 import { reactive, ref } from 'vue'
-import { SortingVo } from '@/types/WMS/StockAsn'
 import i18n from '@/languages/i18n'
 import { hookComponent } from '@/components/system/index'
-import { IsInteger, StringLength } from '@/utils/dataVerification/formRule'
-import { errorColor } from '@/constant/style'
-import tooltipBtn from '@/components/tooltip-btn.vue'
+import { errorColor, SYSTEM_HEIGHT } from '@/constant/style'
 import { getSorting } from '@/api/wms/stockAsn'
+import { UpdateSortingVo } from '@/types/WMS/StockAsn'
+import tooltipBtn from '@/components/tooltip-btn.vue'
+import { isInteger } from '@/utils/dataVerification/tableRule'
 
-const formRef = ref()
+const xTable = ref()
+
 const emit = defineEmits(['sure'])
 
 const data = reactive({
   showDialog: false,
-  form: ref<SortingVo>({
-    asn_id: 0,
-    sorted_qty: 0
-  }),
-  SNList: [] as { snNum: string }[],
-  rules: {
+  tableData: [],
+  validRules: {
     sorted_qty: [
-      (val: string) => !!val || `${ i18n.global.t('system.checkText.mustInput') }${ i18n.global.t('wms.stockAsnInfo.sorted_qty') }!`,
-      (val: number) => IsInteger(val, 'greaterThanZero') === '' || IsInteger(val, 'greaterThanZero')
+      { required: true, message: `${ i18n.global.t('system.checkText.mustInput') }${ i18n.global.t('wms.stockAsnInfo.sorted_qty') }` },
+      {
+        validator: isInteger,
+        validNumerical: 'nonNegative',
+        trigger: 'change'
+      }
     ],
     series_number: [
-      (val: string) => !!val || `${ i18n.global.t('system.checkText.mustInput') }${ i18n.global.t('wms.stockAsnInfo.series_number') }!`,
-      (val: string) => StringLength(val, 0, 64) === '' || StringLength(val, 0, 64)
+      {
+        type: 'string',
+        min: 0,
+        max: 64,
+        message: `${ i18n.global.t('system.checkText.lengthValid') }${ 0 }-${ 64 }`,
+        trigger: 'change'
+      }
     ]
-  }
+  } as any
 })
 
 const method = reactive({
-  // 初始化数据
+  // cell激活控制
+  activeMethod({ row, column }: any) {
+    if (!row.series_number && column.field === 'series_number') {
+      return false
+    }
+    return true
+  },
+  // 删除行
+  deleteRow: (row: UpdateSortingVo) => {
+    const $table = xTable.value
+    hookComponent.$dialog({
+      content: i18n.global.t('system.tips.beforeDeleteDetailMessage'),
+      handleConfirm: async () => {
+        $table.remove(row)
+      }
+    })
+  },
+  // 初始化窗口数据
   initDialogData: async (id: number) => {
     const { data: res } = await getSorting(id)
     if (!res.isSuccess) {
@@ -94,42 +118,15 @@ const method = reactive({
         type: 'error',
         content: res.errorMessage
       })
-      method.closeDialog()
+      data.showDialog = false
       return
     }
-
-    let qty = 0
-    const snList = []
-
-    // 解构
-    for (const item of res.data) {
-      qty += item.sorted_qty
-      if (item.series_number) {
-        snList.push({ snNum: item.series_number })
-      }
-    }
-
-    data.form = {
-      asn_id: id,
-      sorted_qty: qty
-    }
-
-    data.SNList = snList
+    data.tableData = res.data
   },
-  // 删除数据
-  removeItem: (index: number) => {
-    hookComponent.$dialog({
-      content: i18n.global.t('system.tips.beforeDeleteDetailMessage'),
-      handleConfirm: async () => {
-        data.SNList.splice(index, 1)
-      }
-    })
-  },
-  insertSNData: () => {
-    data.SNList.push({ snNum: '' })
-  },
+
   openDialog: async (id: number) => {
-    await method.initDialogData(id)
+    // 初始化数据
+    method.initDialogData(id)
 
     data.showDialog = true
   },
@@ -137,36 +134,21 @@ const method = reactive({
     data.showDialog = false
   },
   submit: async () => {
-    if (data.SNList.length > data.form.sorted_qty) {
-      hookComponent.$message({
-        type: 'error',
-        content: i18n.global.t('wms.stockAsnInfo.exceedingPrompt')
-      })
-      return
-    }
-    const { valid } = await formRef.value.validate()
-    if (valid) {
-      const reqData = []
+    const $table = xTable.value
+    const errMap = await $table.validate(true)
+    if (!errMap) {
+      // 找到删除数据, 赋值负数id代表删除
+      const removeTableData = xTable.value.getRemoveRecords()
 
-      for (const item of data.SNList) {
-        reqData.push({
-          asn_id: data.form.asn_id,
-          series_number: item.snNum,
-          sorted_qty: 1
-        })
+      // 遍历修改原始数据, 因为数据为浅拷贝, 所以不用赋值
+      if (removeTableData) {
+        for (const item of removeTableData) {
+          item.id = 0 - item.id
+        }
       }
 
-      // 如果去除sn码还有剩余则添加没有sn码的明细
-      if (data.SNList.length !== data.form.sorted_qty) {
-        const margin = data.form.sorted_qty - data.SNList.length
-        reqData.push({
-          asn_id: data.form.asn_id,
-          series_number: '',
-          sorted_qty: margin
-        })
-      }
-
-      emit('sure', reqData)
+      const tableData: any = data.tableData
+      emit('sure', tableData)
     } else {
       hookComponent.$message({
         type: 'error',
@@ -182,16 +164,4 @@ defineExpose({
 })
 </script>
 
-<style scoped lang="less">
-.v-form {
-  div {
-    margin-bottom: 7px;
-  }
-}
-.detailBtnContainer {
-  height: 56px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-</style>
+<style scoped lang="less"></style>
