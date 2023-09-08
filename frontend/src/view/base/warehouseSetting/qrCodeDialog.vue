@@ -14,7 +14,7 @@
                   <span class="labelTitle">{{ $t('base.warehouseSetting.warehouse_name') }}:</span> &nbsp;{{ data.printData.warehouse_name }}
                 </div>
                 <div>
-                  <span class="labelTitle">{{ $t('base.warehouseSetting.warehouse_area_name') }}:</span> &nbsp;{{
+                  <span class="labelTitle">{{ $t('base.warehouseSetting.area_name') }}:</span> &nbsp;{{
                     data.printData.warehouse_area_name
                   }}
                 </div>
