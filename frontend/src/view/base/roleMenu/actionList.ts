@@ -18,7 +18,9 @@ export const actionDict: any = {
     'area-export',
     'location-save',
     'location-delete',
-    'location-export'
+    'location-export',
+    'location-printBarCode',
+    'location-printQrCode'
   ],
   ownerOfCargo: ['save', 'delete', 'import', 'export'],
   freightSetting: ['save', 'delete', 'import', 'export'],
@@ -28,6 +30,7 @@ export const actionDict: any = {
     'notice-save',
     'notice-delete',
     'notice-export',
+    'notice-printQrCode',
     'delivered-confirm',
     'delivered-export',
     'unloaded-confirm',
@@ -58,6 +61,7 @@ export const actionDict: any = {
     'invoice-revoke',
     'invoice-delete',
     'invoice-export',
+    'invoice-printQrCode',
     'picked-confirm',
     'picked-revoke',
     'picked-export',

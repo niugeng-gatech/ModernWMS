@@ -65,8 +65,15 @@
         :title="$t('wms.stockAsnInfo.estimated_arrival_time')"
       ></vxe-column>
       <vxe-column field="goods_owner_name" :title="$t('wms.stockAsnInfo.goods_owner_name')"></vxe-column>
-      <vxe-column field="operate" :title="$t('system.page.operate')" width="160" :resizable="false" show-overflow>
+      <vxe-column field="operate" :title="$t('system.page.operate')" width="180px" :resizable="false" show-overflow>
         <template #default="{ row }">
+          <tooltip-btn
+            :flat="true"
+            icon="mdi-qrcode"
+            :tooltip-text="$t('base.commodityManagement.printQrCode')"
+            :disabled="!data.authorityList.includes('notice-printQrCode')"
+            @click="method.printQrCode(row)"
+          ></tooltip-btn>
           <tooltip-btn
             :flat="true"
             icon="mdi-pencil-outline"
@@ -98,6 +105,9 @@
   </div>
   <addOrUpdateNotice :show-dialog="data.showDialog" :form="data.dialogForm" @close="method.closeDialog" @saveSuccess="method.saveSuccess" />
   <skuInfo :show-dialog="data.showDialogShowInfo" :form="data.dialogForm" @close="method.closeDialogShowInfo" />
+
+  <!-- 打印二维码 -->
+  <qrCodeDialog ref="qrCodeDialogRef" />
 </template>
 
 <script lang="ts" setup>
@@ -118,8 +128,10 @@ import customPager from '@/components/custom-pager.vue'
 import skuInfo from './sku-info.vue'
 import { exportData } from '@/utils/exportTable'
 import BtnGroup from '@/components/system/btnGroup.vue'
+import qrCodeDialog from './qrCodeDialog.vue'
 
 const xTableStockLocation = ref()
+const qrCodeDialogRef = ref()
 
 const data = reactive({
   showDialog: false,
@@ -159,6 +171,10 @@ const data = reactive({
 })
 
 const method = reactive({
+  // 打印二维码
+  printQrCode: (row: any) => {
+    qrCodeDialogRef.value.openDialog(row)
+  },
   closeDialogShowInfo: () => {
     data.showDialogShowInfo = false
   },
