@@ -720,7 +720,7 @@ namespace ModernWMS.WMS.Services
                             warehouse_name = dg.Key.warehouse_name,
                             location_name = dg.Key.location_name,
                             spu_name = dg.Key.spu_name,
-                            spu_code = dg.Key.sku_code,
+                            spu_code = dg.Key.spu_code,
                             sku_name = dg.Key.sku_name,
                             sku_code = dg.Key.sku_code,
                             series_number = dg.Key.series_number,
