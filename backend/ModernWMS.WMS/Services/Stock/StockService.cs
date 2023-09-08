@@ -19,6 +19,7 @@ using System.Net.WebSockets;
 using System.Linq;
 using ModernWMS.WMS.Entities.ViewModels.Stock;
 using ModernWMS.Core.Utility;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace ModernWMS.WMS.Services
 {
@@ -673,7 +674,7 @@ namespace ModernWMS.WMS.Services
         /// <param name="input">input</param>
         /// <param name="currentUser">current user</param>
         /// <returns></returns>
-        public async Task<List<DeliveryStatisticViewModel>> DeliveryStatistic(DeliveryStatisticSearchViewModel input, CurrentUser currentUser)
+        public async Task<(List<DeliveryStatisticViewModel> datas, int totals)> DeliveryStatistic(DeliveryStatisticSearchViewModel input, CurrentUser currentUser)
         {
             var dispatch_DBSet = _dBContext.GetDbSet<DispatchlistEntity>().Where(t => t.tenant_id.Equals(currentUser.tenant_id));
             var dispatchpick_DBSet = _dBContext.GetDbSet<DispatchpicklistEntity>();
@@ -689,47 +690,49 @@ namespace ModernWMS.WMS.Services
             {
                 dispatch_DBSet = dispatch_DBSet.Where(t => t.create_time < input.delivery_date_to.AddDays(1));
             }
-            var dispatch_group_datas = await (from dp in dispatch_DBSet.AsNoTracking()
-                                              join dpp in dispatchpick_DBSet.AsNoTracking() on dp.id equals dpp.dispatchlist_id
-                                              join sku in sku_DBSet.AsNoTracking() on dp.sku_id equals sku.id
-                                              join spu in spu_DBSet.AsNoTracking() on sku.spu_id equals spu.id
-                                              join location in location_DBSet.AsNoTracking() on dpp.goods_location_id equals location.id
-                                              join wh in warehouse_DBSet.AsNoTracking() on location.warehouse_id equals wh.id
-                                              where dp.dispatch_status >= 6 && spu.spu_name.Contains(input.spu_name) && spu.spu_code.Contains(input.spu_code)
-                                              && sku.sku_name.Contains(input.sku_name) && sku.sku_code.Contains(input.sku_code) && wh.warehouse_name.Contains(input.warehouse_name)
-                                              && dp.customer_name.Contains(input.customer_name)
-                                              group new { dpp, dp, spu, sku } by
-                                              new
-                                              {
-                                                  dp.dispatch_no,
-                                                  wh.warehouse_name,
-                                                  location_name = location.area_name,
-                                                  spu.spu_name,
-                                                  spu.spu_code,
-                                                  sku.sku_name,
-                                                  sku.sku_code,
-                                                  dpp.series_number,
-                                                  dp.customer_name,
-                                                  dp.create_time
-                                              }
+            var query = from dp in dispatch_DBSet.AsNoTracking()
+                        join dpp in dispatchpick_DBSet.AsNoTracking() on dp.id equals dpp.dispatchlist_id
+                        join sku in sku_DBSet.AsNoTracking() on dp.sku_id equals sku.id
+                        join spu in spu_DBSet.AsNoTracking() on sku.spu_id equals spu.id
+                        join location in location_DBSet.AsNoTracking() on dpp.goods_location_id equals location.id
+                        join wh in warehouse_DBSet.AsNoTracking() on location.warehouse_id equals wh.id
+                        where dp.dispatch_status >= 6 && spu.spu_name.Contains(input.spu_name) && spu.spu_code.Contains(input.spu_code)
+                        && sku.sku_name.Contains(input.sku_name) && sku.sku_code.Contains(input.sku_code) && wh.warehouse_name.Contains(input.warehouse_name)
+                        && dp.customer_name.Contains(input.customer_name)
+                        group new { dpp, dp, spu, sku } by
+                        new
+                        {
+                            dp.dispatch_no,
+                            wh.warehouse_name,
+                            location_name = location.area_name,
+                            spu.spu_name,
+                            spu.spu_code,
+                            sku.sku_name,
+                            sku.sku_code,
+                            dpp.series_number,
+                            dp.customer_name,
+                            dp.create_time
+                        }
                                               into dg
-                                              select new DeliveryStatisticViewModel
-                                              {
-                                                  dispatch_no = dg.Key.dispatch_no,
-                                                  warehouse_name = dg.Key.warehouse_name,
-                                                  location_name = dg.Key.location_name,
-                                                  spu_name = dg.Key.spu_name,
-                                                  spu_code = dg.Key.sku_code,
-                                                  sku_name = dg.Key.sku_name,
-                                                  sku_code = dg.Key.sku_code,
-                                                  series_number = dg.Key.series_number,
-                                                  customer_name = dg.Key.customer_name,
-                                                  delivery_date = dg.Key.create_time,
-                                                  delivery_qty = dg.Sum(t => t.dpp.picked_qty)
-                                              }).OrderByDescending(t => t.delivery_date)
+                        select new DeliveryStatisticViewModel
+                        {
+                            dispatch_no = dg.Key.dispatch_no,
+                            warehouse_name = dg.Key.warehouse_name,
+                            location_name = dg.Key.location_name,
+                            spu_name = dg.Key.spu_name,
+                            spu_code = dg.Key.sku_code,
+                            sku_name = dg.Key.sku_name,
+                            sku_code = dg.Key.sku_code,
+                            series_number = dg.Key.series_number,
+                            customer_name = dg.Key.customer_name,
+                            delivery_date = dg.Key.create_time,
+                            delivery_qty = dg.Sum(t => t.dpp.picked_qty)
+                        };
+            int totals = await query.CountAsync();
+            var list = await query.OrderByDescending(t => t.delivery_date)
                                               .Skip((input.pageIndex - 1) * input.pageSize)
                                               .Take(input.pageSize).ToListAsync();
-            return dispatch_group_datas;
+            return (list, totals);
         }
 
         #endregion Api

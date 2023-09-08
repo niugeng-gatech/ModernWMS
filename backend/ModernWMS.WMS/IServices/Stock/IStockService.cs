@@ -73,7 +73,7 @@ namespace ModernWMS.WMS.IServices
         /// <param name="input">input</param>
         /// <param name="currentUser">current user</param>
         /// <returns></returns>
-        Task<List<DeliveryStatisticViewModel>> DeliveryStatistic(DeliveryStatisticSearchViewModel input, CurrentUser currentUser);
+        Task<(List<DeliveryStatisticViewModel> datas, int totals)> DeliveryStatistic(DeliveryStatisticSearchViewModel input, CurrentUser currentUser);
 
         #endregion Api
     }
