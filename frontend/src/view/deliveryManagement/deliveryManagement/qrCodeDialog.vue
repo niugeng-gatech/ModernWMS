@@ -1,27 +1,15 @@
 <template>
-  <v-dialog v-model="data.showDialog" width="448px" transition="dialog-top-transition" :persistent="true">
+  <v-dialog v-model="data.showDialog" width="248px" transition="dialog-top-transition" :persistent="true">
     <template #default>
       <v-card>
         <v-card-text>
           <div id="printArea" class="printArea">
             <div class="printTopContainer">
-              <div>
-                <vue-qr :key="data.printText" size="140" :margin="0" :auto-color="true" :dot-scale="1" :text="data.printText"></vue-qr>
-              </div>
-
               <div class="printLabel" style="flex: 1">
                 <div>
-                  <span class="labelTitle">{{ $t('base.commodityManagement.spu_code') }}:</span> &nbsp;{{ data.printData.spu_code }}
+                  <span class="labelTitle">{{ $t('wms.deliveryManagement.dispatch_no') }}:</span>{{ data.printData.dispatch_no }}
                 </div>
-                <div>
-                  <span class="labelTitle">{{ $t('base.commodityManagement.spu_name') }}:</span> &nbsp;{{ data.printData.spu_name }}
-                </div>
-                <div>
-                  <span class="labelTitle">{{ $t('base.commodityManagement.sku_code') }}:</span> &nbsp;{{ data.printData.sku_code }}
-                </div>
-                <div>
-                  <span class="labelTitle">{{ $t('base.commodityManagement.sku_name') }}:</span> &nbsp;{{ data.printData.sku_name }}
-                </div>
+                <vue-qr :key="data.printText" size="140" :margin="0" :auto-color="true" :dot-scale="1" :text="data.printText"></vue-qr>
               </div>
             </div>
           </div>
@@ -39,23 +27,17 @@
 <script setup lang="tsx">
 import { reactive } from 'vue'
 import VueQr from 'vue-qr/src/packages/vue-qr.vue'
-import { CommodityVO } from '@/types/Base/CommodityManagement'
 
 const data = reactive({
   showDialog: false,
   printData: {
-    sku_id: 0,
-    spu_name: '',
-    spu_code: '',
-    sku_name: '',
-    sku_code: '',
-    barcode: ''
+    dispatch_no: ''
   } as any,
   printText: ''
 })
 
 const method = reactive({
-  openDialog: (row: CommodityVO) => {
+  openDialog: (row: any) => {
     data.printData = row
 
     data.printText = JSON.stringify(data.printData)
@@ -75,7 +57,7 @@ defineExpose({
 
 <style scoped lang="less">
 .printArea {
-  width: 400px;
+  width: 200px;
 
   display: flex;
   flex-wrap: wrap;
@@ -97,9 +79,9 @@ defineExpose({
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
 
   box-sizing: border-box;
-  padding-left: 30px;
 
   .labelTitle {
     opacity: 0.7;
@@ -108,6 +90,8 @@ defineExpose({
 
   div {
     width: 100%;
+    text-align: center;
+    margin-bottom: 5px;
   }
 }
 </style>

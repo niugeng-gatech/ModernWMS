@@ -11,16 +11,15 @@
 
               <div class="printLabel" style="flex: 1">
                 <div>
-                  <span class="labelTitle">{{ $t('base.commodityManagement.spu_code') }}:</span> &nbsp;{{ data.printData.spu_code }}
+                  <span class="labelTitle">{{ $t('base.warehouseSetting.warehouse_name') }}:</span> &nbsp;{{ data.printData.warehouse_name }}
                 </div>
                 <div>
-                  <span class="labelTitle">{{ $t('base.commodityManagement.spu_name') }}:</span> &nbsp;{{ data.printData.spu_name }}
+                  <span class="labelTitle">{{ $t('base.warehouseSetting.area_name') }}:</span> &nbsp;{{
+                    data.printData.warehouse_area_name
+                  }}
                 </div>
                 <div>
-                  <span class="labelTitle">{{ $t('base.commodityManagement.sku_code') }}:</span> &nbsp;{{ data.printData.sku_code }}
-                </div>
-                <div>
-                  <span class="labelTitle">{{ $t('base.commodityManagement.sku_name') }}:</span> &nbsp;{{ data.printData.sku_name }}
+                  <span class="labelTitle">{{ $t('base.warehouseSetting.location_name') }}:</span> &nbsp;{{ data.printData.location_name }}
                 </div>
               </div>
             </div>
@@ -39,23 +38,20 @@
 <script setup lang="tsx">
 import { reactive } from 'vue'
 import VueQr from 'vue-qr/src/packages/vue-qr.vue'
-import { CommodityVO } from '@/types/Base/CommodityManagement'
 
 const data = reactive({
   showDialog: false,
   printData: {
-    sku_id: 0,
-    spu_name: '',
-    spu_code: '',
-    sku_name: '',
-    sku_code: '',
-    barcode: ''
+    location_id: 0,
+    warehouse_name: '',
+    warehouse_area_name: '',
+    location_name: ''
   } as any,
   printText: ''
 })
 
 const method = reactive({
-  openDialog: (row: CommodityVO) => {
+  openDialog: (row: any) => {
     data.printData = row
 
     data.printText = JSON.stringify(data.printData)

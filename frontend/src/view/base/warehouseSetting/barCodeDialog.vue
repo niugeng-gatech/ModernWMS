@@ -25,28 +25,22 @@
 <script setup lang="tsx">
 import { reactive, nextTick } from 'vue'
 import JsBarcode from 'jsbarcode'
-import { CommodityVO } from '@/types/Base/CommodityManagement'
 
 const data = reactive({
   showDialog: false,
   printData: {
-    sku_id: 0,
-    spu_name: '',
-    spu_code: '',
-    sku_name: '',
-    sku_code: '',
-    barcode: ''
+    location_id: 0
   } as any
 })
 
 const method = reactive({
-  openDialog: (row: CommodityVO) => {
+  openDialog: (row: any) => {
     data.printData = row
 
     data.showDialog = true
 
     nextTick(() => {
-      JsBarcode('#printBarCode', data.printData.barcode, {
+      JsBarcode('#printBarCode', data.printData.id, {
         fontSize: 12,
         width: 2,
         height: 40,

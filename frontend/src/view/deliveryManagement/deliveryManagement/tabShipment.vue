@@ -94,9 +94,16 @@
         :formatter="['formatDate', 'yyyy-MM-dd']"
         :title="$t('wms.deliveryManagement.create_time')"
       ></vxe-column> -->
-      <vxe-column field="operate" :title="$t('system.page.operate')" width="290" :resizable="false" show-overflow>
+      <vxe-column field="operate" :title="$t('system.page.operate')" width="350px" :resizable="false" show-overflow>
         <template #default="{ row }">
           <div style="width: 100%; display: flex; justify-content: center">
+            <tooltip-btn
+              :flat="true"
+              icon="mdi-qrcode"
+              :tooltip-text="$t('base.commodityManagement.printQrCode')"
+              :disabled="!data.authorityList.includes('invoice-printQrCode')"
+              @click="method.printQrCode(row)"
+            ></tooltip-btn>
             <tooltip-btn :flat="true" icon="mdi-eye-outline" :tooltip-text="$t('system.page.view')" @click="method.viewRow(row)"></tooltip-btn>
             <tooltip-btn
               :disabled="!data.authorityList.includes('invoice-confirm') || (row.dispatch_status !== 0 && row.dispatch_status !== 1)"
@@ -160,6 +167,9 @@
       :show-dialog="data.showDeliveredMainDetail"
       @close="method.closeDeliveredDetail"
     />
+
+    <!-- 打印二维码 -->
+    <qrCodeDialog ref="qrCodeDialogRef" />
   </div>
 </template>
 
@@ -184,8 +194,10 @@ import { exportData } from '@/utils/exportTable'
 import { DEBOUNCE_TIME } from '@/constant/system'
 import SearchDeliveredMainDetail from './search-delivered-main-detail.vue'
 import BtnGroup from '@/components/system/btnGroup.vue'
+import qrCodeDialog from './qrCodeDialog.vue'
 
 const xTable = ref()
+const qrCodeDialogRef = ref()
 
 const data = reactive({
   showDeliveredMainDetailNo: '',
@@ -256,6 +268,10 @@ const data = reactive({
 })
 
 const method = reactive({
+  // 打印二维码
+  printQrCode: (row: any) => {
+    qrCodeDialogRef.value.openDialog(row)
+  },
   viewRow: (row: DeliveryManagementVO) => {
     if (row.dispatch_no) {
       data.showDeliveredMainDetailNo = row.dispatch_no

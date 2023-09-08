@@ -546,7 +546,8 @@ export default {
       notLocation: '请选择库位后进行上架!',
       selectLocation: '选择库位编码',
       viewDetail: '查看明细',
-      grounding: '上架'
+      grounding: '上架',
+      num: '编号'
     },
     skuInfo: {
       spu_id: '商品spu标识',
