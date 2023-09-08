@@ -153,6 +153,18 @@ namespace ModernWMS.WMS.Controllers
             return ResultModel<List<LocationStockManagementViewModel>>.Success(datas);
         }
 
+        /// <summary>
+        /// delivery statistic
+        /// </summary>
+        /// <param name="input">input</param>
+        /// <returns></returns>
+        [HttpPost("delivery-list")]
+        public async Task<ResultModel<List<DeliveryStatisticViewModel>>> LocationStockForPhoneAsync(DeliveryStatisticSearchViewModel input)
+        {
+            var datas = await _stockService.DeliveryStatistic(input, CurrentUser);
+            return ResultModel<List<DeliveryStatisticViewModel>>.Success(datas);
+        }
+
         #endregion Api
     }
 }
