@@ -74,8 +74,15 @@
         <template #default="{ row }">
           <tooltip-btn
             :flat="true"
+            icon="mdi-plus"
+            :tooltip-text="$t('wms.stockAsnInfo.addSorting')"
+            :disabled="!data.authorityList.includes('sorted-editCount')"
+            @click="method.addSorting(row)"
+          ></tooltip-btn>
+          <tooltip-btn
+            :flat="true"
             icon="mdi-pencil-outline"
-            :tooltip-text="$t('system.page.edit')"
+            :tooltip-text="$t('wms.stockAsnInfo.editSorting')"
             :disabled="!data.authorityList.includes('sorted-editCount')"
             @click="method.editRowEdit(row)"
           ></tooltip-btn>
@@ -108,31 +115,34 @@
     >
     </custom-pager>
   </div>
-  <updateSorting ref="updateSortingRef" @sure="method.updateSortingSure" />
+  <addSorting ref="addSortingRef" @sure="method.addSortingSure" />
+  <updateSortingDialog ref="updateSortingDialogRef" @sure="method.updateSortingSure" />
   <skuInfo :show-dialog="data.showDialogShowInfo" :form="data.dialogForm" @close="method.closeDialogShowInfo" />
 </template>
 
 <script lang="ts" setup>
 import { computed, ref, reactive, watch, onMounted } from 'vue'
 import { VxePagerEvents } from 'vxe-table'
-import { computedCardHeight, computedTableHeight, errorColor } from '@/constant/style'
-import { StockAsnVO } from '@/types/WMS/StockAsn'
+import { computedCardHeight, computedTableHeight } from '@/constant/style'
+import { StockAsnVO, UpdateSortingVo } from '@/types/WMS/StockAsn'
 import { PAGE_SIZE, PAGE_LAYOUT, DEFAULT_PAGE_SIZE } from '@/constant/vxeTable'
 import { hookComponent } from '@/components/system'
 import { DEBOUNCE_TIME } from '@/constant/system'
 import { setSearchObject, getMenuAuthorityList } from '@/utils/common'
 import { SearchObject, btnGroupItem } from '@/types/System/Form'
-import { editSorting, getStockAsnList, revokeUnload, confirmSorted, unloadAsnCancel } from '@/api/wms/stockAsn'
+import { editSorting, getStockAsnList, revokeUnload, confirmSorted, unloadAsnCancel, modifySorting } from '@/api/wms/stockAsn'
 import tooltipBtn from '@/components/tooltip-btn.vue'
 import i18n from '@/languages/i18n'
-import updateSorting from './update-sorting.vue'
+import addSorting from './add-sorting.vue'
 import customPager from '@/components/custom-pager.vue'
 import skuInfo from './sku-info.vue'
 import { exportData } from '@/utils/exportTable'
 import BtnGroup from '@/components/system/btnGroup.vue'
+import updateSortingDialog from './update-sorting.vue'
 
 const xTableStockLocation = ref()
-const updateSortingRef = ref()
+const addSortingRef = ref()
+const updateSortingDialogRef = ref()
 
 const data = reactive({
   showDialogShowInfo: false,
@@ -171,6 +181,24 @@ const data = reactive({
 })
 
 const method = reactive({
+  // 修改分拣信息回调
+  updateSortingSure: async (tableData: UpdateSortingVo[]) => {
+    const { data: res } = await modifySorting(tableData)
+    if (!res.isSuccess) {
+      hookComponent.$message({
+        type: 'error',
+        content: res.errorMessage
+      })
+      return
+    }
+    hookComponent.$message({
+      type: 'success',
+      content: `${ i18n.global.t('system.page.submit') }${ i18n.global.t('system.tips.success') }`
+    })
+
+    updateSortingDialogRef.value.closeDialog()
+    method.refresh()
+  },
   // 撤回流程
   handleRevoke: () => {
     const checkRecords = xTableStockLocation.value.getCheckboxRecords()
@@ -189,7 +217,7 @@ const method = reactive({
           }
           hookComponent.$message({
             type: 'success',
-            content: `${ i18n.global.t('system.page.delete') }${ i18n.global.t('system.tips.success') }`
+            content: `${ i18n.global.t('system.page.revoke') }${ i18n.global.t('system.tips.success') }`
           })
           method.refresh()
         }
@@ -202,7 +230,7 @@ const method = reactive({
     }
   },
   // 修改分拣信息后的回调
-  updateSortingSure: async (reqData: { asn_id: number; series_number: string; sorted_qty: number }[]) => {
+  addSortingSure: async (reqData: { asn_id: number; series_number: string; sorted_qty: number }[]) => {
     const { data: res } = await editSorting(reqData)
     if (!res.isSuccess) {
       hookComponent.$message({
@@ -216,7 +244,7 @@ const method = reactive({
       content: `${ i18n.global.t('system.page.submit') }${ i18n.global.t('system.tips.success') }`
     })
 
-    updateSortingRef.value.closeDialog()
+    addSortingRef.value.closeDialog()
     method.refresh()
   },
   closeDialogShowInfo: () => {
@@ -226,8 +254,12 @@ const method = reactive({
     data.dialogForm = JSON.parse(JSON.stringify(row))
     data.showDialogShowInfo = true
   },
+  // 添加分拣记录
+  addSorting: (row: StockAsnVO) => {
+    addSortingRef.value.openDialog(row.id)
+  },
   editRowEdit(row: StockAsnVO) {
-    updateSortingRef.value.openDialog(row.id)
+    updateSortingDialogRef.value.openDialog(row.id)
   },
   editRow(row: StockAsnVO) {
     hookComponent.$dialog({

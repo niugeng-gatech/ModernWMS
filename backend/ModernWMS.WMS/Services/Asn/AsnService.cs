@@ -580,6 +580,67 @@ namespace ModernWMS.WMS.Services
                 return new List<AsnsortEntity>();
             }
         }
+        /// <summary>
+        /// update or delete asnsorts data
+        /// </summary>
+        /// <param name="entities">data</param>
+        /// <param name="user">CurrentUser</param>
+        /// <returns></returns>
+        public async Task<(bool flag, string msg)> ModifyAsnsortsAsync(List<AsnsortEntity> entities, CurrentUser user)
+        {
+            var Asnsorts = _dBContext.GetDbSet<AsnsortEntity>();
+            if (entities.Any(t => t.id < 0 || t.sorted_qty == 0))
+            {
+                var delIDList = entities.Where(t => t.id < 0).Select(t => Math.Abs(t.id)).ToList();
+                await Asnsorts.Where(t => delIDList.Contains(t.id)).ExecuteDeleteAsync();
+            }
+            var updateEntities = entities.Where(t => t.id > 0 && t.sorted_qty > 0).ToList();
+            if (updateEntities.Any())
+            {
+                updateEntities.ForEach(t =>
+                {
+                    t.last_update_time = DateTime.Now;
+                    t.is_valid = true;
+                    t.create_time = t.create_time.Year < 1985 ? DateTime.Now : t.create_time;
+                    t.creator = string.IsNullOrEmpty(t.creator) ? user.user_name : t.creator;
+                });
+                Asnsorts.UpdateRange(updateEntities);
+            }
+
+            var qty = await _dBContext.SaveChangesAsync();
+            if (qty > 0)
+            {
+                var Asns = _dBContext.GetDbSet<AsnEntity>();
+                var asnids = entities.Select(t => t.asn_id).Distinct().ToList();
+
+                var sumQty = await Asnsorts.AsNoTracking()
+                    .Where(t => asnids.Contains(t.asn_id))
+                    .GroupBy(t => t.asn_id)
+                    .Select(g => new
+                    {
+                        asn_id = g.Key,
+                        sorted_qty = g.Sum(o => o.sorted_qty)
+                    }).ToListAsync();
+                var asnEntities = await Asns.Where(t => asnids.Contains(t.id)).ToListAsync();
+                if (asnEntities.Any())
+                {
+                    asnEntities.ForEach(e =>
+                    {
+                        var s = sumQty.FirstOrDefault(t => t.asn_id == e.id);
+                        if (s != null)
+                        {
+                            e.sorted_qty = s.sorted_qty;
+                        }
+                    });
+                    await _dBContext.SaveChangesAsync();
+                }
+                return (true, _stringLocalizer["sorted_success"]);
+            }
+            else
+            {
+                return (false, _stringLocalizer["sorted_failed"]);
+            }
+        }
 
         /// <summary>
         /// Sorted
@@ -678,6 +739,7 @@ namespace ModernWMS.WMS.Services
 
             var data = await (from m in Asns.AsNoTracking()
                               join s in Asnsorts.AsNoTracking() on m.id equals s.asn_id
+                              where m.id == id && s.putaway_qty < s.sorted_qty
                               group new { m, s } by new { m.id, m.goods_owner_id, m.goods_owner_name, s.series_number }
                        into g
                               select new AsnPendingPutawayViewModel
@@ -686,7 +748,7 @@ namespace ModernWMS.WMS.Services
                                   goods_owner_id = g.Key.goods_owner_id,
                                   goods_owner_name = g.Key.goods_owner_name,
                                   series_number = g.Key.series_number,
-                                  sorted_qty = g.Sum(o => o.s.sorted_qty)
+                                  sorted_qty = g.Sum(o => o.s.sorted_qty - o.s.putaway_qty)
                               }).ToListAsync();
             return data;
         }
@@ -699,6 +761,7 @@ namespace ModernWMS.WMS.Services
         /// <returns></returns>
         public async Task<(bool flag, string msg)> PutAwayAsync(List<AsnPutAwayInputViewModel> viewModels, CurrentUser currentUser)
         {
+            viewModels.RemoveAll(v => v.putaway_qty < 1);
             if (viewModels.Any(t => t.goods_location_id == 0))
             {
                 return (false, string.Format(_stringLocalizer["Required"], _stringLocalizer["location_name"]));
@@ -706,6 +769,7 @@ namespace ModernWMS.WMS.Services
             var Asns = _dBContext.GetDbSet<AsnEntity>();
             var Goodslocations = _dBContext.GetDbSet<GoodslocationEntity>();
             var Stocks = _dBContext.GetDbSet<StockEntity>();
+            var Asnsorts = _dBContext.GetDbSet<AsnsortEntity>();
 
             var LocationIdList = viewModels.Where(v => v.goods_location_id > 0)
                                            .Select(v => v.goods_location_id)
@@ -737,14 +801,42 @@ namespace ModernWMS.WMS.Services
                 entity.asn_status = 4;
             }
             entity.last_update_time = DateTime.Now;
-            viewModels.ForEach(async viewModel =>
+
+            // 获取已上架数小于分拣数的分拣记录
+            var sortEntities = await Asnsorts.Where(t => t.asn_id == viewModels[0].asn_id && t.sorted_qty > t.putaway_qty).ToListAsync();
+
+            foreach (var viewModel in viewModels)
             {
+                // 根据sn码，将本次上架数量反写到分拣记录中。如果sn码是空的，则分摊进去
+                var sortList = sortEntities.Where(s => s.series_number == viewModel.series_number).ToList();
+                if (sortList.Any())
+                {
+                    int left_putaway_qty = viewModel.putaway_qty;
+                    sortList.ForEach(s =>
+                    {
+                        if (left_putaway_qty > 0)
+                        {
+                            int can_putaway_qty = s.sorted_qty - s.putaway_qty;
+                            if (left_putaway_qty > can_putaway_qty)
+                            {
+                                s.putaway_qty += can_putaway_qty;
+                                left_putaway_qty -= can_putaway_qty;
+                            }
+                            else
+                            {
+                                s.putaway_qty += left_putaway_qty;
+                                left_putaway_qty = 0;
+                            }
+                        }
+                    });
+                }
+
                 var Location = Locations.FirstOrDefault(t => t.id == viewModel.goods_location_id);
                 if (Location != null && Location.warehouse_area_property.Equals(5))
                 {
                     entity.damage_qty += viewModel.putaway_qty;
                 }
-                var stockEntity = await Stocks.FirstOrDefaultAsync(t => t.sku_id.Equals(entity.sku_id) 
+                var stockEntity = await Stocks.FirstOrDefaultAsync(t => t.sku_id.Equals(entity.sku_id)
                                                                               && t.goods_location_id.Equals(viewModel.goods_location_id)
                                                                               && t.goods_owner_id.Equals(viewModel.goods_owner_id)
                                                                               && t.series_number.Equals(viewModel.series_number)
@@ -770,7 +862,7 @@ namespace ModernWMS.WMS.Services
                     stockEntity.qty += viewModel.putaway_qty;
                     stockEntity.last_update_time = DateTime.Now;
                 }
-            });
+            }
             var qty = await _dBContext.SaveChangesAsync();
             if (qty > 0)
             {

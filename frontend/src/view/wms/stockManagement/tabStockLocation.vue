@@ -53,6 +53,7 @@
       <vxe-column field="spu_name" :title="$t('wms.stockLocation.spu_name')"></vxe-column>
       <vxe-column field="sku_code" :title="$t('wms.stockLocation.sku_code')"></vxe-column>
       <vxe-column field="sku_name" :title="$t('wms.stockLocation.sku_name')"></vxe-column>
+      <vxe-column field="series_number" :title="$t('wms.stockLocation.series_number')"></vxe-column>
       <vxe-column field="qty" :title="$t('wms.stockLocation.qty')"></vxe-column>
       <vxe-column field="qty_available" :title="$t('wms.stockLocation.qty_available')"></vxe-column>
       <vxe-column field="qty_locked" :title="$t('wms.stockLocation.qty_locked')"></vxe-column>
@@ -75,7 +76,7 @@
 <script lang="ts" setup>
 import { computed, ref, reactive, watch, onMounted } from 'vue'
 import { VxePagerEvents } from 'vxe-table'
-import { computedCardHeight, computedTableHeight, errorColor } from '@/constant/style'
+import { computedCardHeight, computedTableHeight } from '@/constant/style'
 import { StockLocationVO } from '@/types/WMS/StockManagement'
 import { PAGE_SIZE, PAGE_LAYOUT, DEFAULT_PAGE_SIZE } from '@/constant/vxeTable'
 import { hookComponent } from '@/components/system'
@@ -83,7 +84,6 @@ import { DEBOUNCE_TIME } from '@/constant/system'
 import { setSearchObject, getMenuAuthorityList } from '@/utils/common'
 import { SearchObject, btnGroupItem } from '@/types/System/Form'
 import { getStockLocationList } from '@/api/wms/stockManagement'
-import tooltipBtn from '@/components/tooltip-btn.vue'
 import i18n from '@/languages/i18n'
 import customPager from '@/components/custom-pager.vue'
 import skuInfo from './sku-info.vue'

@@ -26,7 +26,8 @@ export default {
       import: '导入',
       chooseFile: '选择文件',
       exportTemplate: '导出模板',
-      noData: '暂无数据'
+      noData: '暂无数据',
+      revoke: '撤回'
     },
     tips: {
       success: '成功!',
@@ -311,7 +312,9 @@ export default {
         delivery: '出库',
         setCarrier: '设置承运单位',
         signIn: '签收',
-        saftyStock: '安全库存'
+        saftyStock: '安全库存',
+        printQrCode: '打印二维码',
+        printBarCode: '打印条码'
       },
       modalTitle: {
         editMenuAction: '编辑菜单操作权限',
@@ -340,7 +343,9 @@ export default {
       width: '商品宽度',
       height: '商品高度',
       volume: '商品体积',
-      saftyStock: '安全库存'
+      saftyStock: '安全库存',
+      printQrCode: '打印二维码',
+      printBarCode: '打印条码'
     }
   },
   wms: {
@@ -467,7 +472,8 @@ export default {
       qty: '数量',
       qty_available: '可用数量',
       qty_locked: '锁定数量',
-      qty_frozen: '冻结数量'
+      qty_frozen: '冻结数量',
+      series_number: '序列号'
     },
     stockList: {
       spu_code: '商品编码',
@@ -530,7 +536,17 @@ export default {
       unloadPerson: '卸货人',
       revoke: '撤销',
       series_number: '序列号',
-      exceedingPrompt: '序列号数量不能超过分拣数量!'
+      exceedingPrompt: '序列号数量不能超过分拣数量!',
+      addSorting: '分拣',
+      editSorting: '编辑分拣数据',
+      editGrounding: '编辑上架数据',
+      putaway_qty: '上架数量',
+      can_putaway_qty: '可上架数量',
+      exceedTip: '上架数量不可超过可上架数量！',
+      notLocation: '请选择库位后进行上架!',
+      selectLocation: '选择库位编码',
+      viewDetail: '查看明细',
+      grounding: '上架'
     },
     skuInfo: {
       spu_id: '商品spu标识',
@@ -644,6 +660,19 @@ export default {
       opeartionCheckboxIsNull: '未选中可操作的数据!',
       warehouse_name: '仓库名称'
     },
-    saftyStock: {}
+    saftyStock: {
+      warehouse_name: '仓库名称',
+      // location_name: '库位名称',
+      spu_code: '商品编码',
+      spu_name: '商品名称',
+      sku_id: '规格标识',
+      sku_code: '规格编码',
+      sku_name: '规格名称',
+      qty: '数量',
+      qty_available: '可用数量',
+      qty_locked: '锁定数量',
+      qty_frozen: '冻结数量',
+      safety_stock_qty: '安全库存数量'
+    }
   }
 }

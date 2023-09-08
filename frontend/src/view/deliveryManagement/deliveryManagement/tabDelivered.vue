@@ -75,7 +75,7 @@
       </vxe-column>
       <vxe-column field="dispatch_no" :title="$t('wms.deliveryManagement.dispatch_no')"></vxe-column>
       <vxe-column field="spu_code" :title="$t('wms.deliveryManagement.spu_code')"></vxe-column>
-      <vxe-column field="spu_description" :title="$t('wms.deliveryManagement.spu_description')"></vxe-column>
+      <vxe-column field="spu_description" width="200px" :title="$t('wms.deliveryManagement.spu_description')"></vxe-column>
       <vxe-column field="spu_name" :title="$t('wms.deliveryManagement.spu_name')"></vxe-column>
       <vxe-column field="sku_code" :title="$t('wms.deliveryManagement.sku_code')"></vxe-column>
       <vxe-column field="bar_code" :title="$t('wms.deliveryManagement.bar_code')"></vxe-column>
@@ -99,7 +99,12 @@
       <vxe-column field="weighing_no" :title="$t('wms.deliveryManagement.weighing_no')"></vxe-column>
       <vxe-column field="customer_name" :title="$t('wms.deliveryManagement.customer_name')"></vxe-column>
       <vxe-column field="creator" :title="$t('wms.deliveryManagement.creator')"></vxe-column>
-      <vxe-column field="create_time" width="170px" :title="$t('wms.deliveryManagement.create_time')"></vxe-column>
+      <vxe-column
+        field="create_time"
+        width="170px"
+        :formatter="['formatDate', 'yyyy-MM-dd HH:mm']"
+        :title="$t('wms.deliveryManagement.create_time')"
+      ></vxe-column>
       <vxe-column field="operate" :title="$t('system.page.operate')" width="140" :resizable="false" show-overflow>
         <template #default="{ row }">
           <div style="width: 100%; display: flex; justify-content: center">

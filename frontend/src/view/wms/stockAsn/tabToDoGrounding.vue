@@ -76,8 +76,8 @@
         <template #default="{ row }">
           <tooltip-btn
             :flat="true"
-            icon="mdi-pencil-outline"
-            :tooltip-text="$t('system.page.edit')"
+            icon="mdi-package-up"
+            :tooltip-text="$t('wms.stockAsnInfo.grounding')"
             :disabled="!data.authorityList.includes('putOnTheShelf-editArrival')"
             @click="method.editRow(row)"
           ></tooltip-btn>
@@ -104,20 +104,23 @@
     </custom-pager>
   </div>
   <updateGrounding :show-dialog="data.showDialog" :form="data.dialogForm" @close="method.closeDialog" @saveSuccess="method.saveSuccess" />
+
+  <!-- 上架操作框 -->
+  <confirmGroudingDialog ref="confirmGroudingDialogRef" @sure="method.confirmGroudingSure" />
   <skuInfo :show-dialog="data.showDialogShowInfo" :form="data.dialogForm" @close="method.closeDialogShowInfo" />
 </template>
 
 <script lang="ts" setup>
 import { computed, ref, reactive, watch, onMounted } from 'vue'
 import { VxePagerEvents } from 'vxe-table'
-import { computedCardHeight, computedTableHeight, errorColor } from '@/constant/style'
+import { computedCardHeight, computedTableHeight } from '@/constant/style'
 import { StockAsnVO } from '@/types/WMS/StockAsn'
 import { PAGE_SIZE, PAGE_LAYOUT, DEFAULT_PAGE_SIZE } from '@/constant/vxeTable'
 import { hookComponent } from '@/components/system'
 import { DEBOUNCE_TIME } from '@/constant/system'
 import { setSearchObject, getMenuAuthorityList } from '@/utils/common'
 import { SearchObject, btnGroupItem } from '@/types/System/Form'
-import { getStockAsnList, sortedAsnCancel, revokeSorting } from '@/api/wms/stockAsn'
+import { getStockAsnList, sortedAsnCancel, revokeSorting, confirmPutaway } from '@/api/wms/stockAsn'
 import tooltipBtn from '@/components/tooltip-btn.vue'
 import i18n from '@/languages/i18n'
 import updateGrounding from './update-grounding.vue'
@@ -125,8 +128,10 @@ import customPager from '@/components/custom-pager.vue'
 import skuInfo from './sku-info.vue'
 import { exportData } from '@/utils/exportTable'
 import BtnGroup from '@/components/system/btnGroup.vue'
+import confirmGroudingDialog from './confirm-grouding.vue'
 
 const xTableStockLocation = ref()
+const confirmGroudingDialogRef = ref()
 
 const data = reactive({
   showDialog: false,
@@ -166,6 +171,24 @@ const data = reactive({
 })
 
 const method = reactive({
+  // 确认上架数据
+  confirmGroudingSure: async (tableData: any) => {
+    const { data: res } = await confirmPutaway(tableData)
+    if (!res.isSuccess) {
+      hookComponent.$message({
+        type: 'error',
+        content: res.errorMessage
+      })
+      return
+    }
+    hookComponent.$message({
+      type: 'success',
+      content: `${ i18n.global.t('system.page.submit') }${ i18n.global.t('system.tips.success') }`
+    })
+
+    confirmGroudingDialogRef.value.closeDialog()
+    method.refresh()
+  },
   // 撤回流程
   handleRevoke: () => {
     const checkRecords = xTableStockLocation.value.getCheckboxRecords()
@@ -213,8 +236,10 @@ const method = reactive({
     method.closeDialog()
   },
   editRow(row: StockAsnVO) {
-    data.dialogForm = JSON.parse(JSON.stringify(row))
-    data.showDialog = true
+    // data.dialogForm = JSON.parse(JSON.stringify(row))
+    // data.showDialog = true
+
+    confirmGroudingDialogRef.value.openDialog(row.id)
   },
   deleteRow(row: StockAsnVO) {
     hookComponent.$dialog({
@@ -231,7 +256,7 @@ const method = reactive({
           }
           hookComponent.$message({
             type: 'success',
-            content: `${ i18n.global.t('system.page.delete') }${ i18n.global.t('system.tips.success') }`
+            content: `${ i18n.global.t('system.page.revoke') }${ i18n.global.t('system.tips.success') }`
           })
           method.refresh()
         }

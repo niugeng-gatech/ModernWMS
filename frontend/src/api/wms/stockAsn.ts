@@ -44,12 +44,40 @@ export const editSorting = (data: { asn_id: number; series_number: string; sorte
     data
   })
 
+export const modifySorting = (data: { asn_id: number; series_number: string; sorted_qty: number }[]) => http({
+    url: '/asn/sorting-modify',
+    method: 'put',
+    data
+  })
+
 export const getSorting = (id: number) => http({
     url: '/asn/sorting',
     method: 'get',
     params: {
       asn_id: id
     }
+  })
+
+export const getGrouding = (id: number) => http({
+    url: '/asn/pending-putaway',
+    method: 'get',
+    params: {
+      id
+    }
+  })
+
+export const confirmPutaway = (
+  data: {
+    asn_id: number
+    goods_owner_id: number
+    series_number: string
+    goods_location_id: number
+    putaway_qty: number
+  }[]
+) => http({
+    url: '/asn/putaway',
+    method: 'put',
+    data
   })
 
 export const confirmSorted = (id: number) => http({

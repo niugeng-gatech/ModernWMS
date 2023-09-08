@@ -35,6 +35,14 @@ using ModernWMS.WMS.Entities.ViewModels;
         /// <param name="sku_id">sku_id</param>
         /// <returns></returns>
         Task<SkuDetailViewModel> GetSkuAsync(int sku_id);
+
+        /// <summary>
+        /// get sku info by bar_code
+        /// </summary>
+        /// <param name="bar_code">bar_code</param>
+        /// <returns></returns>
+        Task<SkuDetailViewModel> GetSkuByBarCodeAsync(string bar_code);
+
         /// <summary>
         /// add a new record
         /// </summary>
