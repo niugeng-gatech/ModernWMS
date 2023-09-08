@@ -772,7 +772,9 @@ namespace ModernWMS.WMS.Services
                             sku_id = vm.sku_id,
                             dispatch_status = 1,
                             qty = d.qty - d.lock_qty,
-                            tenant_id = currentUser.tenant_id
+                            tenant_id = currentUser.tenant_id,
+                            customer_id = d.customer_id,
+                            customer_name = d.customer_name,
                         });
                         d.qty = d.lock_qty;
                     }
@@ -784,7 +786,9 @@ namespace ModernWMS.WMS.Services
                         sku_id = vm.sku_id,
                         dispatch_status = 1,
                         qty = vm.qty,
-                        tenant_id = currentUser.tenant_id
+                        tenant_id = currentUser.tenant_id,
+                        customer_id = d.customer_id,
+                        customer_name = d.customer_name,
                     });
                     DBSet.Remove(d);
                 }
