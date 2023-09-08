@@ -122,9 +122,9 @@
   </div>
   <add-or-update-dialog :show-dialog="data.showDialog" :form="data.dialogForm" @close="method.closeDialog" @saveSuccess="method.saveSuccess" />
 
-  <!-- 打印二维码 -->
+  <!-- Print QR code -->
   <qrCodeDialog ref="qrCodeDialogRef" />
-  <!-- 打印条码 -->
+  <!-- Print barcode -->
   <barCodeDialog ref="barCodeDialogRef" />
 </template>
 
@@ -191,7 +191,7 @@ const data = reactive({
 })
 
 const method = reactive({
-  // 打印二维码
+  // Print QR code
   printQrCode: (row: any) => {
     qrCodeDialogRef.value.openDialog(row)
   },

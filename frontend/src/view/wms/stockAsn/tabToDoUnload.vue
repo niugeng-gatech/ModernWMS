@@ -101,7 +101,7 @@
     </custom-pager>
   </div>
   <skuInfo :show-dialog="data.showDialogShowInfo" :form="data.dialogForm" @close="method.closeDialogShowInfo" />
-  <!-- 待卸货确认框 -->
+  <!-- Pending unloading confirmation box -->
   <ConfirmUnloadModal ref="ConfirmUnloadModalRef" @sure="method.sureBackUnloadConfirm" />
 </template>
 
@@ -164,7 +164,7 @@ const data = reactive({
 })
 
 const method = reactive({
-  // 撤回流程
+  // Withdrawal process
   handleRevoke: () => {
     const checkRecords = xTableStockLocation.value.getCheckboxRecords()
     if (checkRecords.length > 0) {
@@ -194,7 +194,7 @@ const method = reactive({
       })
     }
   },
-  // 打开到货确认框
+  // Open the arrival confirmation box
   handleConfirm: () => {
     const checkRecords = xTableStockLocation.value.getCheckboxRecords()
     if (checkRecords.length > 0) {
@@ -206,7 +206,7 @@ const method = reactive({
       })
     }
   },
-  // 确认完毕后
+  // After confirmation
   sureBackUnloadConfirm: async (form: { unloadTime: string; unloadPerson: string; unloadPersonID: number }) => {
     const checkRecords = xTableStockLocation.value.getCheckboxRecords()
     const reqBody = checkRecords.map((item: StockAsnVO) => ({ id: item.id, ...form }))

@@ -79,14 +79,14 @@ const xTable = ref()
 
 const emit = defineEmits(['sure'])
 
-// 校验是否超过可上架数量
+// Verify if it exceeds the available shelving quantity
 const validQty = ({ cellValue, row }: { cellValue: number; row: { sorted_qty: number } }) => {
   if (!Number.isNaN(cellValue) && !Number.isNaN(row.sorted_qty) && cellValue > row.sorted_qty) {
     return new Error(i18n.global.t('wms.stockAsnInfo.exceedTip'))
   }
 }
 
-// 校验如果上架数量大于0的话, 必须选择库位编码
+// If the number of listings is greater than 0, a storage location code must be selected for verification
 const validLocationName = ({ cellValue, row }: { cellValue: string; row: { putaway_qty: number } }) => {
   if (row.putaway_qty && !cellValue) {
     return new Error(i18n.global.t('wms.stockAsnInfo.notLocation'))
@@ -113,14 +113,14 @@ const data = reactive({
 })
 
 const method = reactive({
-  // 表格激活规则
+  // Table activation rules
   activeMethod: ({ column }: any) => {
     if (column.field === 'location_name') {
       return false
     }
     return true
   },
-  // 选择库位
+  // Select storage location
   handleSelectLocation: () => {
     const checkRecords = xTable.value.getCheckboxRecords()
 
@@ -133,11 +133,11 @@ const method = reactive({
       })
     }
   },
-  // 关闭库位选择框
+  // Close the location selection box
   closeDialogSelect: () => {
     data.showSkuDialogSelect = false
   },
-  // 选择库位回调
+  // Select inventory location callback
   sureSelect: (selectRecords: any) => {
     if (selectRecords.length > 0) {
       const checkRecords = xTable.value.getCheckboxRecords()
@@ -148,7 +148,7 @@ const method = reactive({
       }
     }
   },
-  // 初始化窗口数据
+  // Initialize window data
   initDialogData: async (id: number) => {
     const { data: res } = await getGrouding(id)
     if (!res.isSuccess) {
@@ -166,7 +166,7 @@ const method = reactive({
   },
 
   openDialog: async (id: number) => {
-    // 初始化数据
+    // Initialized Data
     method.initDialogData(id)
 
     data.showDialog = true

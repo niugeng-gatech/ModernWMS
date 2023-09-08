@@ -146,7 +146,7 @@ const data = reactive({
 })
 
 const method = reactive({
-  // 获取数据
+  // get data
   list: async () => {
     const searchForm = {}
 
@@ -178,19 +178,19 @@ const method = reactive({
     data.showDialog = false
   },
 
-  // 分页函数
+  // Pagination function
   handlePageChange: ref<VxePagerEvents.PageChange>(({ currentPage, pageSize }) => {
     data.tablePage.pageIndex = currentPage
     data.tablePage.pageSize = pageSize
     method.refresh()
   }),
 
-  // 导出表格
+  // Export Table
   exportTable: () => {
     const $table = xTable.value
     exportData({
       table: $table,
-      filename: i18n.global.t('router.sideBar.saftyStock'),
+      filename: i18n.global.t('router.sideBar.deliveryStatistic'),
       columnFilterMethod({ column }: any) {
         return !['checkbox'].includes(column?.type) && !['operate'].includes(column?.field)
       }

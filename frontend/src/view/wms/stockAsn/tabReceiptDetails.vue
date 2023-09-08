@@ -94,7 +94,7 @@
   </div>
   <skuInfo :show-dialog="data.showDialogShowInfo" :form="data.dialogForm" @close="method.closeDialogShowInfo" />
 
-  <!-- 查看明细框 -->
+  <!-- View Details Box -->
   <view-detail-dialog ref="ViewDetailDialogRef" />
 </template>
 
@@ -157,7 +157,7 @@ const data = reactive({
 })
 
 const method = reactive({
-  // 查看行
+  // View Rows
   viewRow: (row: StockAsnVO) => {
     ViewDetailDialogRef.value.openDialog(row.id)
   },

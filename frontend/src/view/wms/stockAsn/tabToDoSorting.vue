@@ -181,7 +181,7 @@ const data = reactive({
 })
 
 const method = reactive({
-  // 修改分拣信息回调
+  // Modify sorting information callback
   updateSortingSure: async (tableData: UpdateSortingVo[]) => {
     const { data: res } = await modifySorting(tableData)
     if (!res.isSuccess) {
@@ -199,7 +199,7 @@ const method = reactive({
     updateSortingDialogRef.value.closeDialog()
     method.refresh()
   },
-  // 撤回流程
+  // Withdrawal process
   handleRevoke: () => {
     const checkRecords = xTableStockLocation.value.getCheckboxRecords()
     if (checkRecords.length > 0) {
@@ -229,7 +229,7 @@ const method = reactive({
       })
     }
   },
-  // 修改分拣信息后的回调
+  // Callback after modifying sorting information
   addSortingSure: async (reqData: { asn_id: number; series_number: string; sorted_qty: number }[]) => {
     const { data: res } = await editSorting(reqData)
     if (!res.isSuccess) {
@@ -254,7 +254,7 @@ const method = reactive({
     data.dialogForm = JSON.parse(JSON.stringify(row))
     data.showDialogShowInfo = true
   },
-  // 添加分拣记录
+  // Add sorting record
   addSorting: (row: StockAsnVO) => {
     addSortingRef.value.openDialog(row.id)
   },

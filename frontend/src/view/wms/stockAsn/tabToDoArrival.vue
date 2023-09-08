@@ -93,7 +93,7 @@
     </custom-pager>
   </div>
   <skuInfo :show-dialog="data.showDialogShowInfo" :form="data.dialogForm" @close="method.closeDialogShowInfo" />
-  <!-- 确认到货框 -->
+  <!-- Confirm Arrival Box -->
   <confirm-arrival-modal ref="ConfirmArrivalRef" @sure="method.sureBackArrival" />
 </template>
 
@@ -108,7 +108,6 @@ import { DEBOUNCE_TIME } from '@/constant/system'
 import { setSearchObject, getMenuAuthorityList } from '@/utils/common'
 import { SearchObject, btnGroupItem } from '@/types/System/Form'
 import { getStockAsnList, confirmAsn, confirmArrival } from '@/api/wms/stockAsn'
-import tooltipBtn from '@/components/tooltip-btn.vue'
 import i18n from '@/languages/i18n'
 import customPager from '@/components/custom-pager.vue'
 import skuInfo from './sku-info.vue'
@@ -157,7 +156,7 @@ const data = reactive({
 })
 
 const method = reactive({
-  // 打开确认到货框
+  // Open the confirmation of arrival box
   handleArrival: () => {
     const checkRecords = xTableStockLocation.value.getCheckboxRecords()
     if (checkRecords.length > 0) {
@@ -169,7 +168,7 @@ const method = reactive({
       })
     }
   },
-  // 确认到货
+  // Confirm arrival
   sureBackArrival: async (dateStr: string) => {
     const checkRecords = xTableStockLocation.value.getCheckboxRecords()
     const reqBody = checkRecords.map((item: StockAsnVO) => ({ id: item.id, arrival_time: dateStr }))

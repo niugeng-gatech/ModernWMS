@@ -45,7 +45,7 @@ const data = reactive({
 })
 
 const method = reactive({
-  // 初始化窗口数据
+  // Initialize window data
   initDialogData: async (id: number) => {
     const { data: res } = await getGrouding(id)
     if (!res.isSuccess) {
@@ -60,7 +60,7 @@ const method = reactive({
   },
 
   openDialog: async (id: number) => {
-    // 初始化数据
+    // Initialized Data
     method.initDialogData(id)
 
     data.showDialog = true
