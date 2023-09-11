@@ -123,7 +123,9 @@ export default {
       deliveryManagement: '发货管理',
       stockAsn: '收货管理',
       statisticAnalysis: '统计分析',
-      saftyStock: '安全库存'
+      saftyStock: '安全库存',
+      asnStatistic: '收货统计',
+      deliveryStatistic: '发货统计'
     }
   },
   login: {
@@ -674,6 +676,19 @@ export default {
       qty_locked: '锁定数量',
       qty_frozen: '冻结数量',
       safety_stock_qty: '安全库存数量'
+    },
+    deliveryStatistic: {
+      dispatch_no: '发货单号',
+      warehouse_name: '仓库名称',
+      location_name: '库位名称',
+      sku_code: '规格编码',
+      sku_name: '规格名称',
+      spu_code: '商品编码',
+      spu_name: '商品名称',
+      customer_name: '客户名称',
+      series_number: '序列号',
+      delivery_qty: '出库数量',
+      delivery_date: '出库时间'
     }
   }
 }

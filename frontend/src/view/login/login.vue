@@ -31,7 +31,7 @@ const method = reactive({
   }
 })
 
-// 回到登录界面清除状态
+// Return to the login interface to clear the status
 onMounted(() => {
   emitter.emit('closeLoading')
 })

@@ -346,7 +346,7 @@ watch(
       method.getCombobox()
       data.form = props.form
 
-      // 处理时间为日期
+      // Processing time is date
       if (data.form.estimated_arrival_time) {
         data.form.estimated_arrival_time = formatDate(data.form.estimated_arrival_time, 'yyyy-MM-dd')
       }

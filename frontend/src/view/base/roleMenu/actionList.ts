@@ -48,6 +48,8 @@ export const actionDict: any = {
 
   stockManagement: ['area-export', 'stock-export'],
   saftyStock: ['export'],
+  asnStatistic: ['export'],
+  deliveryStatistic: ['export'],
 
   warehouseProcessing: ['split', 'group', 'confirmOpeartion', 'confirmAdjust', 'delete', 'export'],
   warehouseMove: ['save', 'delete', 'export', 'confirm'],

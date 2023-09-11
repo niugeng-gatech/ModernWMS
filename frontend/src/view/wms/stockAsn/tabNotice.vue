@@ -106,7 +106,7 @@
   <addOrUpdateNotice :show-dialog="data.showDialog" :form="data.dialogForm" @close="method.closeDialog" @saveSuccess="method.saveSuccess" />
   <skuInfo :show-dialog="data.showDialogShowInfo" :form="data.dialogForm" @close="method.closeDialogShowInfo" />
 
-  <!-- 打印二维码 -->
+  <!-- Print QR code -->
   <qrCodeDialog ref="qrCodeDialogRef" />
 </template>
 
@@ -171,7 +171,7 @@ const data = reactive({
 })
 
 const method = reactive({
-  // 打印二维码
+  // Print QR code
   printQrCode: (row: any) => {
     qrCodeDialogRef.value.openDialog(row)
   },

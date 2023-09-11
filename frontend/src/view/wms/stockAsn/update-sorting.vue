@@ -93,14 +93,13 @@ const data = reactive({
 })
 
 const method = reactive({
-  // cell激活控制
   activeMethod({ row, column }: any) {
     if (!row.series_number && column.field === 'series_number') {
       return false
     }
     return true
   },
-  // 删除行
+  // delete row
   deleteRow: (row: UpdateSortingVo) => {
     const $table = xTable.value
     hookComponent.$dialog({
@@ -110,7 +109,7 @@ const method = reactive({
       }
     })
   },
-  // 初始化窗口数据
+  // Initialize window data
   initDialogData: async (id: number) => {
     const { data: res } = await getSorting(id)
     if (!res.isSuccess) {
@@ -125,7 +124,7 @@ const method = reactive({
   },
 
   openDialog: async (id: number) => {
-    // 初始化数据
+    // Initialized Data
     method.initDialogData(id)
 
     data.showDialog = true
@@ -137,10 +136,10 @@ const method = reactive({
     const $table = xTable.value
     const errMap = await $table.validate(true)
     if (!errMap) {
-      // 找到删除数据, 赋值负数id代表删除
+      // Find the deleted data, assign a negative id to represent deletion
       const removeTableData = xTable.value.getRemoveRecords()
 
-      // 遍历修改原始数据, 因为数据为浅拷贝, 所以不用赋值
+      // Traversing and modifying the original data, as the data is a shallow copy, there is no need to assign a value
       if (removeTableData) {
         for (const item of removeTableData) {
           item.id = 0 - item.id

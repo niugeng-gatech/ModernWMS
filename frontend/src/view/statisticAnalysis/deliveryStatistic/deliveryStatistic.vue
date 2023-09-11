@@ -17,16 +17,38 @@
                   <!-- Search Input -->
                   <v-col cols="9">
                     <v-row no-gutters @keyup.enter="method.sureSearch">
-                      <v-col cols="4"></v-col>
-                      <v-col cols="4"></v-col>
                       <v-col cols="4">
                         <v-text-field
-                          v-model="data.searchForm.spu_name"
+                          v-model="data.searchForm.sku_code"
                           clearable
                           hide-details
                           density="comfortable"
                           class="searchInput ml-5 mt-1"
-                          :label="$t('wms.stockList.spu_name')"
+                          :label="$t('wms.stockList.sku_code')"
+                          variant="solo"
+                        >
+                        </v-text-field>
+                      </v-col>
+                      <v-col cols="4">
+                        <v-text-field
+                          v-model="data.searchForm.warehouse_name"
+                          clearable
+                          hide-details
+                          density="comfortable"
+                          class="searchInput ml-5 mt-1"
+                          :label="$t('base.warehouseSetting.warehouse_name')"
+                          variant="solo"
+                        >
+                        </v-text-field>
+                      </v-col>
+                      <v-col cols="4">
+                        <v-text-field
+                          v-model="data.searchForm.customer_name"
+                          clearable
+                          hide-details
+                          density="comfortable"
+                          class="searchInput ml-5 mt-1"
+                          :label="$t('base.customer.customer_name')"
                           variant="solo"
                         >
                         </v-text-field>
@@ -48,17 +70,22 @@
                     {{ i18n.global.t('system.page.noData') }}
                   </template>
                   <vxe-column type="seq" width="60"></vxe-column>
-                  <vxe-column field="warehouse_name" :title="$t('wms.saftyStock.warehouse_name')"></vxe-column>
-                  <vxe-column field="spu_code" :title="$t('wms.saftyStock.spu_code')"></vxe-column>
-                  <vxe-column field="spu_name" :title="$t('wms.saftyStock.spu_name')"></vxe-column>
-                  <vxe-column field="sku_id" :title="$t('wms.saftyStock.sku_id')"></vxe-column>
-                  <vxe-column field="sku_code" :title="$t('wms.saftyStock.sku_code')"></vxe-column>
-                  <vxe-column field="sku_name" :title="$t('wms.saftyStock.sku_name')"></vxe-column>
-                  <vxe-column field="qty" :title="$t('wms.saftyStock.qty')"></vxe-column>
-                  <vxe-column field="qty_available" :title="$t('wms.saftyStock.qty_available')"></vxe-column>
-                  <vxe-column field="qty_locked" :title="$t('wms.saftyStock.qty_locked')"></vxe-column>
-                  <vxe-column field="qty_frozen" :title="$t('wms.saftyStock.qty_frozen')"></vxe-column>
-                  <vxe-column field="safety_stock_qty" :title="$t('wms.saftyStock.safety_stock_qty')"></vxe-column>
+                  <vxe-column field="dispatch_no" :title="$t('wms.deliveryStatistic.dispatch_no')"></vxe-column>
+                  <vxe-column field="warehouse_name" :title="$t('wms.deliveryStatistic.warehouse_name')"></vxe-column>
+                  <vxe-column field="location_name" :title="$t('wms.deliveryStatistic.location_name')"></vxe-column>
+                  <vxe-column field="spu_code" :title="$t('wms.deliveryStatistic.spu_code')"></vxe-column>
+                  <vxe-column field="spu_name" :title="$t('wms.deliveryStatistic.spu_name')"></vxe-column>
+                  <vxe-column field="sku_code" :title="$t('wms.deliveryStatistic.sku_code')"></vxe-column>
+                  <vxe-column field="sku_name" :title="$t('wms.deliveryStatistic.sku_name')"></vxe-column>
+                  <vxe-column field="customer_name" :title="$t('wms.deliveryStatistic.customer_name')"></vxe-column>
+                  <vxe-column field="series_number" :title="$t('wms.deliveryStatistic.series_number')"></vxe-column>
+                  <vxe-column field="delivery_qty" :title="$t('wms.deliveryStatistic.delivery_qty')"></vxe-column>
+                  <vxe-column
+                    field="delivery_date"
+                    :title="$t('wms.deliveryStatistic.delivery_date')"
+                    width="170px"
+                    :formatter="['formatDate', 'yyyy-MM-dd HH:mm']"
+                  ></vxe-column>
                 </vxe-table>
                 <custom-pager
                   :current-page="data.tablePage.pageIndex"
@@ -84,29 +111,29 @@ import { computed, ref, reactive, watch, onMounted } from 'vue'
 import { VxePagerEvents } from 'vxe-table'
 import { computedCardHeight, computedTableHeight } from '@/constant/style'
 import { PAGE_SIZE, PAGE_LAYOUT, DEFAULT_PAGE_SIZE } from '@/constant/vxeTable'
-import { FREEZE_JOB_FREEZE } from '@/constant/warehouseWorking'
 import { DEBOUNCE_TIME } from '@/constant/system'
-import { setSearchObject, getMenuAuthorityList } from '@/utils/common'
+import { getMenuAuthorityList } from '@/utils/common'
 import { SearchObject, btnGroupItem } from '@/types/System/Form'
 import i18n from '@/languages/i18n'
 import customPager from '@/components/custom-pager.vue'
 import { exportData } from '@/utils/exportTable'
 import BtnGroup from '@/components/system/btnGroup.vue'
-import { list as getSafetyStockList } from '@/api/wms/saftyStock'
+import { list as getDeliveryStatisticList } from '@/api/wms/deliveryStatistic'
 import { hookComponent } from '@/components/system'
-import { SafetyStockVo } from '@/types/WMS/SafetyStock'
+import { DeliveryStatisticVo } from '@/types/WMS/DeliveryStatistic'
 
 const xTable = ref()
 
 const data = reactive({
   showDialog: false,
-  freezeType: FREEZE_JOB_FREEZE,
   timer: ref<any>(null),
   activeTab: null,
   searchForm: {
-    spu_name: ''
+    sku_code: '',
+    warehouse_name: '',
+    customer_name: ''
   },
-  tableData: ref<SafetyStockVo[]>([]),
+  tableData: ref<DeliveryStatisticVo[]>([]),
   tablePage: reactive({
     total: 0,
     pageIndex: 1,
@@ -121,7 +148,15 @@ const data = reactive({
 const method = reactive({
   // get data
   list: async () => {
-    const { data: res } = await getSafetyStockList(data.tablePage)
+    const searchForm = {}
+
+    for (const item of Object.keys(data.searchForm)) {
+      if (data.searchForm[item]) {
+        searchForm[item] = data.searchForm[item]
+      }
+    }
+
+    const { data: res } = await getDeliveryStatisticList({ ...data.tablePage, ...searchForm })
     if (!res.isSuccess) {
       hookComponent.$message({
         type: 'error',
@@ -155,7 +190,7 @@ const method = reactive({
     const $table = xTable.value
     exportData({
       table: $table,
-      filename: i18n.global.t('router.sideBar.saftyStock'),
+      filename: i18n.global.t('router.sideBar.deliveryStatistic'),
       columnFilterMethod({ column }: any) {
         return !['checkbox'].includes(column?.type) && !['operate'].includes(column?.field)
       }
@@ -163,7 +198,7 @@ const method = reactive({
   },
 
   sureSearch: () => {
-    data.tablePage.searchObjects = setSearchObject(data.searchForm)
+    // data.tablePage.searchObjects = setSearchObject(data.searchForm)
     method.refresh()
   }
 })

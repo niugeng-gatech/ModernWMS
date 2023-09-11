@@ -168,7 +168,7 @@
       @close="method.closeDeliveredDetail"
     />
 
-    <!-- 打印二维码 -->
+    <!-- Print QR code -->
     <qrCodeDialog ref="qrCodeDialogRef" />
   </div>
 </template>
@@ -268,7 +268,7 @@ const data = reactive({
 })
 
 const method = reactive({
-  // 打印二维码
+  // Print QR code
   printQrCode: (row: any) => {
     qrCodeDialogRef.value.openDialog(row)
   },

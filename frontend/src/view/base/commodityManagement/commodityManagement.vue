@@ -228,10 +228,10 @@
 
     <update-sku-safety-stock ref="updateSkuSaftyStockRef" @sure="method.updateSkuSaftyStockByRow" />
 
-    <!-- 打印二维码 -->
+    <!-- Print QR code -->
     <qrCodeDialogDialog ref="qrCodeDialogDialogRef" />
 
-    <!-- 打印条形码 -->
+    <!-- Print barcode -->
     <barCodeDialogDialog ref="barCodeDialogDialogRef" />
   </div>
 </template>
@@ -306,7 +306,7 @@ const data: DataProps = reactive({
 const method = reactive({
   // Check if the checkbox can be checked
   getCheckBoxDisableState: ({ row }: { row: any }): boolean => row.parent_id,
-  // 打印二维码
+  // Print QR code
   printQrCode: (row: any) => {
     const pi = data.tableData.findIndex((item: any) => item.id === row.parent_id)
 
