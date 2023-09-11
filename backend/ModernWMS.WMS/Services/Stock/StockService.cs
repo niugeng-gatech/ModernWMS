@@ -713,7 +713,7 @@ namespace ModernWMS.WMS.Services
                             dp.customer_name,
                             dp.create_time
                         }
-                                              into dg
+                        into dg
                         select new DeliveryStatisticViewModel
                         {
                             dispatch_no = dg.Key.dispatch_no,
