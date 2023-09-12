@@ -75,8 +75,22 @@
           <span>{{ formatIsValid(row[column.property]) }}</span>
         </template>
       </vxe-column>
-      <vxe-column field="operate" :title="$t('system.page.operate')" width="160" :resizable="false" show-overflow>
+      <vxe-column field="operate" :title="$t('system.page.operate')" width="280px" :resizable="false" show-overflow>
         <template #default="{ row }">
+          <tooltip-btn
+            :flat="true"
+            icon="mdi-qrcode"
+            :tooltip-text="$t('base.commodityManagement.printQrCode')"
+            :disabled="!data.authorityList.includes('location-printQrCode')"
+            @click="method.printQrCode(row)"
+          ></tooltip-btn>
+          <tooltip-btn
+            :flat="true"
+            icon="mdi-barcode"
+            :tooltip-text="$t('base.commodityManagement.printBarCode')"
+            :disabled="!data.authorityList.includes('location-printBarCode')"
+            @click="method.printBarCode(row)"
+          ></tooltip-btn>
           <tooltip-btn
             :flat="true"
             icon="mdi-pencil-outline"
@@ -107,6 +121,11 @@
     </custom-pager>
   </div>
   <add-or-update-dialog :show-dialog="data.showDialog" :form="data.dialogForm" @close="method.closeDialog" @saveSuccess="method.saveSuccess" />
+
+  <!-- Print QR code -->
+  <qrCodeDialog ref="qrCodeDialogRef" />
+  <!-- Print barcode -->
+  <barCodeDialog ref="barCodeDialogRef" />
 </template>
 
 <script lang="ts" setup>
@@ -128,8 +147,12 @@ import { DEBOUNCE_TIME } from '@/constant/system'
 import { SearchObject, btnGroupItem } from '@/types/System/Form'
 import { exportData } from '@/utils/exportTable'
 import BtnGroup from '@/components/system/btnGroup.vue'
+import qrCodeDialog from './qrCodeDialog.vue'
+import barCodeDialog from './barCodeDialog.vue'
 
 const xTableGoodsLocation = ref()
+const qrCodeDialogRef = ref()
+const barCodeDialogRef = ref()
 
 const data = reactive({
   showDialog: false,
@@ -168,6 +191,13 @@ const data = reactive({
 })
 
 const method = reactive({
+  // Print QR code
+  printQrCode: (row: any) => {
+    qrCodeDialogRef.value.openDialog(row)
+  },
+  printBarCode: (row: any) => {
+    barCodeDialogRef.value.openDialog(row)
+  },
   // Open a dialog to add
   add: () => {
     data.dialogForm = {

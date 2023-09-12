@@ -34,7 +34,7 @@ export const deleteSpu = (id: number) => http({
 
 // Update safety stock
 export const updateSaftyStock = (data: { sku_id: number; detailList: UpdateSaftyStockReqBodyVO[] }) => http({
-    url: '/spu/sku-safty-stock',
+    url: '/spu/sku-safety-stock',
     method: 'put',
     data
   })

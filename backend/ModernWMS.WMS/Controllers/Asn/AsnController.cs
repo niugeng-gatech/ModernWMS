@@ -369,6 +369,25 @@ namespace ModernWMS.WMS.Controllers
         }
 
         /// <summary>
+        /// update or delete asnsorts data
+        /// </summary>
+        /// <param name="entities">data</param>
+        /// <returns></returns>
+        [HttpPut("sorting-modify")]
+        public async Task<ResultModel<string>> ModifyAsnsortsAsync(List<AsnsortEntity> entities)
+        {
+            var (flag, msg) = await _asnService.ModifyAsnsortsAsync(entities, CurrentUser);
+            if (flag)
+            {
+                return ResultModel<string>.Success(msg);
+            }
+            else
+            {
+                return ResultModel<string>.Error(msg);
+            }
+        }
+
+        /// <summary>
         /// Sorted
         /// change the asn_status from 2 to 3
         /// </summary>

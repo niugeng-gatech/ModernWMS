@@ -114,6 +114,8 @@ function GetMenuNameAndModule(path: string): string {
       return i18n.global.t('router.sideBar.stockAsn')
     case 'saftyStock':
       return i18n.global.t('router.sideBar.saftyStock')
+    case 'deliveryStatistic':
+      return i18n.global.t('router.sideBar.deliveryStatistic')
     default:
       return ''
   }
@@ -131,6 +133,7 @@ function GetModuleAndIcon(name: string) {
     case 'warehouseWorkingModule':
       return 'account-hard-hat-outline '
     case 'deliveryManagement':
+    case 'deliveryStatistic':
       return 'cube-send'
     case 'companySetting':
       return 'office-building'

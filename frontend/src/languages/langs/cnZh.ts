@@ -26,7 +26,8 @@ export default {
       import: '导入',
       chooseFile: '选择文件',
       exportTemplate: '导出模板',
-      noData: '暂无数据'
+      noData: '暂无数据',
+      revoke: '撤回'
     },
     tips: {
       success: '成功!',
@@ -42,7 +43,8 @@ export default {
       requestTimeout: '请求超时！',
       requestFail: '接口请求失败，请重试',
       vaildEmail: '请输入正确的邮箱格式!',
-      verifyPwd: '校验失败, 新密码与确认新密码不同!'
+      verifyPwd: '校验失败, 新密码与确认新密码不同!',
+      beforeOperation: '您确定要进行此操作吗?'
     },
     checkText: {
       checkFormFail: '操作失败, 请检查数据后重试!',
@@ -124,7 +126,9 @@ export default {
       deliveryManagement: '发货管理',
       stockAsn: '收货管理',
       statisticAnalysis: '统计分析',
-      saftyStock: '安全库存'
+      saftyStock: '安全库存',
+      asnStatistic: '收货统计',
+      deliveryStatistic: '发货统计'
     }
   },
   login: {
@@ -168,7 +172,8 @@ export default {
       afterResetPwd: '重置密码成功, 新密码为: ',
       user_register_name: '用户名',
       email: 'Email',
-      auth_string: '密码'
+      auth_string: '密码',
+      userModalTitle: '用户选择框'
     },
     warehouseSetting: {
       warehouseSetting: '仓库设置',
@@ -312,7 +317,9 @@ export default {
         delivery: '出库',
         setCarrier: '设置承运单位',
         signIn: '签收',
-        saftyStock: '安全库存'
+        saftyStock: '安全库存',
+        printQrCode: '打印二维码',
+        printBarCode: '打印条码'
       },
       modalTitle: {
         editMenuAction: '编辑菜单操作权限',
@@ -341,7 +348,9 @@ export default {
       width: '商品宽度',
       height: '商品高度',
       volume: '商品体积',
-      saftyStock: '安全库存'
+      saftyStock: '安全库存',
+      printQrCode: '打印二维码',
+      printBarCode: '打印条码'
     }
   },
   wms: {
@@ -468,7 +477,8 @@ export default {
       qty: '数量',
       qty_available: '可用数量',
       qty_locked: '锁定数量',
-      qty_frozen: '冻结数量'
+      qty_frozen: '冻结数量',
+      series_number: '序列号'
     },
     stockList: {
       spu_code: '商品编码',
@@ -519,7 +529,30 @@ export default {
       supplier_name: '供应商名称',
       goods_owner_id: '货主标识',
       goods_owner_name: '货主名称',
-      is_valid: '是否有效'
+      is_valid: '是否有效',
+      asn_batch: '批次',
+      estimated_arrival_time: '预计到达时间',
+      arrival_time: '到达时间',
+      mustInputErrorMsg: '请填写到货时间!',
+      confirmArrival: '确认到货',
+      selectOne: '请至少选择一条数据!',
+      unloadTime: '卸货时间',
+      confirmUnload: '确认卸货',
+      unloadPerson: '卸货人',
+      revoke: '撤销',
+      series_number: '序列号',
+      exceedingPrompt: '序列号数量不能超过分拣数量!',
+      addSorting: '分拣',
+      editSorting: '编辑分拣数据',
+      editGrounding: '编辑上架数据',
+      putaway_qty: '上架数量',
+      can_putaway_qty: '可上架数量',
+      exceedTip: '上架数量不可超过可上架数量！',
+      notLocation: '请选择库位后进行上架!',
+      selectLocation: '选择库位编码',
+      viewDetail: '查看明细',
+      grounding: '上架',
+      num: '编号'
     },
     skuInfo: {
       spu_id: '商品spu标识',
@@ -633,6 +666,32 @@ export default {
       opeartionCheckboxIsNull: '未选中可操作的数据!',
       warehouse_name: '仓库名称'
     },
-    saftyStock: {}
+    saftyStock: {
+      warehouse_name: '仓库名称',
+      // location_name: '库位名称',
+      spu_code: '商品编码',
+      spu_name: '商品名称',
+      sku_id: '规格标识',
+      sku_code: '规格编码',
+      sku_name: '规格名称',
+      qty: '数量',
+      qty_available: '可用数量',
+      qty_locked: '锁定数量',
+      qty_frozen: '冻结数量',
+      safety_stock_qty: '安全库存数量'
+    },
+    deliveryStatistic: {
+      dispatch_no: '发货单号',
+      warehouse_name: '仓库名称',
+      location_name: '库位名称',
+      sku_code: '规格编码',
+      sku_name: '规格名称',
+      spu_code: '商品编码',
+      spu_name: '商品名称',
+      customer_name: '客户名称',
+      series_number: '序列号',
+      delivery_qty: '出库数量',
+      delivery_date: '出库时间'
+    }
   }
 }

@@ -73,7 +73,12 @@
       <vxe-column field="email" :title="$t('base.warehouseSetting.email')"></vxe-column>
       <vxe-column field="manager" :title="$t('base.warehouseSetting.manager')"></vxe-column>
       <vxe-column field="creator" :title="$t('base.warehouseSetting.creator')"></vxe-column>
-      <vxe-column field="create_time" width="170px" :title="$t('base.warehouseSetting.create_time')"></vxe-column>
+      <vxe-column
+        field="create_time"
+        width="170px"
+        :formatter="['formatDate', 'yyyy-MM-dd HH:mm']"
+        :title="$t('base.warehouseSetting.create_time')"
+      ></vxe-column>
       <vxe-column field="is_valid" :title="$t('base.warehouseSetting.is_valid')">
         <template #default="{ row, column }">
           <span>{{ formatIsValid(row[column.property]) }}</span>

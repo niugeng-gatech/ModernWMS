@@ -20,16 +20,16 @@
                       <v-col cols="4"></v-col>
                       <v-col cols="4"></v-col>
                       <v-col cols="4">
-                        <!-- <v-text-field
-                          v-model="data.searchForm.job_code"
+                        <v-text-field
+                          v-model="data.searchForm.spu_name"
                           clearable
                           hide-details
                           density="comfortable"
                           class="searchInput ml-5 mt-1"
-                          :label="$t('wms.warehouseWorking.warehouseFreeze.job_code')"
+                          :label="$t('wms.stockList.spu_name')"
                           variant="solo"
                         >
-                        </v-text-field> -->
+                        </v-text-field>
                       </v-col>
                     </v-row>
                   </v-col>
@@ -43,39 +43,22 @@
                   height: cardHeight
                 }"
               >
-                <vxe-table ref="xTable" :column-config="{ minWidth: '100px' }" :data="data.tableData" :height="tableHeight" align="center">
+                <vxe-table ref="xTable" :column-config="{ minWidth: '120px' }" :data="data.tableData" :height="tableHeight" align="center">
                   <template #empty>
                     {{ i18n.global.t('system.page.noData') }}
                   </template>
                   <vxe-column type="seq" width="60"></vxe-column>
-                  <vxe-column type="checkbox" width="50"></vxe-column>
-                  <vxe-column field="job_code" width="150px" :title="$t('wms.warehouseWorking.warehouseFreeze.job_code')"></vxe-column>
-                  <vxe-column field="job_type" width="150px" :title="$t('wms.warehouseWorking.warehouseFreeze.job_type')">
-                    <template #default="{ row, column }">
-                      <span>{{ formatFreezeJobType(row[column.property]) }}</span>
-                    </template>
-                  </vxe-column>
-                  <vxe-column field="warehouse_name" width="150px" :title="$t('wms.warehouseWorking.warehouseFreeze.warehouse')"></vxe-column>
-                  <vxe-column field="location_name" width="150px" :title="$t('wms.warehouseWorking.warehouseFreeze.location_name')"></vxe-column>
-                  <vxe-column field="spu_code" width="150px" :title="$t('base.commodityManagement.spu_code')"></vxe-column>
-                  <vxe-column field="spu_name" width="150px" :title="$t('base.commodityManagement.spu_name')"></vxe-column>
-                  <vxe-column field="sku_code" width="150px" :title="$t('base.commodityManagement.sku_code')"></vxe-column>
-                  <vxe-column field="handler" width="150px" :title="$t('wms.warehouseWorking.warehouseFreeze.handler')"></vxe-column>
-                  <vxe-column field="handle_time" width="170px" :title="$t('wms.warehouseWorking.warehouseFreeze.handle_time')">
-                    <template #default="{ row, column }">
-                      <span>{{ formatDate(row[column.property]) }}</span>
-                    </template>
-                  </vxe-column>
-                  <vxe-column field="operate" :title="$t('system.page.operate')" width="100" :resizable="false" show-overflow>
-                    <template #default="{ row }">
-                      <tooltip-btn
-                        :flat="true"
-                        icon="mdi-eye-outline"
-                        :tooltip-text="$t('system.page.view')"
-                        @click="method.viewRow(row)"
-                      ></tooltip-btn>
-                    </template>
-                  </vxe-column>
+                  <vxe-column field="warehouse_name" :title="$t('wms.saftyStock.warehouse_name')"></vxe-column>
+                  <vxe-column field="spu_code" :title="$t('wms.saftyStock.spu_code')"></vxe-column>
+                  <vxe-column field="spu_name" :title="$t('wms.saftyStock.spu_name')"></vxe-column>
+                  <vxe-column field="sku_id" :title="$t('wms.saftyStock.sku_id')"></vxe-column>
+                  <vxe-column field="sku_code" :title="$t('wms.saftyStock.sku_code')"></vxe-column>
+                  <vxe-column field="sku_name" :title="$t('wms.saftyStock.sku_name')"></vxe-column>
+                  <vxe-column field="qty" :title="$t('wms.saftyStock.qty')"></vxe-column>
+                  <vxe-column field="qty_available" :title="$t('wms.saftyStock.qty_available')"></vxe-column>
+                  <vxe-column field="qty_locked" :title="$t('wms.saftyStock.qty_locked')"></vxe-column>
+                  <vxe-column field="qty_frozen" :title="$t('wms.saftyStock.qty_frozen')"></vxe-column>
+                  <vxe-column field="safety_stock_qty" :title="$t('wms.saftyStock.safety_stock_qty')"></vxe-column>
                 </vxe-table>
                 <custom-pager
                   :current-page="data.tablePage.pageIndex"
@@ -97,24 +80,21 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, reactive, onActivated, watch, nextTick, onMounted } from 'vue'
+import { computed, ref, reactive, watch, onMounted } from 'vue'
 import { VxePagerEvents } from 'vxe-table'
 import { computedCardHeight, computedTableHeight } from '@/constant/style'
-import { WarehouseFreezeVO } from '@/types/WarehouseWorking/WarehouseFreeze'
 import { PAGE_SIZE, PAGE_LAYOUT, DEFAULT_PAGE_SIZE } from '@/constant/vxeTable'
 import { FREEZE_JOB_FREEZE } from '@/constant/warehouseWorking'
-import { hookComponent } from '@/components/system'
-import { formatFreezeJobType } from '@/utils/format/formatWarehouseWorking'
-import { getStockFreezeList, getStockFreezeOne } from '@/api/wms/warehouseFreeze'
 import { DEBOUNCE_TIME } from '@/constant/system'
 import { setSearchObject, getMenuAuthorityList } from '@/utils/common'
 import { SearchObject, btnGroupItem } from '@/types/System/Form'
-import { formatDate } from '@/utils/format/formatSystem'
-import tooltipBtn from '@/components/tooltip-btn.vue'
 import i18n from '@/languages/i18n'
 import customPager from '@/components/custom-pager.vue'
 import { exportData } from '@/utils/exportTable'
 import BtnGroup from '@/components/system/btnGroup.vue'
+import { list as getSafetyStockList } from '@/api/wms/saftyStock'
+import { hookComponent } from '@/components/system'
+import { SafetyStockVo } from '@/types/WMS/SafetyStock'
 
 const xTable = ref()
 
@@ -124,28 +104,9 @@ const data = reactive({
   timer: ref<any>(null),
   activeTab: null,
   searchForm: {
-    job_code: ''
+    spu_name: ''
   },
-  tableData: ref<WarehouseFreezeVO[]>([]),
-  dialogForm: {
-    id: 0,
-    job_code: '',
-    job_type: FREEZE_JOB_FREEZE,
-    sku_id: 0,
-    goods_owner_id: 0,
-    goods_location_id: 0,
-    handler: '',
-    handle_time: '',
-    last_update_time: '',
-    tenant_id: 0,
-    warehouse_name: '',
-    location_name: '',
-    spu_code: '',
-    spu_name: '',
-    sku_code: '',
-    creator: '',
-    create_time: ''
-  },
+  tableData: ref<SafetyStockVo[]>([]),
   tablePage: reactive({
     total: 0,
     pageIndex: 1,
@@ -158,51 +119,9 @@ const data = reactive({
 })
 
 const method = reactive({
-  // Open a dialog to add
-  add: (jobType: boolean) => {
-    data.freezeType = jobType
-    data.dialogForm = {
-      id: 0,
-      job_code: '',
-      job_type: FREEZE_JOB_FREEZE,
-      sku_id: 0,
-      goods_owner_id: 0,
-      goods_location_id: 0,
-      handler: '',
-      handle_time: '',
-      last_update_time: '',
-      tenant_id: 0,
-      warehouse_name: '',
-      location_name: '',
-      spu_code: '',
-      spu_name: '',
-      sku_code: '',
-      creator: '',
-      create_time: ''
-    }
-    nextTick(() => {
-      data.showDialog = true
-    })
-  },
-
-  // After add or update success.
-  saveSuccess: () => {
-    method.refresh()
-    method.closeDialog()
-  },
-
-  // Refresh data
-  refresh: () => {
-    method.getStockProcessList()
-  },
-
-  // Shut add or update dialog
-  closeDialog: () => {
-    data.showDialog = false
-  },
-
-  getStockProcessList: async () => {
-    const { data: res } = await getStockFreezeList(data.tablePage)
+  // get data
+  list: async () => {
+    const { data: res } = await getSafetyStockList(data.tablePage)
     if (!res.isSuccess) {
       hookComponent.$message({
         type: 'error',
@@ -214,61 +133,29 @@ const method = reactive({
     data.tablePage.total = res.data.totals
   },
 
-  viewRow: async (row: WarehouseFreezeVO) => {
-    await method.getOne(row.id)
-    nextTick(() => {
-      data.showDialog = true
-    })
+  // Refresh data
+  refresh: () => {
+    method.list()
   },
 
-  getOne: async (id: number) => {
-    const { data: res } = await getStockFreezeOne(id)
-    if (!res.isSuccess) {
-      hookComponent.$message({
-        type: 'error',
-        content: res.errorMessage
-      })
-      return
-    }
-
-    data.dialogForm = res.data
+  // Shut add or update dialog
+  closeDialog: () => {
+    data.showDialog = false
   },
 
-  // deleteRow(row: WarehouseFreezeVO) {
-  //   hookComponent.$dialog({
-  //     content: i18n.global.t('system.tips.beforeDeleteMessage'),
-  //     handleConfirm: async () => {
-  //       if (row.id) {
-  //         const { data: res } = await deleteStockFreeze(row.id)
-  //         if (!res.isSuccess) {
-  //           hookComponent.$message({
-  //             type: 'error',
-  //             content: res.errorMessage
-  //           })
-  //           return
-  //         }
-
-  //         hookComponent.$message({
-  //           type: 'success',
-  //           content: `${ i18n.global.t('system.page.delete') }${ i18n.global.t('system.tips.success') }`
-  //         })
-  //         method.refresh()
-  //       }
-  //     }
-  //   })
-  // },
-
+  // Pagination function
   handlePageChange: ref<VxePagerEvents.PageChange>(({ currentPage, pageSize }) => {
     data.tablePage.pageIndex = currentPage
     data.tablePage.pageSize = pageSize
     method.refresh()
   }),
 
+  // Export Table
   exportTable: () => {
     const $table = xTable.value
     exportData({
       table: $table,
-      filename: i18n.global.t('router.sideBar.warehouseFreeze'),
+      filename: i18n.global.t('router.sideBar.saftyStock'),
       columnFilterMethod({ column }: any) {
         return !['checkbox'].includes(column?.type) && !['operate'].includes(column?.field)
       }
@@ -279,10 +166,6 @@ const method = reactive({
     data.tablePage.searchObjects = setSearchObject(data.searchForm)
     method.refresh()
   }
-})
-
-onActivated(() => {
-  method.refresh()
 })
 
 onMounted(() => {
@@ -300,6 +183,8 @@ onMounted(() => {
       click: method.exportTable
     }
   ]
+
+  method.refresh()
 })
 
 const cardHeight = computed(() => computedCardHeight({ hasTab: false }))

@@ -69,7 +69,7 @@
       <vxe-column field="asn_qty" :title="$t('wms.stockAsnInfo.asn_qty')"></vxe-column>
       <vxe-column field="weight" :title="$t('wms.stockAsnInfo.weight')"></vxe-column>
       <vxe-column field="volume" :title="$t('wms.stockAsnInfo.volume')"></vxe-column>
-      <vxe-column field="operate" :title="$t('system.page.operate')" width="160" :resizable="false" show-overflow>
+      <!-- <vxe-column field="operate" :title="$t('system.page.operate')" width="160" :resizable="false" show-overflow>
         <template #default="{ row }">
           <tooltip-btn
             :flat="true"
@@ -87,7 +87,7 @@
             @click="method.deleteRow(row)"
           ></tooltip-btn>
         </template>
-      </vxe-column>
+      </vxe-column> -->
     </vxe-table>
     <custom-pager
       :current-page="data.tablePage.pageIndex"
@@ -101,27 +101,30 @@
     </custom-pager>
   </div>
   <skuInfo :show-dialog="data.showDialogShowInfo" :form="data.dialogForm" @close="method.closeDialogShowInfo" />
+  <!-- Pending unloading confirmation box -->
+  <ConfirmUnloadModal ref="ConfirmUnloadModalRef" @sure="method.sureBackUnloadConfirm" />
 </template>
 
 <script lang="ts" setup>
 import { computed, ref, reactive, watch, onMounted } from 'vue'
 import { VxePagerEvents } from 'vxe-table'
-import { computedCardHeight, computedTableHeight, errorColor } from '@/constant/style'
+import { computedCardHeight, computedTableHeight } from '@/constant/style'
 import { StockAsnVO } from '@/types/WMS/StockAsn'
 import { PAGE_SIZE, PAGE_LAYOUT, DEFAULT_PAGE_SIZE } from '@/constant/vxeTable'
 import { hookComponent } from '@/components/system'
 import { DEBOUNCE_TIME } from '@/constant/system'
 import { setSearchObject, getMenuAuthorityList } from '@/utils/common'
 import { SearchObject, btnGroupItem } from '@/types/System/Form'
-import { getStockAsnList, unloadAsn, confirmAsnCancel } from '@/api/wms/stockAsn'
-import tooltipBtn from '@/components/tooltip-btn.vue'
+import { getStockAsnList, unloadAsn, confirmAsnCancel, confirmUnload, unconfirmArrival } from '@/api/wms/stockAsn'
 import i18n from '@/languages/i18n'
 import customPager from '@/components/custom-pager.vue'
 import skuInfo from './sku-info.vue'
-import { exportData } from '@/utils/exportTable'
+// import { exportData } from '@/utils/exportTable'
 import BtnGroup from '@/components/system/btnGroup.vue'
+import ConfirmUnloadModal from './confirm-unload.vue'
 
 const xTableStockLocation = ref()
+const ConfirmUnloadModalRef = ref()
 
 const data = reactive({
   showDialog: false,
@@ -135,30 +138,17 @@ const data = reactive({
   dialogForm: ref<StockAsnVO>({
     id: 0,
     asn_no: '',
-    asn_status: 0,
-    spu_id: 0,
-    spu_code: '',
-    spu_name: '',
-    sku_id: 0,
-    sku_code: '',
-    sku_name: '',
-    origin: '',
-    length_unit: 0,
-    volume_unit: 0,
-    weight_unit: 0,
-    asn_qty: 0,
-    actual_qty: 0,
-    sorted_qty: 0,
-    shortage_qty: 0,
-    more_qty: 0,
-    damage_qty: 0,
-    weight: 0,
-    volume: 0,
-    supplier_id: 0,
-    supplier_name: '',
-    goods_owner_id: 0,
-    goods_owner_name: '',
-    is_valid: true
+    asn_batch: '',
+    estimated_arrival_time: '',
+    // asn_status: 0,
+    // weight: 0,
+    // volume: 0,
+    // goods_owner_id: 0,
+    // goods_owner_name: '',
+    // creator: '',
+    // create_time: '',
+    // last_update_time: '',
+    detailList: []
   }),
   tablePage: reactive({
     total: 0,
@@ -174,6 +164,68 @@ const data = reactive({
 })
 
 const method = reactive({
+  // Withdrawal process
+  handleRevoke: () => {
+    const checkRecords = xTableStockLocation.value.getCheckboxRecords()
+    if (checkRecords.length > 0) {
+      const idList = checkRecords.map((item: StockAsnVO) => item.id)
+      hookComponent.$dialog({
+        content: i18n.global.t('system.tips.beforeOperation'),
+        handleConfirm: async () => {
+          const { data: res } = await unconfirmArrival(idList)
+          if (!res.isSuccess) {
+            hookComponent.$message({
+              type: 'error',
+              content: res.errorMessage
+            })
+            return
+          }
+          hookComponent.$message({
+            type: 'success',
+            content: `${ i18n.global.t('system.page.revoke') }${ i18n.global.t('system.tips.success') }`
+          })
+          method.refresh()
+        }
+      })
+    } else {
+      hookComponent.$message({
+        type: 'error',
+        content: i18n.global.t('wms.stockAsnInfo.selectOne')
+      })
+    }
+  },
+  // Open the arrival confirmation box
+  handleConfirm: () => {
+    const checkRecords = xTableStockLocation.value.getCheckboxRecords()
+    if (checkRecords.length > 0) {
+      ConfirmUnloadModalRef.value.openDialog()
+    } else {
+      hookComponent.$message({
+        type: 'error',
+        content: i18n.global.t('wms.stockAsnInfo.selectOne')
+      })
+    }
+  },
+  // After confirmation
+  sureBackUnloadConfirm: async (form: { unloadTime: string; unloadPerson: string; unloadPersonID: number }) => {
+    const checkRecords = xTableStockLocation.value.getCheckboxRecords()
+    const reqBody = checkRecords.map((item: StockAsnVO) => ({ id: item.id, ...form }))
+
+    const { data: res } = await confirmUnload(reqBody)
+    if (!res.isSuccess) {
+      hookComponent.$message({
+        type: 'error',
+        content: res.errorMessage
+      })
+      return
+    }
+    hookComponent.$message({
+      type: 'success',
+      content: `${ i18n.global.t('system.page.confirm') }${ i18n.global.t('system.tips.success') }`
+    })
+    ConfirmUnloadModalRef.value.closeDialog()
+    method.refresh()
+  },
   closeDialogShowInfo: () => {
     data.showDialogShowInfo = false
   },
@@ -276,6 +328,18 @@ onMounted(() => {
       icon: 'mdi-export-variant',
       code: 'unloaded-export',
       click: method.exportTable
+    },
+    {
+      name: i18n.global.t('wms.stockAsnInfo.confirmUnload'),
+      icon: 'mdi-check',
+      code: 'unloaded-confirm',
+      click: method.handleConfirm
+    },
+    {
+      name: i18n.global.t('wms.stockAsnInfo.revoke'),
+      icon: 'mdi-arrow-left-top',
+      code: 'unloaded-delete',
+      click: method.handleRevoke
     }
   ]
 })

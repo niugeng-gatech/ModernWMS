@@ -81,6 +81,7 @@
                 {{ i18n.global.t('system.page.noData') }}
               </template>
               <vxe-column type="seq" width="60"></vxe-column>
+              <!-- <vxe-column type="checkbox" width="60"></vxe-column> -->
               <vxe-column tree-node width="60">
                 <template #header>
                   <div
@@ -163,7 +164,7 @@
               <vxe-column field="brand" :title="$t('base.commodityManagement.brand')"></vxe-column>
               <vxe-column field="unit" :title="$t('base.commodityManagement.unit')"></vxe-column>
               <vxe-column field="cost" :title="$t('base.commodityManagement.cost')"></vxe-column> -->
-              <vxe-column field="operate" :title="$t('system.page.operate')" width="160" :resizable="false" show-overflow>
+              <vxe-column field="operate" :title="$t('system.page.operate')" width="210px" :resizable="false" show-overflow>
                 <template #default="{ row }">
                   <div v-if="!row.parent_id || row.parent_id <= 0">
                     <tooltip-btn
@@ -183,6 +184,20 @@
                     ></tooltip-btn>
                   </div>
                   <div v-else>
+                    <tooltip-btn
+                      :flat="true"
+                      icon="mdi-qrcode"
+                      :tooltip-text="$t('base.commodityManagement.printQrCode')"
+                      :disabled="!data.authorityList.includes('printQrCode')"
+                      @click="method.printQrCode(row)"
+                    ></tooltip-btn>
+                    <tooltip-btn
+                      :flat="true"
+                      icon="mdi-barcode"
+                      :tooltip-text="$t('base.commodityManagement.printBarCode')"
+                      :disabled="!data.authorityList.includes('printBarCode')"
+                      @click="method.printBarCode(row)"
+                    ></tooltip-btn>
                     <tooltip-btn
                       :flat="true"
                       icon="mdi-alarm-light"
@@ -211,7 +226,13 @@
     <!-- Add or modify data mode window -->
     <addOrUpdateDialog :show-dialog="data.showDialog" :form="data.dialogForm" @close="method.closeDialog" @saveSuccess="method.saveSuccess" />
 
-    <update-sku-safty-stock ref="updateSkuSaftyStockRef" @sure="method.updateSkuSaftyStockByRow" />
+    <update-sku-safety-stock ref="updateSkuSaftyStockRef" @sure="method.updateSkuSaftyStockByRow" />
+
+    <!-- Print QR code -->
+    <qrCodeDialogDialog ref="qrCodeDialogDialogRef" />
+
+    <!-- Print barcode -->
+    <barCodeDialogDialog ref="barCodeDialogDialogRef" />
   </div>
 </template>
 
@@ -232,10 +253,14 @@ import { setSearchObject, getMenuAuthorityList } from '@/utils/common'
 import { exportData } from '@/utils/exportTable'
 import { DEBOUNCE_TIME } from '@/constant/system'
 import BtnGroup from '@/components/system/btnGroup.vue'
-import updateSkuSaftyStock from './update-sku-safty-stock.vue'
+import updateSkuSafetyStock from './update-sku-safety-stock.vue'
+import qrCodeDialogDialog from './qrCodeDialog.vue'
+import barCodeDialogDialog from './barCodeDialog.vue'
 
 const xTable = ref()
 const updateSkuSaftyStockRef = ref()
+const qrCodeDialogDialogRef = ref()
+const barCodeDialogDialogRef = ref()
 
 const data: DataProps = reactive({
   searchForm: {
@@ -279,6 +304,45 @@ const data: DataProps = reactive({
 })
 
 const method = reactive({
+  // Check if the checkbox can be checked
+  getCheckBoxDisableState: ({ row }: { row: any }): boolean => row.parent_id,
+  // Print QR code
+  printQrCode: (row: any) => {
+    const pi = data.tableData.findIndex((item: any) => item.id === row.parent_id)
+
+    if (pi > -1) {
+      const parent_data = data.tableData[pi]
+
+      const print_data = {
+        sku_id: row.id,
+        spu_code: parent_data.spu_code,
+        spu_name: parent_data.spu_name,
+        sku_code: row.sku_code,
+        sku_name: row.sku_name,
+        barcode: row.bar_code
+      }
+
+      qrCodeDialogDialogRef.value.openDialog(print_data)
+    }
+  },
+  printBarCode: (row: any) => {
+    const pi = data.tableData.findIndex((item: any) => item.id === row.parent_id)
+
+    if (pi > -1) {
+      const parent_data = data.tableData[pi]
+
+      const print_data = {
+        sku_id: row.id,
+        spu_code: parent_data.spu_code,
+        spu_name: parent_data.spu_name,
+        sku_code: row.sku_code,
+        sku_name: row.sku_name,
+        barcode: row.bar_code
+      }
+
+      barCodeDialogDialogRef.value.openDialog(print_data)
+    }
+  },
   expandAllRows: () => {
     const expandRows = xTable.value.getTreeExpandRecords()
     const parentData = data.tableData.filter((item: any) => !item.parent_id)
@@ -432,6 +496,18 @@ onMounted(async () => {
       code: 'export',
       click: method.exportTable
     }
+    // {
+    //   name: i18n.global.t('base.commodityManagement.printQrCode'),
+    //   icon: 'mdi-qrcode',
+    //   code: 'printQrCode',
+    //   click: method.printQrCode
+    // },
+    // {
+    //   name: i18n.global.t('base.commodityManagement.printBarCode'),
+    //   icon: 'mdi-barcode',
+    //   code: 'printBarCode',
+    //   click: method.printBarCode
+    // }
   ]
 })
 

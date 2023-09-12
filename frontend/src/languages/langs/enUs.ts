@@ -26,7 +26,8 @@ export default {
       import: 'Import',
       chooseFile: 'Choose File',
       exportTemplate: 'Export Template',
-      noData: 'No data'
+      noData: 'No data',
+      revoke: 'Revoke'
     },
     tips: {
       success: ' success!',
@@ -42,7 +43,8 @@ export default {
       requestTimeout: 'Request Timeout!',
       requestFail: 'Request fail.Please try it again',
       vaildEmail: 'Please enter the correct email format!',
-      verifyPwd: 'Verification failed. The new password is different from the confirmed one!'
+      verifyPwd: 'Verification failed. The new password is different from the confirmed one!',
+      beforeOperation: 'Are you sure to proceed?'
     },
     checkText: {
       checkFormFail: 'Operation failed. Please check the data and try again!',
@@ -124,7 +126,9 @@ export default {
       deliveryManagement: 'Delivery Management',
       stockAsn: 'Receiving Management',
       statisticAnalysis: 'Statistic Analysis',
-      saftyStock: 'Safety Stock'
+      saftyStock: 'Safety Stock',
+      asnStatistic: 'Receiving statistics',
+      deliveryStatistic: 'Shipment statistics'
     }
   },
   login: {
@@ -168,7 +172,8 @@ export default {
       afterResetPwd: 'Password reset succeeded, the new password is ',
       user_register_name: 'User Name',
       email: 'Email',
-      auth_string: 'Password'
+      auth_string: 'Password',
+      userModalTitle: 'User selection'
     },
     warehouseSetting: {
       warehouseSetting: 'Warehouse Setting',
@@ -312,7 +317,9 @@ export default {
         delivery: 'Delivery',
         setCarrier: 'Set carrier',
         signIn: 'Sign in',
-        saftyStock: 'Safety stock'
+        saftyStock: 'Safety stock',
+        printQrCode: 'Print QR code',
+        printBarCode: 'Print barcode'
       },
       modalTitle: {
         editMenuAction: 'Edit menu operation permissions',
@@ -322,11 +329,11 @@ export default {
     commodityManagement: {
       spu_code: 'Commodity Code',
       spu_name: 'Commodity Name',
+      sku_code: 'Specification Code',
+      sku_name: 'Specification Name',
       category_name: 'Commodity Category',
       spu_description: 'Commodity Description',
       bar_code: 'Specification Code',
-      sku_code: 'Specification Code',
-      sku_name: 'Specification Name',
       supplier_name: 'Supplier Name',
       brand: 'Brand',
       unit: 'Commodity Unit',
@@ -341,7 +348,9 @@ export default {
       width: 'Commodity Width',
       height: 'Commodity Height',
       volume: 'Commodity Volume',
-      saftyStock: 'Safety stock'
+      saftyStock: 'Safety stock',
+      printQrCode: 'Print QR code',
+      printBarCode: 'Print barcode'
     }
   },
   wms: {
@@ -439,11 +448,11 @@ export default {
         book_qty: 'Book Qty',
         counted_qty: 'Actual Qty',
         difference_qty: 'Difference Qty',
+        confirmTaking: 'Confirm Taking',
         handler: 'Handler',
         handle_time: 'Handle Time',
         creator: 'Creator',
         create_time: 'Create Time',
-        confirmTaking: 'Confirm Taking',
         unfinish: 'Unfinish',
         finish: 'Finish',
         confirmAdjust: 'Confirm Adjust',
@@ -468,7 +477,8 @@ export default {
       qty: 'Quantity',
       qty_available: 'Available Quantity',
       qty_locked: 'Locked Quantity',
-      qty_frozen: 'Frozen Quantity'
+      qty_frozen: 'Frozen Quantity',
+      series_number: 'Serial number'
     },
     stockList: {
       spu_code: 'Commodity code',
@@ -519,7 +529,30 @@ export default {
       supplier_name: 'Supplier Name',
       goods_owner_id: 'Goods Owner Id',
       goods_owner_name: 'Goods Owner Name',
-      is_valid: 'Valid'
+      is_valid: 'Valid',
+      asn_batch: 'Batch',
+      estimated_arrival_time: 'Estimated time of arrival',
+      arrival_time: 'Arrival time',
+      mustInputErrorMsg: 'Please fill in the arrival time!',
+      confirmArrival: 'Confirm arrival',
+      selectOne: 'Please select at least one piece of data!',
+      unloadTime: 'Unloading time',
+      confirmUnload: 'Confirm unloading',
+      unloadPerson: 'Discharger',
+      revoke: 'Revoke',
+      series_number: 'Serial number',
+      exceedingPrompt: 'The number of serial numbers cannot exceed the sorting quantity!',
+      addSorting: 'Sorting',
+      editSorting: 'Edit sorting data',
+      editGrounding: 'Edit listing data',
+      putaway_qty: 'Number of listings',
+      can_putaway_qty: 'Quantity available for listing',
+      exceedTip: 'The number of listings cannot exceed the number of listings available!',
+      notLocation: 'Please select a storage location before listing!',
+      selectLocation: 'Select location code',
+      viewDetail: 'View Details',
+      grounding: 'grounding',
+      num: 'number'
     },
     skuInfo: {
       spu_id: 'Spu Id',
@@ -633,6 +666,32 @@ export default {
       opeartionCheckboxIsNull: 'No actionable data selected!',
       warehouse_name: 'Warehouse name'
     },
-    saftyStock: {}
+    saftyStock: {
+      warehouse_name: 'Warehouse name',
+      // location_name: 'Location name',
+      spu_code: 'Commodity Code',
+      spu_name: 'Commodity Name',
+      sku_id: 'Identifying',
+      sku_code: 'Specification Code',
+      sku_name: 'Specification Name',
+      qty: 'Quantity',
+      qty_available: 'Available quantity',
+      qty_locked: 'Locked Quantity',
+      qty_frozen: 'Frozen Quantity',
+      safety_stock_qty: 'Safety stock quantity'
+    },
+    deliveryStatistic: {
+      dispatch_no: 'Shipment No',
+      warehouse_name: 'Warehouse name',
+      location_name: 'Location Code',
+      sku_code: 'Specification Code',
+      sku_name: 'Specification Name',
+      spu_code: 'Commodity Code',
+      spu_name: 'Commodity Name',
+      customer_name: 'Customer Name',
+      series_number: 'Serial number',
+      delivery_qty: 'Delivery quantity',
+      delivery_date: 'Delivery time'
+    }
   }
 }

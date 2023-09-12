@@ -40,10 +40,12 @@
                 <vxe-column type="seq" width="60"></vxe-column>
                 <vxe-column field="user_name" width="140" :title="$t('system.viewLog.user_name')"></vxe-column>
                 <vxe-column field="action_content" :title="$t('system.viewLog.action_content')"></vxe-column>
-                <vxe-column field="action_time" width="180" :title="$t('system.viewLog.action_time')">
-                  <template #default="{ row, column }">
-                    <span>{{ formatDate(row[column.property]) }}</span>
-                  </template>
+                <vxe-column
+                  field="action_time"
+                  width="170px"
+                  :formatter="['formatDate', 'yyyy-MM-dd HH:mm']"
+                  :title="$t('system.viewLog.action_time')"
+                >
                 </vxe-column>
               </vxe-table>
 

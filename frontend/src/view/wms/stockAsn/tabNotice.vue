@@ -56,23 +56,24 @@
         {{ i18n.global.t('system.page.noData') }}
       </template>
       <vxe-column type="seq" width="60"></vxe-column>
-      <vxe-column type="checkbox" width="50"></vxe-column>
+      <!-- <vxe-column type="checkbox" width="50"></vxe-column> -->
       <vxe-column field="asn_no" :title="$t('wms.stockAsnInfo.asn_no')"></vxe-column>
-      <vxe-column field="spu_code" :title="$t('wms.stockAsnInfo.spu_code')"></vxe-column>
-      <vxe-column field="spu_name" :title="$t('wms.stockAsnInfo.spu_name')"></vxe-column>
-      <vxe-column field="sku_code" :title="$t('wms.stockAsnInfo.sku_code')">
-        <template #default="{ row }">
-          <div :class="'text-decoration-none'" @click="method.showSkuInfo(row)"> {{ row.sku_code }}</div>
-        </template>
-      </vxe-column>
-      <vxe-column field="sku_name" :title="$t('wms.stockAsnInfo.sku_name')"></vxe-column>
+      <vxe-column field="asn_batch" :title="$t('wms.stockAsnInfo.asn_batch')"></vxe-column>
+      <vxe-column
+        field="estimated_arrival_time"
+        :formatter="['formatDate', 'yyyy-MM-dd']"
+        :title="$t('wms.stockAsnInfo.estimated_arrival_time')"
+      ></vxe-column>
       <vxe-column field="goods_owner_name" :title="$t('wms.stockAsnInfo.goods_owner_name')"></vxe-column>
-      <vxe-column field="supplier_name" :title="$t('wms.stockAsnInfo.supplier_name')"></vxe-column>
-      <vxe-column field="asn_qty" :title="$t('wms.stockAsnInfo.asn_qty')"></vxe-column>
-      <vxe-column field="weight" :title="$t('wms.stockAsnInfo.weight')"></vxe-column>
-      <vxe-column field="volume" :title="$t('wms.stockAsnInfo.volume')"></vxe-column>
-      <vxe-column field="operate" :title="$t('system.page.operate')" width="160" :resizable="false" show-overflow>
+      <vxe-column field="operate" :title="$t('system.page.operate')" width="180px" :resizable="false" show-overflow>
         <template #default="{ row }">
+          <tooltip-btn
+            :flat="true"
+            icon="mdi-qrcode"
+            :tooltip-text="$t('base.commodityManagement.printQrCode')"
+            :disabled="!data.authorityList.includes('notice-printQrCode')"
+            @click="method.printQrCode(row)"
+          ></tooltip-btn>
           <tooltip-btn
             :flat="true"
             icon="mdi-pencil-outline"
@@ -104,6 +105,9 @@
   </div>
   <addOrUpdateNotice :show-dialog="data.showDialog" :form="data.dialogForm" @close="method.closeDialog" @saveSuccess="method.saveSuccess" />
   <skuInfo :show-dialog="data.showDialogShowInfo" :form="data.dialogForm" @close="method.closeDialogShowInfo" />
+
+  <!-- Print QR code -->
+  <qrCodeDialog ref="qrCodeDialogRef" />
 </template>
 
 <script lang="ts" setup>
@@ -116,16 +120,18 @@ import { hookComponent } from '@/components/system'
 import { DEBOUNCE_TIME } from '@/constant/system'
 import { setSearchObject, getMenuAuthorityList } from '@/utils/common'
 import { SearchObject, btnGroupItem } from '@/types/System/Form'
-import { getStockAsnList, deleteAsn } from '@/api/wms/stockAsn'
+import { listNew as getStockAsnList, deleteAsn } from '@/api/wms/stockAsn'
 import tooltipBtn from '@/components/tooltip-btn.vue'
 import i18n from '@/languages/i18n'
-import addOrUpdateNotice from './add-or-update-notice.vue'
+import addOrUpdateNotice from './new-add-or-update-notice.vue'
 import customPager from '@/components/custom-pager.vue'
 import skuInfo from './sku-info.vue'
 import { exportData } from '@/utils/exportTable'
 import BtnGroup from '@/components/system/btnGroup.vue'
+import qrCodeDialog from './qrCodeDialog.vue'
 
 const xTableStockLocation = ref()
+const qrCodeDialogRef = ref()
 
 const data = reactive({
   showDialog: false,
@@ -137,30 +143,17 @@ const data = reactive({
   dialogForm: ref<StockAsnVO>({
     id: 0,
     asn_no: '',
-    asn_status: 0,
-    spu_id: 0,
-    spu_code: '',
-    spu_name: '',
-    sku_id: 0,
-    sku_code: '',
-    sku_name: '',
-    origin: '',
-    length_unit: 0,
-    volume_unit: 0,
-    weight_unit: 0,
-    asn_qty: 0,
-    actual_qty: 0,
-    sorted_qty: 0,
-    shortage_qty: 0,
-    more_qty: 0,
-    damage_qty: 0,
-    weight: 0,
-    volume: 0,
-    supplier_id: 0,
-    supplier_name: '',
-    goods_owner_id: 0,
-    goods_owner_name: '',
-    is_valid: true
+    asn_batch: '',
+    estimated_arrival_time: '',
+    // asn_status: 0,
+    // weight: 0,
+    // volume: 0,
+    // goods_owner_id: 0,
+    // goods_owner_name: '',
+    // creator: '',
+    // create_time: '',
+    // last_update_time: '',
+    detailList: []
   }),
   activeTab: null,
   tableData: ref<StockAsnVO[]>([]),
@@ -178,6 +171,10 @@ const data = reactive({
 })
 
 const method = reactive({
+  // Print QR code
+  printQrCode: (row: any) => {
+    qrCodeDialogRef.value.openDialog(row)
+  },
   closeDialogShowInfo: () => {
     data.showDialogShowInfo = false
   },
@@ -190,30 +187,17 @@ const method = reactive({
     data.dialogForm = {
       id: 0,
       asn_no: '',
-      asn_status: 0,
-      spu_id: 0,
-      spu_code: '',
-      spu_name: '',
-      sku_id: 0,
-      sku_code: '',
-      sku_name: '',
-      origin: '',
-      length_unit: 0,
-      volume_unit: 0,
-      weight_unit: 0,
-      asn_qty: 0,
-      actual_qty: 0,
-      sorted_qty: 0,
-      shortage_qty: 0,
-      more_qty: 0,
-      damage_qty: 0,
-      weight: 0,
-      volume: 0,
-      supplier_id: 0,
-      // supplier_name: '',
-      goods_owner_id: 0,
+      asn_batch: '',
+      estimated_arrival_time: '',
+      // asn_status: 0,
+      // weight: 0,
+      // volume: 0,
+      // goods_owner_id: 0,
       // goods_owner_name: '',
-      is_valid: true
+      // creator: '',
+      // create_time: '',
+      // last_update_time: '',
+      detailList: []
     }
     data.showDialog = true
   },

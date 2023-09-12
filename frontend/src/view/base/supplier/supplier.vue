@@ -50,7 +50,15 @@
               height: cardHeight
             }"
           >
-            <vxe-table ref="xTable" :data="data.tableData" :height="tableHeight" align="center">
+            <vxe-table
+              ref="xTable"
+              :column-config="{
+                minWidth: '100px'
+              }"
+              :data="data.tableData"
+              :height="tableHeight"
+              align="center"
+            >
               <template #empty>
                 {{ i18n.global.t('system.page.noData') }}
               </template>
@@ -63,15 +71,14 @@
               <vxe-column field="email" :title="$t('base.supplier.email')"></vxe-column>
               <vxe-column field="contact_tel" :title="$t('base.supplier.contact_tel')"></vxe-column>
               <vxe-column field="creator" :title="$t('base.supplier.creator')"></vxe-column>
-              <vxe-column field="create_time" :title="$t('base.supplier.create_time')">
-                <template #default="{ row, column }">
-                  <span>{{ formatDate(row[column.property]) }}</span>
-                </template>
+              <vxe-column field="create_time" width="170px" :formatter="['formatDate', 'yyyy-MM-dd HH:mm']" :title="$t('base.supplier.create_time')">
               </vxe-column>
-              <vxe-column field="last_update_time" :title="$t('base.supplier.last_update_time')">
-                <template #default="{ row, column }">
-                  <span>{{ formatDate(row[column.property]) }}</span>
-                </template>
+              <vxe-column
+                field="last_update_time"
+                width="170px"
+                :formatter="['formatDate', 'yyyy-MM-dd HH:mm']"
+                :title="$t('base.supplier.last_update_time')"
+              >
               </vxe-column>
               <vxe-column field="operate" :title="$t('system.page.operate')" width="160" :resizable="false" show-overflow>
                 <template #default="{ row }">
@@ -129,7 +136,6 @@ import { SearchObject, btnGroupItem } from '@/types/System/Form'
 import i18n from '@/languages/i18n'
 import { getSupplierList, deleteSupplier } from '@/api/base/supplier'
 import importSupplierTable from './import-supplier-table.vue'
-import { formatDate } from '@/utils/format/formatSystem'
 import customPager from '@/components/custom-pager.vue'
 import { exportData } from '@/utils/exportTable'
 import BtnGroup from '@/components/system/btnGroup.vue'
