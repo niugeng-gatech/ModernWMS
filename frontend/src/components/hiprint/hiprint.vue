@@ -169,7 +169,7 @@ const method = reactive({
         // { tid: 'providerModule.image', title: 'Logo', data: '', type: 'image' }
       ])
     ]
-    const userList = []
+    const userList = [] as any[]
     for (const key in props.form) {
       const i18nName = `${ props.i18nName }.${ key }`
       const labelName = i18n.global.t(i18nName)
@@ -333,9 +333,7 @@ const method = reactive({
       data.panel = JSON.parse(option[0].config_json)
     } else {
       data.panel = {}
-    }
-    console.log(data.panel)
-    
+    }    
     method.initTemplate()
   },
   async handleSubmit() {
