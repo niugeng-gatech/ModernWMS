@@ -3,6 +3,7 @@ import { UniformFileNaming } from '../System/Form'
 export interface StockAsnVO extends UniformFileNaming {
   id?: number
   asn_no?: string
+  spu_id?: number
   asn_batch?: string
   estimated_arrival_time?: string
   asn_status?: number
