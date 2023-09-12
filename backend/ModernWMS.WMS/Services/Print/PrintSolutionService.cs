@@ -116,15 +116,15 @@ namespace ModernWMS.WMS.Services
         /// <param name="input">input</param>
         /// <param name="currentUser">currentUser</param>
         /// <returns></returns>
-        public async Task<PrintSolutionViewModel> GetByPathAsync(PrintSolutionGetByPathInputViewModel input, CurrentUser currentUser)
+        public async Task<List<PrintSolutionViewModel>> GetByPathAsync(PrintSolutionGetByPathInputViewModel input, CurrentUser currentUser)
         {
             var DbSet = _dBContext.GetDbSet<PrintSolutionEntity>();
-            var entity = await DbSet.AsNoTracking().FirstOrDefaultAsync(t => t.tenant_id.Equals(currentUser.tenant_id) && t.vue_path.Equals(input.vue_path) && t.tab_page.Equals(input.tab_page));
+            var entity = await DbSet.AsNoTracking().Where(t => t.tenant_id.Equals(currentUser.tenant_id) && t.vue_path.Equals(input.vue_path) && t.tab_page.Equals(input.tab_page)).ToListAsync();
             if (entity == null)
             {
                 return null;
             }
-            return entity.Adapt<PrintSolutionViewModel>();
+            return entity.Adapt<List<PrintSolutionViewModel>>();
         }
 
         /// <summary>

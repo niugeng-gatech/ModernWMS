@@ -112,16 +112,16 @@ namespace ModernWMS.WMS.Controllers
         /// </summary>
         /// <returns>args</returns>
         [HttpPost("get-by-path")]
-        public async Task<ResultModel<PrintSolutionViewModel>> GetByPathAsync(PrintSolutionGetByPathInputViewModel input)
+        public async Task<ResultModel<List<PrintSolutionViewModel>>> GetByPathAsync(PrintSolutionGetByPathInputViewModel input)
         {
             var data = await _PrintSolutionService.GetByPathAsync(input, CurrentUser);
             if (data != null)
             {
-                return ResultModel<PrintSolutionViewModel>.Success(data);
+                return ResultModel<List<PrintSolutionViewModel>>.Success(data);
             }
             else
             {
-                return ResultModel<PrintSolutionViewModel>.Error(_stringLocalizer["not_exists_entity"]);
+                return ResultModel<List<PrintSolutionViewModel>>.Error(_stringLocalizer["not_exists_entity"]);
             }
         }
 

@@ -45,7 +45,7 @@ namespace ModernWMS.WMS.IServices
         /// <param name="input">input</param>
         /// <param name="currentUser">currentUser</param>
         /// <returns></returns>
-        Task<PrintSolutionViewModel> GetByPathAsync(PrintSolutionGetByPathInputViewModel input, CurrentUser currentUser);
+        Task<List<PrintSolutionViewModel>> GetByPathAsync(PrintSolutionGetByPathInputViewModel input, CurrentUser currentUser);
 
         /// <summary>
         /// add a new record
