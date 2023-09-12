@@ -92,7 +92,10 @@ export default {
       hline: '横线',
       vline: '竖线',
       rect: '矩形',
-      oval: '椭圆'
+      oval: '椭圆',
+      addScheme: '新增方案',
+      schemeName: '方案名称',
+      repeatScheme: '方案名称已存在'
     }
   },
   router: {

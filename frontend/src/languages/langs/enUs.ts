@@ -92,7 +92,10 @@ export default {
       hline: 'horizontalLine',
       vline: 'verticalLine',
       rect: 'rectangle',
-      oval: 'oval'
+      oval: 'oval',
+      addScheme: 'addScheme',
+      schemeName: 'schemeName',
+      repeatScheme: 'SchemeName Is Repeat'
     }
   },
   router: {

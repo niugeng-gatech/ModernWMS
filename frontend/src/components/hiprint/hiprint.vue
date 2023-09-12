@@ -1,29 +1,28 @@
 <template>
   <v-dialog v-model="data.formVisible" fullscreen :scrim="false" transition="dialog-bottom-transition">
     <v-card>
-      <v-toolbar color="white">
-        <v-toolbar-title>print</v-toolbar-title>
+      <!-- <v-toolbar color="white">
+        <v-toolbar-title>{{ $t('system.page.print') }}</v-toolbar-title>
         <v-spacer></v-spacer>
-        <!-- <v-toolbar-items>
-          <v-btn variant="text" @click="method.init"> LOAD </v-btn>
-        </v-toolbar-items> -->
         <v-btn icon @click="data.formVisible = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
-      </v-toolbar>
-      <div style="padding: 0 15px">
+      </v-toolbar> -->
+      <div style="padding: 15px 15px">
         <v-row>
           <v-col cols="2">
-            <v-select
-              v-model="data.mode"
-              :items="data.modeList"
-              item-title="label"
-              item-value="value"
-              density="compact"
-              hide-details
-              clearable
-              @update:model-value="method.changeMode"
-            ></v-select>
+            <div class="left-top-box">
+              <v-select
+                v-model="data.mode"
+                :items="data.modeList"
+                density="compact"
+                hide-details
+                clearable
+                @update:model-value="method.handleChangeMode"
+              ></v-select>
+              <v-btn icon="mdi-plus" style="font-size: 14px; margin-left: 10px" size="small" @click="method.handleAddScheme"></v-btn>
+            </div>
+
             <div class="left-box">
               <div class="rect-printElement-types hiprintEpContainer"> </div>
             </div>
@@ -35,7 +34,7 @@
                   v-for="(value, type) in data.paperTypes"
                   :key="type"
                   :color="curPaperType === type ? 'indigo-darken-3' : 'white'"
-                  @click="method.setPaper(type, value)"
+                  @click="method.handleSetPaper(type, value)"
                 >
                   {{ type }}
                 </v-btn>
@@ -43,19 +42,21 @@
                   icon="mdi-magnify-minus-outline"
                   style="font-size: 14px; margin-left: 10px"
                   size="small"
-                  @click="method.changeScale(false)"
+                  @click="method.handleChangeScale(false)"
                 ></v-btn>
                 <v-btn disabled size="small" style="margin-left: 10px; width: 70px">{{ scaleValueStr }}%</v-btn>
                 <v-btn
                   icon="mdi-magnify-plus-outline"
                   style="font-size: 14px; margin-left: 10px"
                   size="small"
-                  @click="method.changeScale(true)"
+                  @click="method.handleChangeScale(true)"
                 ></v-btn>
               </div>
               <div>
-                <v-btn style="font-size: 14px; margin-left: 10px" color="primary" @click="method.preView()"> {{ $t('system.page.submit') }} </v-btn>
-                <v-btn style="font-size: 14px; margin-left: 10px" @click="method.preView()"> {{ $t('system.page.preView') }} </v-btn>
+                <v-btn style="font-size: 14px; margin-left: 10px" @click="method.handlePreView()"> {{ $t('system.page.preView') }} </v-btn>
+                <v-btn style="font-size: 14px; margin-left: 10px" :disabled="!data.mode" color="primary" @click="method.handleSubmit">
+                  {{ $t('system.page.submit') }}
+                </v-btn>
               </div>
             </div>
 
@@ -64,7 +65,13 @@
             </div>
           </v-col>
           <v-col cols="3">
-            <div class="box">
+            <div class="right-top-box">
+              <v-btn icon style="font-size: 14px; margin-left: 10px" size="small" @click="data.formVisible = false">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </div>
+
+            <div class="right-box">
               <div id="PrintElementOptionSetting"></div>
             </div>
           </v-col>
@@ -72,14 +79,19 @@
       </div>
     </v-card>
     <preViewDialog ref="preViewDialogRef" />
+    <addSchemeDialog ref="addSchemeDialogRef" :mode-list="data.modeList" @addScheme="method.addScheme" />
   </v-dialog>
 </template>
 <script lang="ts" setup>
-import { reactive, ref, computed } from 'vue'
+import { reactive, ref, computed, watch, nextTick } from 'vue'
 import $ from 'jquery'
 import { hiprint } from '@/hiprint/index.js'
+import { hookComponent } from '@/components/system/index'
+import { addPrintSolution, updatePrintSolution, listByPath } from '@/api/sys/printSolution'
+import { PrintSolutionVO, PrintSolutionGetByPathVo } from '@/types/System/PrintSolution'
 import i18n from '@/languages/i18n'
 import preViewDialog from './preView.vue'
+import addSchemeDialog from './add-scheme.vue'
 
 interface paperTypeData {
   width: number
@@ -94,17 +106,16 @@ const props = defineProps<{
   form: object
   table?: Array<tableInterFace>
   i18nName: string
-  vueName: string
+  vuePath: string
+  tabPage: string
 }>()
 const preViewDialogRef = ref()
+const addSchemeDialogRef = ref()
 const data = reactive({
   formVisible: false,
   hiprintTemplate: {} as any,
-  mode: 1,
-  modeList: [
-    { label: '格式1', value: 1 },
-    { label: '格式2', value: 2 }
-  ],
+  mode: '',
+  modeList: [] as string[],
   // 当前纸张
   curPaper: {
     type: 'A4',
@@ -141,74 +152,11 @@ const data = reactive({
   scaleValue: 1,
   scaleMax: 5,
   scaleMin: 0.5,
-  panel: {
-    panels: [
-      {
-        index: 0,
-        name: 1,
-        height: 296.6,
-        width: 210,
-        paperHeader: 0,
-        paperFooter: 840.7559055118112,
-        printElements: [
-          {
-            options: {
-              left: 110,
-              top: 92.5,
-              height: 17,
-              width: 120,
-              testData: '单据表头',
-              fontSize: 16.5,
-              fontWeight: '700',
-              textAlign: 'center',
-              hideTitle: true,
-              title: '单据表头'
-            },
-            printElementType: { title: '单据表头', type: 'text' }
-          },
-          {
-            options: {
-              left: 135,
-              top: 175,
-              height: 16,
-              width: 120,
-              testData: '单据类型',
-              fontSize: 15,
-              fontWeight: '700',
-              textAlign: 'center',
-              hideTitle: true,
-              title: '单据类型'
-            },
-            printElementType: { title: '单据类型', type: 'text' }
-          },
-          {
-            options: {
-              left: 302.5,
-              top: 112.5,
-              height: 16,
-              width: 120,
-              field: 'orderId',
-              testData: 'XS888888888',
-              fontSize: 6.75,
-              fontWeight: '700',
-              textAlign: 'left',
-              textContentVerticalAlign: 'middle',
-              title: '订单编号'
-            },
-            printElementType: { title: '订单编号', type: 'text' }
-          }
-        ],
-        paperNumberLeft: 565,
-        paperNumberTop: 204,
-        paperNumberContinue: true,
-        scale: 1,
-        watermarkOptions: {}
-      }
-    ]
-  }
+  panel: {},
+  printSolutionList: [] as PrintSolutionVO[]
 })
 const method = reactive({
-  initProvider() {
+  provider() {
     const elementList = [
       new hiprint.PrintElementTypeGroup(i18n.global.t('system.hiprint.routine'), [
         {
@@ -309,13 +257,15 @@ const method = reactive({
       addElementTypes
     }
   },
-  init() {
-    // const provider = providers[0]
+  initProvier() {
     hiprint.init({
-      providers: [method.initProvider()]
+      providers: [method.provider()]
     })
     $('.hiprintEpContainer').empty()
     hiprint.PrintElementTypeManager.build('.hiprintEpContainer', 'providerModule')
+  },
+  initTemplate() {
+    // const provider = providers[0]
     $('#hiprint-printTemplate').empty()
     data.hiprintTemplate = new hiprint.PrintTemplate({
       template: data.panel,
@@ -333,19 +283,35 @@ const method = reactive({
     })
     data.hiprintTemplate.design('#hiprint-printTemplate')
   },
-  setPaper(type: string, value: paperTypeData) {
+  async init() {
+    const form = {
+      vue_path: props.vuePath,
+      tab_page: props.tabPage
+    } as PrintSolutionGetByPathVo
+    const { data: res } = await listByPath(form)
+    if (res.isSuccess) {
+      data.printSolutionList = res.data
+      data.modeList = data.printSolutionList.map((item) => item.solution_name)
+    }
+    if (!data.mode && data.modeList.length > 0) {
+      data.mode = data.printSolutionList[0].solution_name
+      method.handleSetPaper(data.printSolutionList[0].report_direction, { height: data.printSolutionList[0].report_length, width: data.printSolutionList[0].report_width })
+    }
+    method.handleChangeMode()
+  },
+  handleSetPaper(type: string, value: paperTypeData) {
     try {
       if (Object.keys(data.paperTypes).includes(type)) {
         data.curPaper = { type, width: value.width, height: value.height }
       } else {
         data.curPaper = { type: 'other', width: value.width, height: value.height }
       }
-      data.hiprintTemplate.setPaper(value.width, value.height)
+      data.hiprintTemplate.handleSetPaper(value.width, value.height)
     } catch (error) {
-      console.log(error)
+      // console.log(error)
     }
   },
-  changeScale(big: boolean) {
+  handleChangeScale(big: boolean) {
     let scaleValue = data.scaleValue
     if (big) {
       scaleValue += 0.1
@@ -361,10 +327,62 @@ const method = reactive({
       data.scaleValue = scaleValue
     }
   },
-  changeMode() {
-    method.init()
+  handleChangeMode() {
+    const option = data.printSolutionList.filter((item) => item.solution_name === data.mode)
+    if (option.length > 0) {
+      data.panel = JSON.parse(option[0].config_json)
+    } else {
+      data.panel = {}
+    }
+    console.log(data.panel)
+    
+    method.initTemplate()
   },
-  preView() {
+  async handleSubmit() {
+    if (data.hiprintTemplate) {
+      const jsonOut = JSON.stringify(data.hiprintTemplate.getJson() || {})
+      const form = {
+        id: 0,
+        vue_path: props.vuePath,
+        tab_page: props.tabPage,
+        solution_name: data.mode,
+        config_json: jsonOut,
+        report_length: data.curPaper.height,
+        report_width: data.curPaper.width,
+        report_direction: data.curPaper.type,
+        tenant_id: 0
+      } as PrintSolutionVO
+      const option = data.printSolutionList.filter((item) => item.solution_name === data.mode)
+      if (option.length > 0) {
+        form.id = option[0].id
+      }
+
+      const { data: res } = form.id === 0 ? await addPrintSolution(form) : await updatePrintSolution(form)
+      if (!res.isSuccess) {
+        hookComponent.$message({
+          type: 'error',
+          content: res.errorMessage
+        })
+        return
+      }
+      method.init()
+      hookComponent.$message({
+        type: 'success',
+        content: `${ i18n.global.t('system.page.submit') }${ i18n.global.t('system.tips.success') }`
+      })
+    }
+  },
+  handleAddScheme() {
+    const ref = addSchemeDialogRef.value
+    ref.data.formVisible = true
+  },
+  addScheme(scheme: string) {
+    data.modeList.push(scheme)
+    data.mode = scheme
+    method.handleChangeMode()
+  },
+
+  handlePreView() {
     const ref = preViewDialogRef.value
     ref.data.width = data.curPaper.width
     ref.data.hiprintTemplate = data.hiprintTemplate
@@ -372,6 +390,18 @@ const method = reactive({
     ref.method.show()
   }
 })
+
+watch(
+  () => data.formVisible,
+  (val) => {
+    if (val) {
+      nextTick(() => {
+        method.initProvier()
+        method.init()
+      })
+    }
+  }
+)
 const scaleValueStr = computed(() => {
   let scaleValue = data.scaleValue * 100
   scaleValue = Number(scaleValue.toFixed(0))
@@ -402,7 +432,7 @@ defineExpose({
   justify-content: space-between;
 }
 .center-box {
-  height: calc(100vh - 123px);
+  height: calc(100vh - 83px);
   border: 2px solid #e8e8e8;
   box-sizing: border-box;
   border-radius: 2px;
@@ -410,8 +440,12 @@ defineExpose({
   display: flex;
   justify-content: center; /* 水平居中对齐 */
 }
+.left-top-box {
+  display: flex;
+  justify-content: space-between; /* 水平居中对齐 */
+}
 .left-box {
-  height: calc(100vh - 123px);
+  height: calc(100vh - 83px);
   border: 2px solid #e8e8e8;
   box-sizing: border-box;
   border-radius: 2px;
@@ -420,15 +454,19 @@ defineExpose({
   justify-content: center; /* 水平居中对齐 */
   margin-top: 5px;
 }
-.box {
-  height: calc(100vh - 123px);
+.right-top-box {
+  display: flex;
+  justify-content: flex-end;
+}
+.right-box {
+  height: calc(100vh - 83px);
   border: 2px solid #e8e8e8;
   box-sizing: border-box;
   border-radius: 2px;
   padding: 0 5px;
   display: flex;
   justify-content: center; /* 水平居中对齐 */
-  margin-top: 42px;
+  margin-top: 5px;
 }
 .hiprintEpContainer {
   max-width: 200px;
