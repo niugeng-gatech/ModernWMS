@@ -270,7 +270,10 @@ const data = reactive({
 const method = reactive({
   // Print QR code
   printQrCode: (row: any) => {
-    qrCodeDialogRef.value.openDialog(row)
+    qrCodeDialogRef.value.openDialog({
+      dispatch_no: row.dispatch_no,
+      type: 'delivery'
+    })
   },
   viewRow: (row: DeliveryManagementVO) => {
     if (row.dispatch_no) {

@@ -39,7 +39,6 @@
 <script setup lang="tsx">
 import { reactive } from 'vue'
 import VueQr from 'vue-qr/src/packages/vue-qr.vue'
-import { CommodityVO } from '@/types/Base/CommodityManagement'
 
 const data = reactive({
   showDialog: false,
@@ -55,7 +54,7 @@ const data = reactive({
 })
 
 const method = reactive({
-  openDialog: (row: CommodityVO) => {
+  openDialog: (row: any) => {
     data.printData = row
 
     data.printText = JSON.stringify(data.printData)

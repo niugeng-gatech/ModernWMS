@@ -173,7 +173,12 @@ const data = reactive({
 const method = reactive({
   // Print QR code
   printQrCode: (row: any) => {
-    qrCodeDialogRef.value.openDialog(row)
+    qrCodeDialogRef.value.openDialog({
+      asn_id: row.id,
+      asn_no: row.asn_no,
+      asn_batch: row.asn_batch,
+      type: 'asn'
+    })
   },
   closeDialogShowInfo: () => {
     data.showDialogShowInfo = false

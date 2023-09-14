@@ -319,7 +319,8 @@ const method = reactive({
         spu_name: parent_data.spu_name,
         sku_code: row.sku_code,
         sku_name: row.sku_name,
-        barcode: row.bar_code
+        barcode: row.bar_code,
+        type: 'commodity'
       }
 
       qrCodeDialogDialogRef.value.openDialog(print_data)

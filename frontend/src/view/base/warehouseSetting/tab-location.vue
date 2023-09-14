@@ -193,7 +193,13 @@ const data = reactive({
 const method = reactive({
   // Print QR code
   printQrCode: (row: any) => {
-    qrCodeDialogRef.value.openDialog(row)
+    qrCodeDialogRef.value.openDialog({
+      location_id: row.id,
+      warehouse_name: row.warehouse_name,
+      warehouse_area_name: row.warehouse_area_name,
+      location_name: row.location_name,
+      type: 'warehouse'
+    })
   },
   printBarCode: (row: any) => {
     barCodeDialogRef.value.openDialog(row)
