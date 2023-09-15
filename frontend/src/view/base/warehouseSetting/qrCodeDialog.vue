@@ -14,9 +14,7 @@
                   <span class="labelTitle">{{ $t('base.warehouseSetting.warehouse_name') }}:</span> &nbsp;{{ data.printData.warehouse_name }}
                 </div>
                 <div>
-                  <span class="labelTitle">{{ $t('base.warehouseSetting.area_name') }}:</span> &nbsp;{{
-                    data.printData.warehouse_area_name
-                  }}
+                  <span class="labelTitle">{{ $t('base.warehouseSetting.area_name') }}:</span> &nbsp;{{ data.printData.warehouse_area_name }}
                 </div>
                 <div>
                   <span class="labelTitle">{{ $t('base.warehouseSetting.location_name') }}:</span> &nbsp;{{ data.printData.location_name }}
@@ -54,7 +52,10 @@ const method = reactive({
   openDialog: (row: any) => {
     data.printData = row
 
-    data.printText = JSON.stringify(data.printData)
+    data.printText = JSON.stringify({
+      location_id: row.location_id,
+      type: row.type
+    })
 
     data.showDialog = true
   },
