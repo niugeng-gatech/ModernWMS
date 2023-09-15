@@ -59,7 +59,7 @@ const method = reactive({
 
     // 二维码内容
     data.printText = JSON.stringify({
-      sku_id: row.id,
+      sku_id: row.sku_id,
       type: row.type
     })
 
