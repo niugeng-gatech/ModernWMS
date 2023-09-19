@@ -23,7 +23,7 @@ import { reactive, onMounted } from 'vue'
 import LoginForm from '@/components/login/login-form.vue'
 import LanguagesSwitch from '@/components/system/languages.vue'
 import Logo from '@/components/system/logo.vue'
-import { emitter } from '@/utils/bus.js'
+import { emitter } from '@/utils/bus'
 
 const method = reactive({
   toICP: () => {
