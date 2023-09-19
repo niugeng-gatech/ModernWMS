@@ -222,8 +222,10 @@
         <v-card-actions class="justify-end">
           <v-btn variant="text" @click="method.closeDialog">{{ $t('system.page.close') }}</v-btn>
           <v-btn color="primary" variant="text" @click="method.submit">{{ $t('system.page.submit') }}</v-btn>
+          <v-btn color="primary" variant="text" @click="method.print">打印</v-btn>
         </v-card-actions>
       </v-card>
+      <hprintDialog ref="hprintDialogRef" :form="data.form" :table="data.printTable" :i18n-name="'base.commodityManagement'" :vue-path="'commodityManagement'" :tab-page="'detail'" />
     </template>
   </v-dialog>
 </template>
@@ -244,11 +246,12 @@ import { removeArrayNull } from '@/utils/common'
 import { StringLength } from '@/utils/dataVerification/formRule'
 import { isDecimal } from '@/utils/dataVerification/tableRule'
 import { exportData } from '@/utils/exportTable'
+import hprintDialog from '@/components/hiprint/hiprint.vue'
 
 const formRef = ref()
 const emit = defineEmits(['close', 'saveSuccess'])
 const xTable = ref()
-
+const hprintDialogRef = ref()
 const props = defineProps<{
   showDialog: boolean
   form: CommodityVO
@@ -483,7 +486,10 @@ const data = reactive({
     ],
     category_name: [],
     supplier_name: []
-  })
+  }),
+  printTable: [
+    { name: '明细数据', field: 'detailList', columns: ['sku_code', 'sku_name', 'unit', 'weight', 'width', 'height', 'volume', 'cost', 'price'] }
+  ]
 })
 
 const method = reactive({
@@ -594,6 +600,10 @@ const method = reactive({
         content: i18n.global.t('system.checkText.checkFormFail')
       })
     }
+  },
+  print() {
+    const ref = hprintDialogRef.value
+    ref.data.formVisible = true
   },
   editRow: (row: CommodityDetailVO) => {
     const $table = xTable.value
