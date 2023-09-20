@@ -1,13 +1,6 @@
 <template>
   <v-dialog v-model="data.formVisible" fullscreen :scrim="false" transition="dialog-bottom-transition">
     <v-card>
-      <!-- <v-toolbar color="white">
-        <v-toolbar-title>{{ $t('system.page.print') }}</v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-btn icon @click="data.formVisible = false">
-          <v-icon>mdi-close</v-icon>
-        </v-btn>
-      </v-toolbar> -->
       <div style="padding: 15px 15px">
         <v-row>
           <v-col cols="2">
@@ -24,7 +17,7 @@
             </div>
 
             <div class="left-box">
-              <div class="rect-printElement-types hiprintEpContainer"> </div>
+              <div id="hiprintEpContainer" class="rect-printElement-types hiprintEpContainer"> </div>
             </div>
           </v-col>
           <v-col cols="7">
@@ -84,7 +77,6 @@
 </template>
 <script lang="ts" setup>
 import { reactive, ref, computed, watch, nextTick } from 'vue'
-import $ from 'jquery'
 import { hiprint } from '@/hiprint/index.js'
 import { hookComponent } from '@/components/system/index'
 import { addPrintSolution, updatePrintSolution, listByPath } from '@/api/sys/printSolution'
@@ -261,12 +253,20 @@ const method = reactive({
     hiprint.init({
       providers: [method.provider()]
     })
-    $('.hiprintEpContainer').empty()
+    // $('.hiprintEpContainer').empty()
+    const dom = document.getElementById('hiprintEpContainer')
+    if (dom !== null) {
+      dom.innerHTML = ''
+    }
     hiprint.PrintElementTypeManager.build('.hiprintEpContainer', 'providerModule')
   },
   initTemplate() {
     // const provider = providers[0]
-    $('#hiprint-printTemplate').empty()
+    // $('#hiprint-printTemplate').empty()
+    const dom = document.getElementById('hiprint-printTemplate')
+    if (dom !== null) {
+      dom.innerHTML = ''
+    }
     data.hiprintTemplate = new hiprint.PrintTemplate({
       template: data.panel,
       dataMode: 1, // 1:getJson 其他：getJsonTid 默认1
@@ -295,7 +295,10 @@ const method = reactive({
     }
     if (!data.mode && data.modeList.length > 0) {
       data.mode = data.printSolutionList[0].solution_name
-      method.handleSetPaper(data.printSolutionList[0].report_direction, { height: data.printSolutionList[0].report_length, width: data.printSolutionList[0].report_width })
+      method.handleSetPaper(data.printSolutionList[0].report_direction, {
+        height: data.printSolutionList[0].report_length,
+        width: data.printSolutionList[0].report_width
+      })
     }
     method.handleChangeMode()
   },
@@ -333,7 +336,7 @@ const method = reactive({
       data.panel = JSON.parse(option[0].config_json)
     } else {
       data.panel = {}
-    }    
+    }
     method.initTemplate()
   },
   async handleSubmit() {
