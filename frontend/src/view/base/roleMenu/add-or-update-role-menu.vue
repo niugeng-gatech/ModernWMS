@@ -1,35 +1,37 @@
 <template>
-  <v-dialog v-model="isShow" :width="'30%'" transition="dialog-top-transition" :persistent="true">
+  <v-dialog v-model="isShow" :persistent="true" :width="'30%'" transition="dialog-top-transition">
     <template #default>
       <v-card class="formCard">
-        <v-toolbar color="white" :title="`${$t('router.sideBar.roleMenu')}`"></v-toolbar>
+        <v-toolbar :title="`${$t('router.sideBar.roleMenu')}`" color="white"></v-toolbar>
         <v-card-text>
           <v-form ref="formRef">
             <v-select
               v-model="data.form.userrole_id"
-              :items="data.combobox.role_name"
-              item-title="label"
-              item-value="value"
-              :rules="data.rules.role_name"
-              :label="$t('base.roleMenu.role_name')"
-              variant="outlined"
               :disabled="data.dialogTitle === 'update'"
+              :items="data.combobox.role_name"
+              :label="$t('base.roleMenu.role_name')"
+              :rules="data.rules.role_name"
               clearable
-            ></v-select>
-            <v-select
-              v-model="data.menusSelectedList"
-              :items="data.combobox.menu_name"
-              :menu-props="{ maxHeight: 400 }"
               item-title="label"
               item-value="value"
-              :label="$t('base.roleMenu.menu_name')"
               variant="outlined"
-              chips
-              multiple
-              clearable
-            >
-            </v-select>
+            ></v-select>
           </v-form>
+          <vxe-table
+            ref="xTable"
+            :checkbox-config="{checkRowKeys: data.menusSelectedList}"
+            :data="data.combobox.menu_name"
+            :radio-config="{labelField: 'value'}"
+            :row-config="{isHover: true, keyField:'value'}"
+            align="center"
+            max-height="500"
+            row-id="value"
+            @checkbox-all="method.selectAllEvent"
+            @checkbox-change="method.selectChangeEvent"
+          >
+            <vxe-column type="checkbox" width="60"></vxe-column>
+            <vxe-column :title="$t('base.roleMenu.menu_name')" field="label"></vxe-column>
+          </vxe-table>
         </v-card-text>
         <v-card-actions class="justify-end">
           <v-btn variant="text" @click="method.closeDialog">{{ $t('system.page.close') }}</v-btn>
@@ -41,12 +43,12 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, computed, ref, watch } from 'vue'
-import { RoleMenuVO, RoleMenuDetailVo } from '@/types/Base/RoleMenu'
+import { computed, reactive, ref, watch } from 'vue'
+import { RoleMenuDetailVo, RoleMenuVO } from '@/types/Base/RoleMenu'
 import { UserRoleVO } from '@/types/Base/UserRoleSetting'
 import i18n from '@/languages/i18n'
 import { hookComponent } from '@/components/system/index'
-import { addRoleMenu, updateRoleMenu, getMenus } from '@/api/base/roleMenu'
+import { addRoleMenu, getMenus, updateRoleMenu } from '@/api/base/roleMenu'
 import { getUserRoleAll } from '@/api/base/userRoleSetting'
 import { MenuItem } from '@/types/System/Store'
 import { actionDict } from './actionList'
@@ -58,9 +60,13 @@ const props = defineProps<{
   showDialog: boolean
   form: RoleMenuVO
 }>()
-
+const select = ref([11292,
+  11309,
+  11293,
+  11294
+])
 const isShow = computed(() => props.showDialog)
-
+const xTable = ref()
 const data = reactive({
   dialogTitle: '',
   form: ref<RoleMenuVO>({
@@ -119,19 +125,24 @@ const method = reactive({
         value: role.id
       })
     }
-    data.combobox.menu_name = []
+    // data.combobox.menu_name = []
     const { data: menuRes } = await getMenus()
     if (!menuRes.isSuccess) {
       return
     }
     const menus: MenuItem[] = menuRes.data
-    for (const menu of menus) {
-      data.combobox.menu_name.push({
-        label: i18n.global.t(`router.sideBar.${ menu.menu_name }`),
-        value: menu.id,
-        menu_name: menu.menu_name
-      })
-    }
+    // for (const menu of menus) {
+    //   data.combobox.menu_name.push({
+    //     label: i18n.global.t(`router.sideBar.${ menu.menu_name }`),
+    //     value: menu.id,
+    //     menu_name: menu.menu_name
+    //   })
+    // }
+    data.combobox.menu_name = menus.map(item => ({
+      label: i18n.global.t(`router.sideBar.${ item.menu_name }`),
+      value: item.id,
+      menu_name: item.menu_name
+    }))
   },
   closeDialog: () => {
     emit('close')
@@ -185,8 +196,11 @@ const method = reactive({
       })
 
       const { data: res } = data.dialogTitle === 'add'
-          ? await addRoleMenu(form)
-          : await updateRoleMenu({ ...form, detailList: [...form.detailList, ...data.removeDetailList] }) // Merge the deleted list and the original list
+        ? await addRoleMenu(form)
+        : await updateRoleMenu({
+          ...form,
+          detailList: [...form.detailList, ...data.removeDetailList]
+        }) // Merge the deleted list and the original list
       if (!res.isSuccess) {
         hookComponent.$message({
           type: 'error',
@@ -205,11 +219,20 @@ const method = reactive({
         content: i18n.global.t('system.checkText.checkFormFail')
       })
     }
+  },
+  selectAllEvent: ({ checked }) => {
+    checked
+      ? data.menusSelectedList = data.combobox.menu_name.map(item => item.value)
+      : data.menusSelectedList = []
+  },
+  selectChangeEvent: () => {
+    const records = xTable.value.getCheckboxRecords()
+    data.menusSelectedList = records.map(item => item.value)
   }
 })
 
 watch(
-  () => isShow.value,
+  () => props.showDialog,
   (val) => {
     if (val) {
       method.getDialogType()
@@ -221,4 +244,4 @@ watch(
 )
 </script>
 
-<style scoped lang="less"></style>
+<style lang="less" scoped></style>
