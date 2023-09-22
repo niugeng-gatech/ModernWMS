@@ -224,7 +224,7 @@ const method = reactive({
       table: $table,
       filename: i18n.global.t('router.sideBar.commodityCategorySetting'),
       columnFilterMethod({ column }: any) {
-        return !['checkbox'].includes(column?.type)
+        return !['checkbox'].includes(column?.type) && !['operate'].includes(column?.field)
       }
     })
   }
