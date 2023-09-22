@@ -60,11 +60,6 @@ const props = defineProps<{
   showDialog: boolean
   form: RoleMenuVO
 }>()
-const select = ref([11292,
-  11309,
-  11293,
-  11294
-])
 const isShow = computed(() => props.showDialog)
 const xTable = ref()
 const data = reactive({

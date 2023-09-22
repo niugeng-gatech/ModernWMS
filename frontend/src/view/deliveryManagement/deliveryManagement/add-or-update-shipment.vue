@@ -1,7 +1,7 @@
 <template>
-  <v-dialog v-model="isShow" :width="'70%'" transition="dialog-top-transition" :persistent="true">
+  <v-dialog v-model="isShow" transition="dialog-top-transition" :persistent="true">
     <template #default>
-      <v-card class="formCard">
+      <v-card class="formCard" :width="dialogWidth">
         <v-toolbar color="white" :title="`${$t('router.sideBar.deliveryManagement')}`"></v-toolbar>
         <v-card-text>
           <v-form ref="formRef">
@@ -109,7 +109,8 @@ const props = defineProps<{
 }>()
 
 const isShow = computed(() => props.showDialog)
-
+// eslint-disable-next-line vue/return-in-computed-property
+const dialogWidth = computed(() => (data.form.detailList.length === 0 ? '30%' : '70%'))
 const data = reactive({
   curSelectType: '',
   showSkuDialogSelect: false,
@@ -324,4 +325,9 @@ watch(
 // .v-col {
 //   padding: 0 !important;
 // }
+.v-card {
+  margin: 0 auto;
+  transition: width .3s;
+
+}
 </style>
