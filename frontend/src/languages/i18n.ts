@@ -1,6 +1,6 @@
 import { createI18n } from 'vue-i18n'
 import messages from './langs/index'
-import { getSelectedLang } from './method/index'
+import { getSelcectedLang } from './method/index'
 
 const i18n = createI18n({
   legacy: false,
@@ -13,7 +13,7 @@ const i18n = createI18n({
 function getStorageLang() {
   const lang = localStorage.getItem('language')
   if (lang) {
-    return getSelectedLang(lang)
+    return getSelcectedLang(lang)
   }
   return 'en_US'
 }

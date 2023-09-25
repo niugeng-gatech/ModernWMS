@@ -76,14 +76,12 @@
               :height="tableHeight"
               align="center"
               :tree-config="data.tableTreeConfig"
-              @checkbox-all="method.selectAllEvent"
-              @checkbox-change="method.selectChangeEvent"
             >
               <template #empty>
                 {{ i18n.global.t('system.page.noData') }}
               </template>
-              <vxe-column type="checkbox" width="50"></vxe-column>
               <vxe-column type="seq" width="60"></vxe-column>
+              <!-- <vxe-column type="checkbox" width="60"></vxe-column> -->
               <vxe-column tree-node width="60">
                 <template #header>
                   <div
@@ -180,7 +178,7 @@
                       :flat="true"
                       icon="mdi-delete-outline"
                       :tooltip-text="$t('system.page.delete')"
-                      :icon-color="!data.authorityList.includes('delete')?'':errorColor"
+                      :icon-color="errorColor"
                       :disabled="!data.authorityList.includes('delete')"
                       @click="method.deleteRow(row)"
                     ></tooltip-btn>
@@ -231,22 +229,15 @@
     <update-sku-safety-stock ref="updateSkuSaftyStockRef" @sure="method.updateSkuSaftyStockByRow" />
 
     <!-- Print QR code -->
-    <qr-code-dialog ref="qrCodeDialogRef">
-      <template #left="{slotData}">
-        <p>{{ $t('base.commodityManagement.spu_code') }}:{{ slotData.spu_code }}</p>
-        <p>{{ $t('base.commodityManagement.spu_name') }}:{{ slotData.spu_name }}</p>
-        <p>{{ $t('base.commodityManagement.sku_code') }}:{{ slotData.sku_code }}</p>
-        <p>{{ $t('base.commodityManagement.sku_name') }}:{{ slotData.sku_name }}</p>
-      </template>
-    </qr-code-dialog>
+    <qrCodeDialogDialog ref="qrCodeDialogDialogRef" />
 
     <!-- Print barcode -->
-    <bar-code-dialog ref="barCodeDialogRef" />
+    <barCodeDialogDialog ref="barCodeDialogDialogRef" />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { computed, reactive, onMounted, ref, watch } from 'vue'
 import { VxePagerEvents } from 'vxe-table'
 import { computedCardHeight, computedTableHeight, errorColor } from '@/constant/style'
 import tooltipBtn from '@/components/tooltip-btn.vue'
@@ -264,13 +255,12 @@ import { DEBOUNCE_TIME } from '@/constant/system'
 import BtnGroup from '@/components/system/btnGroup.vue'
 import updateSkuSafetyStock from './update-sku-safety-stock.vue'
 import qrCodeDialogDialog from './qrCodeDialog.vue'
-import BarCodeDialog from '@/components/codeDialog/barCodeDialog.vue'
-import QrCodeDialog from '@/components/codeDialog/qrCodeDialog.vue'
+import barCodeDialogDialog from './barCodeDialog.vue'
 
 const xTable = ref()
 const updateSkuSaftyStockRef = ref()
-const qrCodeDialogRef = ref()
-const barCodeDialogRef = ref()
+const qrCodeDialogDialogRef = ref()
+const barCodeDialogDialogRef = ref()
 
 const data: DataProps = reactive({
   searchForm: {
@@ -310,8 +300,7 @@ const data: DataProps = reactive({
     detailList: []
   },
   btnList: [],
-  authorityList: getMenuAuthorityList(),
-  selectRowData: [],
+  authorityList: getMenuAuthorityList()
 })
 
 const method = reactive({
@@ -319,33 +308,41 @@ const method = reactive({
   getCheckBoxDisableState: ({ row }: { row: any }): boolean => row.parent_id,
   // Print QR code
   printQrCode: (row: any) => {
-    data.selectRowData.length === 0 ? data.selectRowData = [row] : ''
-    let records:any[] = data.selectRowData
-    records = records.filter(item => item.parent_id)
-    for (const parent of data.selectRowData) {
-      for (const child of records) {
-        if (parent.id === child.parent_id) {
-          child.spu_code = parent.spu_code
-          child.spu_name = parent.spu_name
-          child.type = 'commodity'
-        }
+    const pi = data.tableData.findIndex((item: any) => item.id === row.parent_id)
+
+    if (pi > -1) {
+      const parent_data = data.tableData[pi]
+
+      const print_data = {
+        sku_id: row.id,
+        spu_code: parent_data.spu_code,
+        spu_name: parent_data.spu_name,
+        sku_code: row.sku_code,
+        sku_name: row.sku_name,
+        barcode: row.bar_code,
+        type: 'commodity'
       }
+
+      qrCodeDialogDialogRef.value.openDialog(print_data)
     }
-    qrCodeDialogRef.value.openDialog(records)
   },
   printBarCode: (row: any) => {
-    data.selectRowData.length === 0 ? data.selectRowData = [row] : ''
-    let records = data.selectRowData
-    records = records.filter(item => item.parent_id)
-    records = records.filter(item => item.bar_code)
-    barCodeDialogRef.value.openDialog(records)
-  },
-  selectAllEvent({ checked }) {
-    const records = xTable.value.getCheckboxRecords()
-    checked ? data.selectRowData = records : data.selectRowData = []
-  },
-  selectChangeEvent() {
-    data.selectRowData = xTable.value.getCheckboxRecords()
+    const pi = data.tableData.findIndex((item: any) => item.id === row.parent_id)
+
+    if (pi > -1) {
+      const parent_data = data.tableData[pi]
+
+      const print_data = {
+        sku_id: row.id,
+        spu_code: parent_data.spu_code,
+        spu_name: parent_data.spu_name,
+        sku_code: row.sku_code,
+        sku_name: row.sku_name,
+        barcode: row.bar_code
+      }
+
+      barCodeDialogDialogRef.value.openDialog(print_data)
+    }
   },
   expandAllRows: () => {
     const expandRows = xTable.value.getTreeExpandRecords()

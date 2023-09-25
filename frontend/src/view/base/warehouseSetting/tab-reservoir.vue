@@ -78,7 +78,7 @@
             :flat="true"
             icon="mdi-delete-outline"
             :tooltip-text="$t('system.page.delete')"
-            :icon-color="!data.authorityList.includes('area-delete')?'':errorColor"
+            :icon-color="errorColor"
             :disabled="!data.authorityList.includes('area-delete')"
             @click="method.deleteRow(row)"
           ></tooltip-btn>

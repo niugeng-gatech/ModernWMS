@@ -50,15 +50,7 @@
       height: cardHeight
     }"
   >
-    <vxe-table
-      ref="xTableGoodsLocation"
-      :column-config="{ minWidth: '100px' }"
-      :data="data.tableData"
-      :height="tableHeight"
-      align="center"
-      @checkbox-all="method.selectAllEvent"
-      @checkbox-change="method.selectChangeEvent"
-    >
+    <vxe-table ref="xTableGoodsLocation" :column-config="{ minWidth: '100px' }" :data="data.tableData" :height="tableHeight" align="center">
       <vxe-column type="seq" width="60"></vxe-column>
       <vxe-column type="checkbox" width="50"></vxe-column>
       <vxe-column field="warehouse_name" :title="$t('base.warehouseSetting.warehouse_name')"></vxe-column>
@@ -131,38 +123,32 @@
   <add-or-update-dialog :show-dialog="data.showDialog" :form="data.dialogForm" @close="method.closeDialog" @saveSuccess="method.saveSuccess" />
 
   <!-- Print QR code -->
-  <qr-code-dialog ref="qrCodeDialogRef">
-    <template #left="{slotData}">
-      <p>{{ $t('base.warehouseSetting.warehouse_name') }}:{{ slotData.warehouse_name }}</p> &nbsp;
-      <p>{{ $t('base.warehouseSetting.area_name') }}:{{ slotData.warehouse_area_name }}</p> &nbsp;
-      <p>{{ $t('base.warehouseSetting.location_name') }}:{{ slotData.location_name }}</p> &nbsp;
-    </template>
-  </qr-code-dialog>
+  <qrCodeDialog ref="qrCodeDialogRef" />
   <!-- Print barcode -->
-  <bar-code-dialog ref="barCodeDialogRef" />
+  <barCodeDialog ref="barCodeDialogRef" />
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { computed, ref, reactive, watch, onMounted } from 'vue'
 import { VxePagerEvents } from 'vxe-table'
 import { computedCardHeight, computedTableHeight, errorColor } from '@/constant/style'
 import { GoodsLocationVO } from '@/types/Base/Warehouse'
-import { DEFAULT_PAGE_SIZE, PAGE_LAYOUT, PAGE_SIZE } from '@/constant/vxeTable'
+import { PAGE_SIZE, PAGE_LAYOUT, DEFAULT_PAGE_SIZE } from '@/constant/vxeTable'
 import { hookComponent } from '@/components/system'
 import { deleteGoodsLocation, getGoodsLocationList } from '@/api/base/warehouseSetting'
+import tooltipBtn from '@/components/tooltip-btn.vue'
+import addOrUpdateDialog from './add-or-update-location.vue'
 import i18n from '@/languages/i18n'
 import { formatIsValid } from '@/utils/format/formatSystem'
 import { formatAreaProperty } from '@/utils/format/formatWarehouse'
-import { getMenuAuthorityList, setSearchObject } from '@/utils/common'
-import { DEBOUNCE_TIME } from '@/constant/system'
-import { btnGroupItem, SearchObject } from '@/types/System/Form'
-import { exportData } from '@/utils/exportTable'
-import tooltipBtn from '@/components/tooltip-btn.vue'
-import addOrUpdateDialog from './add-or-update-location.vue'
 import customPager from '@/components/custom-pager.vue'
+import { setSearchObject, getMenuAuthorityList } from '@/utils/common'
+import { DEBOUNCE_TIME } from '@/constant/system'
+import { SearchObject, btnGroupItem } from '@/types/System/Form'
+import { exportData } from '@/utils/exportTable'
 import BtnGroup from '@/components/system/btnGroup.vue'
-import BarCodeDialog from '@/components/codeDialog/barCodeDialog.vue'
-import QrCodeDialog from '@/components/codeDialog/qrCodeDialog.vue'
+import qrCodeDialog from './qrCodeDialog.vue'
+import barCodeDialog from './barCodeDialog.vue'
 
 const xTableGoodsLocation = ref()
 const qrCodeDialogRef = ref()
@@ -198,7 +184,6 @@ const data = reactive({
     pageSize: DEFAULT_PAGE_SIZE,
     searchObjects: ref<Array<SearchObject>>([])
   }),
-  selectRowData: [],
   timer: ref<any>(null),
   btnList: [] as btnGroupItem[],
   // Menu operation permissions
@@ -207,26 +192,17 @@ const data = reactive({
 
 const method = reactive({
   // Print QR code
-  printQrCode: (row: never) => {
-    data.selectRowData.length === 0 ? data.selectRowData = [row] : ''
-    const records:any[] = data.selectRowData
-    for (const item of records) {
-      item.type = 'warehouse'
-    }
-    qrCodeDialogRef.value.openDialog(records)
+  printQrCode: (row: any) => {
+    qrCodeDialogRef.value.openDialog({
+      location_id: row.id,
+      warehouse_name: row.warehouse_name,
+      warehouse_area_name: row.warehouse_area_name,
+      location_name: row.location_name,
+      type: 'warehouse'
+    })
   },
-  printBarCode: (row: never) => {
-    data.selectRowData.length === 0 ? data.selectRowData = [row] : ''
-    let records:any[] = data.selectRowData
-    records = records.filter(item => item.id)
-    barCodeDialogRef.value.openDialog(records)
-  },
-  selectAllEvent({ checked }) {
-    const records = xTableGoodsLocation.value.getCheckboxRecords()
-    checked ? data.selectRowData = records : data.selectRowData = []
-  },
-  selectChangeEvent() {
-    data.selectRowData = xTableGoodsLocation.value.getCheckboxRecords()
+  printBarCode: (row: any) => {
+    barCodeDialogRef.value.openDialog(row)
   },
   // Open a dialog to add
   add: () => {

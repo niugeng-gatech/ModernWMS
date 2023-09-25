@@ -18,7 +18,7 @@
 import { reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useLocale } from 'vuetify'
-import { getSelectedLang } from '@/languages/method/index'
+import { getSelcectedLang } from '@/languages/method/index'
 import { getSelcectedLangForVuetify } from '@/plugins/vuetify/method/index'
 import { store } from '@/store'
 import { router } from '@/router'
@@ -41,7 +41,7 @@ const method = reactive({
     }
     localStorage.setItem('language', lang)
     store.commit('system/setLanguage', lang) // set store
-    locale.value = getSelectedLang(lang) // global
+    locale.value = getSelcectedLang(lang) // global
     current.value = getSelcectedLangForVuetify(lang) // vuetify
 
     if (!['/', '/login'].includes(router.currentRoute.value.path)) {

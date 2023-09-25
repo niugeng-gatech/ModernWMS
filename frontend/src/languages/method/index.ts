@@ -1,5 +1,5 @@
 // Get different languages according to the key
-export function getSelectedLang(lang: string) {
+export function getSelcectedLang(lang: string) {
   switch (lang) {
     case 'zh':
       return 'zh_CN'
