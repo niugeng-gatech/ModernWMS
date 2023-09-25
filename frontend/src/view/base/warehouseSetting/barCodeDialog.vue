@@ -44,7 +44,7 @@ const method = reactive({
         fontSize: 12,
         width: 2,
         height: 40,
-        displayValue: false
+        displayValue: true
       })
     })
   },
