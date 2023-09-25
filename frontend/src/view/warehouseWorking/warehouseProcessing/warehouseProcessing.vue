@@ -114,7 +114,7 @@
                         :flat="true"
                         icon="mdi-delete-outline"
                         :tooltip-text="$t('system.page.delete')"
-                        :icon-color="errorColor"
+                        :icon-color="!data.authorityList.includes('delete') || method.confirmProcessBtnDisabled(row)?'':errorColor"
                         :disabled="!data.authorityList.includes('delete') || method.confirmProcessBtnDisabled(row)"
                         @click="method.deleteRow(row)"
                       ></tooltip-btn>
