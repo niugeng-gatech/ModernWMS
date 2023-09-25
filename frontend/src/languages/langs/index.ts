@@ -1,8 +1,8 @@
 import zhCN from 'vxe-table/lib/locale/lang/zh-CN'
 import enUS from 'vxe-table/lib/locale/lang/en-US'
 
-import en from './enUs'
-import cn from './cnZh'
+import en from '../langsJson/en.json'
+import cn from '../langsJson/cn.json'
 
 export default {
   zh_CN: {
