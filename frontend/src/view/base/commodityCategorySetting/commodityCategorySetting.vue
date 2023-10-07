@@ -93,7 +93,7 @@
                     :flat="true"
                     icon="mdi-delete-outline"
                     :tooltip-text="$t('system.page.delete')"
-                    :icon-color="errorColor"
+                    :icon-color="!data.authorityList.includes('delete')?'':errorColor"
                     :disabled="!data.authorityList.includes('delete')"
                     @click="method.deleteRow(row)"
                   ></tooltip-btn>
@@ -224,7 +224,7 @@ const method = reactive({
       table: $table,
       filename: i18n.global.t('router.sideBar.commodityCategorySetting'),
       columnFilterMethod({ column }: any) {
-        return !['checkbox'].includes(column?.type)
+        return !['checkbox'].includes(column?.type) && !['operate'].includes(column?.field)
       }
     })
   }

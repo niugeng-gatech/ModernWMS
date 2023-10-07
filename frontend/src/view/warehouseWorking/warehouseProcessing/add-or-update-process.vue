@@ -173,7 +173,10 @@ const jobTypeComp = computed(() => (data.form.job_type === PROCESS_JOB_COMBINE
     ? i18n.global.t('wms.warehouseWorking.warehouseProcessing.process_combine')
     : i18n.global.t('wms.warehouseWorking.warehouseProcessing.process_split')))
 const operateDisabled = computed(() => !!isUpdate.value)
-const qrCodeValue = computed(() => data.form.id.toString())
+const qrCodeValue = computed(() => JSON.stringify({
+    id: data.form.id.toString(),
+    type: 'warehouseProcessing'
+  }))
 
 const method = reactive({
   initForm: () => {

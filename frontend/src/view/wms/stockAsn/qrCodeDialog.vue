@@ -46,7 +46,10 @@ const method = reactive({
   openDialog: (row: any) => {
     data.printData = row
 
-    data.printText = JSON.stringify(data.printData)
+    data.printText = JSON.stringify({
+      asn_id: row.asn_id,
+      type: row.type
+    })
 
     data.showDialog = true
   },

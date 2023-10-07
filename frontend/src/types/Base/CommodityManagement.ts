@@ -61,6 +61,7 @@ export interface DataProps {
   timer: any
   btnList: btnGroupItem[]
   authorityList: string[]
+  selectRowData: any[]
 }
 
 export interface UpdateSaftyStockReqBodyVO {

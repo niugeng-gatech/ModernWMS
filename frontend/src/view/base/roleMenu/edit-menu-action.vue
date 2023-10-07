@@ -1,24 +1,39 @@
 <template>
-  <v-dialog v-model="data.showDialog" :width="'30%'" transition="dialog-top-transition" :persistent="true">
+  <v-dialog v-model="data.showDialog" :persistent="true" :width="'30%'" transition="dialog-top-transition">
     <template #default>
       <v-card class="formCard">
-        <v-toolbar color="white" :title="`${$t('base.roleMenu.modalTitle.editMenuAction')}`"></v-toolbar>
+        <v-toolbar :title="`${$t('base.roleMenu.modalTitle.editMenuAction')}`" color="white"></v-toolbar>
         <v-card-text>
-          <v-form ref="formRef">
-            <v-select
-              v-model="data.actions"
-              :items="currentActionList"
-              :menu-props="{ maxHeight: 400 }"
-              item-title="label"
-              item-value="value"
-              :label="$t('base.roleMenu.modalTitle.actionTitle')"
-              variant="outlined"
-              chips
-              multiple
-              clearable
-            >
-            </v-select>
-          </v-form>
+          <!--          <v-form ref="formRef">-->
+          <!--            <v-select-->
+          <!--              v-model="data.actions"-->
+          <!--              :items="currentActionList"-->
+          <!--              :menu-props="{ maxHeight: 400 }"-->
+          <!--              item-title="label"-->
+          <!--              item-value="value"-->
+          <!--              :label="$t('base.roleMenu.modalTitle.actionTitle')"-->
+          <!--              variant="outlined"-->
+          <!--              chips-->
+          <!--              multiple-->
+          <!--              clearable-->
+          <!--            >-->
+          <!--            </v-select>-->
+          <!--          </v-form>-->
+          <vxe-table
+            ref="xTable"
+            :checkbox-config="{checkRowKeys: data.actions}"
+            :data="currentActionList"
+            :radio-config="{labelField: 'value'}"
+            :row-config="{isHover: true, keyField:'value'}"
+            align="center"
+            row-id="value"
+            max-height="500"
+            @checkbox-all="method.selectAllEvent"
+            @checkbox-change="method.selectChangeEvent"
+          >
+            <vxe-column type="checkbox" width="60"></vxe-column>
+            <vxe-column :title="$t('base.roleMenu.modalTitle.actionTitle')" field="label"></vxe-column>
+          </vxe-table>
         </v-card-text>
         <v-card-actions class="justify-end">
           <v-btn variant="text" @click="method.closeDialog">{{ $t('system.page.close') }}</v-btn>
@@ -29,8 +44,8 @@
   </v-dialog>
 </template>
 
-<script setup lang="tsx">
-import { reactive, computed, defineExpose } from 'vue'
+<script lang="tsx" setup>
+import { computed, defineExpose, reactive, ref } from 'vue'
 import { actionDict, getActionName } from './actionList'
 import { RoleMenuDetailVo } from '@/types/Base/RoleMenu'
 
@@ -42,11 +57,15 @@ const props = defineProps<{
 
 const currentActionList = computed(() => {
   if (props.row.menu_name && Object.hasOwn(actionDict, props.row.menu_name)) {
-    const result = actionDict[props.row.menu_name].map((item: string) => ({ label: getActionName(item, props.row.menu_name), value: item }))
-    return result
+    return actionDict[props.row.menu_name].map((item: string) => ({
+      label: getActionName(item, props.row.menu_name),
+      value: item
+    }))
   }
   return []
 })
+
+const xTable = ref()
 
 const data = reactive({
   actions: [] as string[],
@@ -56,9 +75,7 @@ const data = reactive({
 const method = reactive({
   openDialog: (cache: string[]) => {
     data.actions = []
-
     data.actions = cache
-
     data.showDialog = true
   },
   closeDialog: () => {
@@ -66,6 +83,15 @@ const method = reactive({
   },
   saveSuccess: () => {
     emit('saveSuccess', data.actions)
+  },
+  selectAllEvent: ({ checked }) => {
+    checked
+      ? data.actions = currentActionList.value.map(item => item.value)
+      : data.actions = []
+  },
+  selectChangeEvent: () => {
+    const records = xTable.value.getCheckboxRecords()
+    data.actions = records.map(item => item.value)
   }
 })
 
@@ -75,4 +101,4 @@ defineExpose({
 })
 </script>
 
-<style scoped lang="less"></style>
+<style lang="less" scoped></style>
