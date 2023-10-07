@@ -662,7 +662,8 @@ namespace ModernWMS.WMS.Services
                             qty = sg.qty,
                             location_name = gl.location_name,
                             warehouse_name = gl.warehouse_name,
-                            series_number = sg.series_number
+                            series_number = sg.series_number,
+                            goods_location_id = sg.goods_location_id
                         };
 
             var list = await query.OrderBy(t => t.sku_code)

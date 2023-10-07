@@ -84,5 +84,10 @@ namespace ModernWMS.WMS.Entities.ViewModels
         [Display(Name = "series_number")]
         [MaxLength(64, ErrorMessage = "MaxLength")]
         public string series_number { get; set; } = string.Empty;
+
+        /// <summary>
+        /// goods_location_id
+        /// </summary>
+        public int goods_location_id { get; set; } = 0;
     }
 }
