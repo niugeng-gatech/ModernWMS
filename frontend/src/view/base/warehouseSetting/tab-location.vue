@@ -6,6 +6,8 @@
         <tooltip-btn icon="mdi-plus" :tooltip-text="$t('system.page.add')" @click="method.add"></tooltip-btn>
         <tooltip-btn icon="mdi-refresh" :tooltip-text="$t('system.page.refresh')" @click="method.refresh"></tooltip-btn>
         <tooltip-btn icon="mdi-export-variant" :tooltip-text="$t('system.page.export')" @click="method.exportTable"> </tooltip-btn>
+        <tooltip-btn icon="mdi-qrcode" :tooltip-text="$t('base.commodityManagement.printQrCode')" @click="method.printQrCode"> </tooltip-btn>
+        <tooltip-btn icon="mdi-barcode" :tooltip-text="$t('base.commodityManagement.printBarCode')" @click="method.printBarCode"> </tooltip-btn>
       </v-col>
 
       <!-- Search Input -->
@@ -49,8 +51,8 @@
     }"
   >
     <vxe-table ref="xTableGoodsLocation" :column-config="{ minWidth: '100px' }" :data="data.tableData" :height="tableHeight" align="center">
+      <vxe-column type="checkbox" width="50" fixed="left"></vxe-column>
       <vxe-column type="seq" width="60"></vxe-column>
-      <vxe-column type="checkbox" width="50"></vxe-column>
       <vxe-column field="warehouse_name" :title="$t('base.warehouseSetting.warehouse_name')"></vxe-column>
       <vxe-column field="warehouse_area_name" :title="$t('base.warehouseSetting.area_name')"></vxe-column>
       <vxe-column field="warehouse_area_property" :title="$t('base.warehouseSetting.area_property')">
@@ -98,6 +100,18 @@
     </custom-pager>
   </div>
   <add-or-update-dialog :show-dialog="data.showDialog" :form="data.dialogForm" @close="method.closeDialog" @saveSuccess="method.saveSuccess" />
+
+  <!-- Print QR code -->
+  <qr-code-dialog ref="qrCodeDialogRef">
+    <template #left="{ slotData }">
+      {{ $t('base.warehouseSetting.warehouse_name') }}:{{ slotData.warehouse_name }}<br />
+      {{ $t('base.warehouseSetting.area_name') }}:{{ slotData.warehouse_area_name }}<br />
+      {{ $t('base.warehouseSetting.location_name') }}:{{ slotData.location_name }}
+    </template>
+  </qr-code-dialog>
+
+  <!-- Print barcode -->
+  <bar-code-dialog ref="barCodeDialogRef" />
 </template>
 
 <script lang="ts" setup>
@@ -118,8 +132,12 @@ import { setSearchObject } from '@/utils/common'
 import { DEBOUNCE_TIME } from '@/constant/system'
 import { SearchObject } from '@/types/System/Form'
 import { exportData } from '@/utils/exportTable'
+import BarCodeDialog from '@/components/codeDialog/barCodeDialog.vue'
+import QrCodeDialog from '@/components/codeDialog/qrCodeDialog.vue'
 
 const xTableGoodsLocation = ref()
+const qrCodeDialogRef = ref()
+const barCodeDialogRef = ref()
 
 const data = reactive({
   showDialog: false,
@@ -155,6 +173,39 @@ const data = reactive({
 })
 
 const method = reactive({
+  // Print QR code
+  printQrCode: () => {
+    const records = xTableGoodsLocation.value.getCheckboxRecords()
+
+    // data.selectRowData.length === 0 ? (data.selectRowData = [row]) : ''
+    // const records: any[] = data.selectRowData
+    if (records.length > 0) {
+      for (const item of records) {
+        item.type = 'warehouse'
+      }
+      qrCodeDialogRef.value.openDialog(records)
+    } else {
+      hookComponent.$message({
+        type: 'error',
+        content: i18n.global.t('base.userManagement.checkboxIsNull')
+      })
+    }
+  },
+  printBarCode: () => {
+    let records = xTableGoodsLocation.value.getCheckboxRecords()
+    records = records.filter((item: any) => item.id)
+    // data.selectRowData.length === 0 ? (data.selectRowData = [row]) : ''
+    // let records: any[] = data.selectRowData
+
+    if (records.length > 0) {
+      barCodeDialogRef.value.openDialog(records)
+    } else {
+      hookComponent.$message({
+        type: 'error',
+        content: i18n.global.t('base.userManagement.checkboxIsNull')
+      })
+    }
+  },
   // Open a dialog to add
   add: () => {
     data.dialogForm = {

@@ -16,6 +16,8 @@ export default {
       edit: '编辑',
       delete: '删除',
       close: '关闭',
+      print: '打印',
+      preView: '预览',
       submit: '提交',
       reset: '重置',
       confirm: '确认',
@@ -435,7 +437,8 @@ export default {
       supplier_name: '供应商名称',
       goods_owner_id: '货主标识',
       goods_owner_name: '货主名称',
-      is_valid: '是否有效'
+      is_valid: '是否有效',
+      num: '编号'
     },
     skuInfo: {
       spu_id: '商品spu标识',

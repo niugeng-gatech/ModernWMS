@@ -15,7 +15,9 @@ export default {
       operate: 'Operate',
       edit: 'Edit',
       delete: 'Delete',
-      close: 'Colse',
+      close: 'Close',
+      print: '打印',
+      preView: '预览',
       submit: 'Submit',
       reset: 'Reset',
       confirm: 'Confirm',
@@ -435,7 +437,8 @@ export default {
       supplier_name: 'Supplier Name',
       goods_owner_id: 'Goods Owner Id',
       goods_owner_name: 'Goods Owner Name',
-      is_valid: 'Valid'
+      is_valid: 'Valid',
+      num: 'Number'
     },
     skuInfo: {
       spu_id: 'Spu Id',

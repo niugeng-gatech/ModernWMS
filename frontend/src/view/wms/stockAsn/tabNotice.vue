@@ -6,6 +6,7 @@
         <tooltip-btn icon="mdi-plus" :tooltip-text="$t('system.page.add')" @click="method.add"></tooltip-btn>
         <tooltip-btn icon="mdi-refresh" :tooltip-text="$t('system.page.refresh')" @click="method.refresh"></tooltip-btn>
         <tooltip-btn icon="mdi-export-variant" :tooltip-text="$t('system.page.export')" @click="method.exportTable"> </tooltip-btn>
+        <tooltip-btn icon="mdi-qrcode" :tooltip-text="$t('base.commodityManagement.printQrCode')" @click="method.printQrCode"> </tooltip-btn>
       </v-col>
 
       <!-- Search Input -->
@@ -48,12 +49,13 @@
       height: cardHeight
     }"
   >
-    <vxe-table ref="xTableStockLocation" :column-config="{ minWidth: '100px' }" :data="data.tableData" :height="tableHeight" align="center">
+    <vxe-table ref="xTable" :column-config="{ minWidth: '100px' }" :data="data.tableData" :height="tableHeight" align="center">
       <template #empty>
         {{ i18n.global.t('system.page.noData') }}
       </template>
+      <vxe-column type="checkbox" width="50" fixed="left"></vxe-column>
       <vxe-column type="seq" width="60"></vxe-column>
-      <vxe-column type="checkbox" width="50"></vxe-column>
+      <!-- <vxe-column type="checkbox" width="50"></vxe-column> -->
       <vxe-column field="asn_no" :title="$t('wms.stockAsnInfo.asn_no')"></vxe-column>
       <vxe-column field="spu_code" :title="$t('wms.stockAsnInfo.spu_code')"></vxe-column>
       <vxe-column field="spu_name" :title="$t('wms.stockAsnInfo.spu_name')"></vxe-column>
@@ -94,6 +96,11 @@
   </div>
   <addOrUpdateNotice :show-dialog="data.showDialog" :form="data.dialogForm" @close="method.closeDialog" @saveSuccess="method.saveSuccess" />
   <skuInfo :show-dialog="data.showDialogShowInfo" :form="data.dialogForm" @close="method.closeDialogShowInfo" />
+
+  <!-- Print QR code -->
+  <qr-code-dialog ref="qrCodeDialogRef">
+    <template #left="{ slotData }"> {{ $t('wms.stockAsnInfo.num') }}:{{ slotData.asn_no }} </template>
+  </qr-code-dialog>
 </template>
 
 <script lang="ts" setup>
@@ -113,8 +120,10 @@ import addOrUpdateNotice from './add-or-update-notice.vue'
 import customPager from '@/components/custom-pager.vue'
 import skuInfo from './sku-info.vue'
 import { exportData } from '@/utils/exportTable'
+import QrCodeDialog from '@/components/codeDialog/qrCodeDialog.vue'
 
-const xTableStockLocation = ref()
+const xTable = ref()
+const qrCodeDialogRef = ref()
 
 const data = reactive({
   showDialog: false,
@@ -164,6 +173,24 @@ const data = reactive({
 })
 
 const method = reactive({
+  // Print QR code
+  printQrCode: () => {
+    const records = xTable.value.getCheckboxRecords()
+
+    // data.selectRowData.length === 0 ? data.selectRowData = [row] : ''
+    // const records:any[] = data.selectRowData
+    if (records.length > 0) {
+      for (const item of records) {
+        item.type = 'asn'
+      }
+      qrCodeDialogRef.value.openDialog(records)
+    } else {
+      hookComponent.$message({
+        type: 'error',
+        content: i18n.global.t('base.userManagement.checkboxIsNull')
+      })
+    }
+  },
   closeDialogShowInfo: () => {
     data.showDialogShowInfo = false
   },
@@ -261,7 +288,7 @@ const method = reactive({
     method.getStockAsnList()
   }),
   exportTable: () => {
-    const $table = xTableStockLocation.value
+    const $table = xTable.value
     exportData({
       table: $table,
       filename: i18n.global.t('wms.stockAsn.tabNotice'),

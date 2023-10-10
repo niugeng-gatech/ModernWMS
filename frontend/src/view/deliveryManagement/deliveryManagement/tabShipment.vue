@@ -6,6 +6,7 @@
         <tooltip-btn icon="mdi-plus" :tooltip-text="$t('system.page.add')" @click="method.add()"></tooltip-btn>
         <tooltip-btn icon="mdi-refresh" :tooltip-text="$t('system.page.refresh')" @click="method.refresh"></tooltip-btn>
         <tooltip-btn icon="mdi-export-variant" :tooltip-text="$t('system.page.export')" @click="method.exportTable"> </tooltip-btn>
+        <tooltip-btn icon="mdi-qrcode" :tooltip-text="$t('base.commodityManagement.printQrCode')" @click="method.printQrCode"> </tooltip-btn>
       </v-col>
 
       <!-- Search Input -->
@@ -65,8 +66,8 @@
       <template #empty>
         {{ i18n.global.t('system.page.noData') }}
       </template>
+      <vxe-column type="checkbox" width="50" fixed="left"></vxe-column>
       <vxe-column type="seq" width="60"></vxe-column>
-      <!-- <vxe-column type="checkbox" width="50"></vxe-column> -->
       <vxe-column field="dispatch_no" width="120" :title="$t('wms.deliveryManagement.dispatch_no')"></vxe-column>
       <vxe-column field="dispatch_status" :title="$t('wms.deliveryManagement.dispatch_status')">
         <template #default="{ row }">
@@ -149,6 +150,13 @@
       :show-dialog="data.showDeliveredMainDetail"
       @close="method.closeDeliveredDetail"
     />
+
+    <!-- Print QR code -->
+    <qr-code-dialog ref="qrCodeDialogRef">
+      <template #left="{ slotData }">
+        {{ $t('wms.deliveryManagement.dispatch_no') }}:{{ slotData.dispatch_no }}<br />
+      </template>
+    </qr-code-dialog>
   </div>
 </template>
 
@@ -172,8 +180,10 @@ import { TablePage } from '@/types/System/Form'
 import { exportData } from '@/utils/exportTable'
 import { DEBOUNCE_TIME } from '@/constant/system'
 import SearchDeliveredMainDetail from './search-delivered-main-detail.vue'
+import QrCodeDialog from '@/components/codeDialog/qrCodeDialog.vue'
 
 const xTable = ref()
+const qrCodeDialogRef = ref()
 
 const data = reactive({
   showDeliveredMainDetailNo: '',
@@ -241,6 +251,25 @@ const data = reactive({
 })
 
 const method = reactive({
+  // Print QR code
+  printQrCode: () => {
+    const records = xTable.value.getCheckboxRecords()
+
+    // data.selectRowData.length === 0 ? data.selectRowData = [row] : ''
+    // const records:any[] = data.selectRowData
+    if (records.length > 0) {
+      for (const item of records) {
+        item.id = item.dispatch_no
+        item.type = 'delivery'
+      }
+      qrCodeDialogRef.value.openDialog(records)
+    } else {
+      hookComponent.$message({
+        type: 'error',
+        content: i18n.global.t('base.userManagement.checkboxIsNull')
+      })
+    }
+  },
   viewRow: (row: DeliveryManagementVO) => {
     if (row.dispatch_no) {
       data.showDeliveredMainDetailNo = row.dispatch_no

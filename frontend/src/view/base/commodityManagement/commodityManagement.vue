@@ -7,14 +7,20 @@
           <div class="operateArea">
             <v-row no-gutters>
               <!-- Operate Btn -->
-              <v-col cols="12" sm="3" class="col">
+              <v-col cols="12" sm="4" class="col">
                 <tooltip-btn icon="mdi-plus" :tooltip-text="$t('system.page.add')" @click="method.add()"></tooltip-btn>
                 <tooltip-btn icon="mdi-refresh" :tooltip-text="$t('system.page.refresh')" @click="method.refresh()"></tooltip-btn>
                 <tooltip-btn icon="mdi-export-variant" :tooltip-text="$t('system.page.export')" @click="method.exportTable"></tooltip-btn>
+                <tooltip-btn icon="mdi-qrcode" :tooltip-text="$t('base.commodityManagement.printQrCode')" @click="method.printQrCode"></tooltip-btn>
+                <tooltip-btn
+                  icon="mdi-barcode"
+                  :tooltip-text="$t('base.commodityManagement.printBarCode')"
+                  @click="method.printBarCode"
+                ></tooltip-btn>
               </v-col>
 
               <!-- Search Input -->
-              <v-col cols="12" sm="9">
+              <v-col cols="12" sm="8">
                 <v-row no-gutters @keyup.enter="method.sureSearch">
                   <v-col cols="4">
                     <v-text-field
@@ -77,6 +83,7 @@
               <template #empty>
                 {{ i18n.global.t('system.page.noData') }}
               </template>
+              <vxe-column type="checkbox" width="50" fixed="left"></vxe-column>
               <vxe-column type="seq" width="60"></vxe-column>
               <vxe-column field="spu_code" width="150px" :title="$t('base.commodityManagement.spu_code')" tree-node>
                 <template #default="{ row }">
@@ -178,6 +185,19 @@
     </div>
     <!-- Add or modify data mode window -->
     <addOrUpdateDialog :show-dialog="data.showDialog" :form="data.dialogForm" @close="method.closeDialog" @saveSuccess="method.saveSuccess" />
+
+    <!-- Print QR code -->
+    <qr-code-dialog ref="qrCodeDialogRef">
+      <template #left="{ slotData }">
+        {{ $t('base.commodityManagement.spu_code') }}:{{ slotData.spu_code }}<br />
+        {{ $t('base.commodityManagement.spu_name') }}:{{ slotData.spu_name }}<br />
+        {{ $t('base.commodityManagement.sku_code') }}:{{ slotData.sku_code }}<br />
+        {{ $t('base.commodityManagement.sku_name') }}:{{ slotData.sku_name }}
+      </template>
+    </qr-code-dialog>
+
+    <!-- Print barcode -->
+    <bar-code-dialog ref="barCodeDialogRef" />
   </div>
 </template>
 
@@ -197,8 +217,12 @@ import customPager from '@/components/custom-pager.vue'
 import { setSearchObject } from '@/utils/common'
 import { exportData } from '@/utils/exportTable'
 import { DEBOUNCE_TIME } from '@/constant/system'
+import BarCodeDialog from '@/components/codeDialog/barCodeDialog.vue'
+import QrCodeDialog from '@/components/codeDialog/qrCodeDialog.vue'
 
 const xTable = ref()
+const qrCodeDialogRef = ref()
+const barCodeDialogRef = ref()
 
 const data: DataProps = reactive({
   searchForm: {
@@ -240,6 +264,47 @@ const data: DataProps = reactive({
 })
 
 const method = reactive({
+  printQrCode: () => {
+    let records = xTable.value.getCheckboxRecords()
+    const parentRecords = records.filter((item: any) => !item.parent_id)
+    records = records.filter((item: any) => item.parent_id)
+
+    // data.selectRowData.length === 0 ? (data.selectRowData = [row]) : ''
+    // let records: any[] = data.selectRowData
+    if (records.length > 0) {
+      for (const parent of parentRecords) {
+        for (const child of records) {
+          if (parent.id === child.parent_id) {
+            child.spu_code = parent.spu_code
+            child.spu_name = parent.spu_name
+            child.type = 'commodity'
+          }
+        }
+      }
+      qrCodeDialogRef.value.openDialog(records)
+    } else {
+      hookComponent.$message({
+        type: 'error',
+        content: i18n.global.t('base.userManagement.checkboxIsNull')
+      })
+    }
+  },
+  printBarCode: () => {
+    let records = xTable.value.getCheckboxRecords()
+    records = records.filter((item: any) => !item.parent_id)
+    records = records.filter((item: any) => item.bar_code)
+
+    // data.selectRowData.length === 0 ? (data.selectRowData = [row]) : ''
+    // let records = data.selectRowData
+    if (records.length > 0) {
+      barCodeDialogRef.value.openDialog(records)
+    } else {
+      hookComponent.$message({
+        type: 'error',
+        content: i18n.global.t('base.userManagement.checkboxIsNull')
+      })
+    }
+  },
   sureSearch: () => {
     data.tablePage.searchObjects = setSearchObject(data.searchForm)
     method.getCompanyList()
