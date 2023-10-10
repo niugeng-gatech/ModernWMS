@@ -77,7 +77,7 @@
 </template>
 <script lang="ts" setup>
 import { reactive, ref, computed, watch, nextTick } from 'vue'
-import { hiprint } from '@/hiprint/index.js'
+import { hiprint } from 'yk-vue-plugin-hiprint'
 import { hookComponent } from '@/components/system/index'
 import { addPrintSolution, updatePrintSolution, listByPath } from '@/api/sys/printSolution'
 import { PrintSolutionVO, PrintSolutionGetByPathVo } from '@/types/System/PrintSolution'
@@ -426,7 +426,6 @@ defineExpose({
 })
 </script>
 <style scoped lang="less">
-@import '../../assets/css/bootstrap.min.css';
 .center-btn-box {
   margin-bottom: 5px;
   display: flex;

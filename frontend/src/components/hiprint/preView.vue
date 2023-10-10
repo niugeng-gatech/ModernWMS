@@ -28,6 +28,7 @@ const data = reactive({
   width: 0,
   // 模板
   hiprintTemplate: {} as any,
+  hiprintData: {} as any,
   // 数据
   printData: {}
 })
@@ -38,7 +39,6 @@ const method = reactive({
   show() {
     data.formVisible = true
     setTimeout(() => {
-      // eslint-disable-next-line no-undef
       $('#preview_content_custom').html(data.hiprintTemplate.getHtml(data.printData))
     }, 500)
   },
@@ -66,7 +66,6 @@ defineExpose({
 })
 </script>
 <style scoped lang="less">
-@import "../../assets/css/bootstrap.min.css";
 .preview_box {
   display: flex;
   justify-content: center; /* 水平居中对齐 */
