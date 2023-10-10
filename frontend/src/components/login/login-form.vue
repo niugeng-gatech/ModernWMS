@@ -19,9 +19,9 @@
         ></v-text-field>
         <v-checkbox v-model="data.remember" :label="$t('login.rememberTips')"></v-checkbox>
         <v-btn color="purple" class="loginBtn" @click="method.login()">{{ $t('login.mainButtonLabel') }}</v-btn>
-        <v-btn class="mt-2" color="#666" variant="plain" @click="method.openRegisterDialog">
+        <!-- <v-btn class="mt-2" color="#666" variant="plain" @click="method.openRegisterDialog">
           {{ i18n.global.t('login.registerTips') }}
-        </v-btn>
+        </v-btn> -->
       </v-form>
     </div>
     <userRegisterForm :show-dialog="data.showDialog" :form="data.dialogForm" @close="method.closeDialog" @saveSuccess="method.saveSuccess" />
