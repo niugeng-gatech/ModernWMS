@@ -456,6 +456,15 @@ namespace ModernWMS.WMS.Services
                         tenant_id = tenant_id
                     },new MenuEntity
                     {
+                        menu_name = "print",
+                        module = "baseModule",
+                        vue_path = "print",
+                        vue_path_detail = "",
+                        vue_directory = "base/print",
+                        sort = 11,
+                        tenant_id = tenant_id
+                    },new MenuEntity
+                    {
                         menu_name = "stockManagement",
                         module = "statisticAnalysis ",
                         vue_path = "stockManagement",
