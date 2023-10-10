@@ -131,7 +131,7 @@ namespace ModernWMS.WMS.Controllers
             var (id, msg) = await _userService.AddAsync(viewModel, CurrentUser);
             if (id > 0)
             {
-                return ResultModel<int>.Success(id);
+                return ResultModel<int>.Success(id, msg);
             }
             else
             {
