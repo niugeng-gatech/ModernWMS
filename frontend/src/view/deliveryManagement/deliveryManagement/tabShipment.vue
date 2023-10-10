@@ -63,12 +63,18 @@
       height: cardHeight
     }"
   >
-    <vxe-table ref="xTable" :column-config="{ minWidth: '100px' }" :data="data.tableData" :height="tableHeight" align="center">
+    <vxe-table
+      ref="xTable"
+      :column-config="{ minWidth: '100px' }"
+      :data="data.tableData"
+      :height="tableHeight"
+      align="center"
+    >
       <template #empty>
         {{ i18n.global.t('system.page.noData') }}
       </template>
+      <vxe-column type="checkbox" width="50" fixed="left"></vxe-column>
       <vxe-column type="seq" width="60"></vxe-column>
-      <!-- <vxe-column type="checkbox" width="50"></vxe-column> -->
       <vxe-column field="dispatch_no" width="120" :title="$t('wms.deliveryManagement.dispatch_no')"></vxe-column>
       <vxe-column field="dispatch_status" :title="$t('wms.deliveryManagement.dispatch_status')">
         <template #default="{ row }">
@@ -94,16 +100,9 @@
         :formatter="['formatDate', 'yyyy-MM-dd']"
         :title="$t('wms.deliveryManagement.create_time')"
       ></vxe-column> -->
-      <vxe-column field="operate" :title="$t('system.page.operate')" width="350px" :resizable="false" show-overflow>
+      <vxe-column field="operate" :title="$t('system.page.operate')" width="300px" :resizable="false" show-overflow>
         <template #default="{ row }">
           <div style="width: 100%; display: flex; justify-content: center">
-            <tooltip-btn
-              :flat="true"
-              icon="mdi-qrcode"
-              :tooltip-text="$t('base.commodityManagement.printQrCode')"
-              :disabled="!data.authorityList.includes('invoice-printQrCode')"
-              @click="method.printQrCode(row)"
-            ></tooltip-btn>
             <tooltip-btn :flat="true" icon="mdi-eye-outline" :tooltip-text="$t('system.page.view')" @click="method.viewRow(row)"></tooltip-btn>
             <tooltip-btn
               :disabled="!data.authorityList.includes('invoice-confirm') || (row.dispatch_status !== 0 && row.dispatch_status !== 1)"
@@ -135,7 +134,9 @@
               :flat="true"
               icon="mdi-delete-outline"
               :tooltip-text="$t('system.page.delete')"
-              :icon-color="errorColor"
+              :icon-color="
+                !data.authorityList.includes('invoice-delete') || (row.dispatch_status !== 0 && row.dispatch_status !== 1) ? '' : errorColor
+              "
               @click="method.deleteRow(row)"
             ></tooltip-btn>
           </div>
@@ -169,7 +170,12 @@
     />
 
     <!-- Print QR code -->
-    <qrCodeDialog ref="qrCodeDialogRef" />
+
+    <qr-code-dialog ref="qrCodeDialogRef">
+      <template #left="{ slotData }">
+        <p>{{ $t('wms.deliveryManagement.dispatch_no') }}:{{ slotData.dispatch_no }}</p> &nbsp;
+      </template>
+    </qr-code-dialog>
   </div>
 </template>
 
@@ -194,7 +200,7 @@ import { exportData } from '@/utils/exportTable'
 import { DEBOUNCE_TIME } from '@/constant/system'
 import SearchDeliveredMainDetail from './search-delivered-main-detail.vue'
 import BtnGroup from '@/components/system/btnGroup.vue'
-import qrCodeDialog from './qrCodeDialog.vue'
+import QrCodeDialog from '@/components/codeDialog/qrCodeDialog.vue'
 
 const xTable = ref()
 const qrCodeDialogRef = ref()
@@ -264,16 +270,36 @@ const data = reactive({
   },
   btnList: [] as btnGroupItem[],
   // Menu operation permissions
-  authorityList: getMenuAuthorityList()
+  authorityList: getMenuAuthorityList(),
+  selectRowData: []
 })
 
 const method = reactive({
   // Print QR code
-  printQrCode: (row: any) => {
-    qrCodeDialogRef.value.openDialog({
-      dispatch_no: row.dispatch_no,
-      type: 'delivery'
-    })
+  printQrCode: () => {
+    const records = xTable.value.getCheckboxRecords()
+
+    // data.selectRowData.length === 0 ? data.selectRowData = [row] : ''
+    // const records:any[] = data.selectRowData
+    if (records.length > 0) {
+      for (const item of records) {
+        item.id = item.dispatch_no
+        item.type = 'delivery'
+      }
+      qrCodeDialogRef.value.openDialog(records)
+    } else {
+      hookComponent.$message({
+        type: 'error',
+        content: i18n.global.t('base.userManagement.checkboxIsNull')
+      })
+    }
+  },
+  selectAllEvent({ checked }) {
+    const records = xTable.value.getCheckboxRecords()
+    checked ? (data.selectRowData = records) : (data.selectRowData = [])
+  },
+  selectChangeEvent() {
+    data.selectRowData = xTable.value.getCheckboxRecords()
   },
   viewRow: (row: DeliveryManagementVO) => {
     if (row.dispatch_no) {
@@ -454,6 +480,12 @@ onMounted(() => {
       icon: 'mdi-export-variant',
       code: 'invoice-export',
       click: method.exportTable
+    },
+    {
+      name: i18n.global.t('base.commodityManagement.printQrCode'),
+      icon: 'mdi-qrcode',
+      code: 'invoice-printQrCode',
+      click: method.printQrCode
     }
   ]
 })

@@ -25,5 +25,10 @@ namespace ModernWMS.WMS.Entities.ViewModels
         /// goods_location_id
         /// </summary>
         public int goods_location_id { get; set; } = 0;
+
+        /// <summary>
+        /// 仓库标识
+        /// </summary>
+        public int warehouse_id { get; set; } = 0;
     }
 }

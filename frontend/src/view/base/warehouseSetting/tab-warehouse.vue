@@ -97,7 +97,7 @@
             :flat="true"
             icon="mdi-delete-outline"
             :tooltip-text="$t('system.page.delete')"
-            :icon-color="errorColor"
+            :icon-color="!data.authorityList.includes('warehouse-delete')?'':errorColor"
             :disabled="!data.authorityList.includes('warehouse-delete')"
             @click="method.deleteRow(row)"
           ></tooltip-btn>
