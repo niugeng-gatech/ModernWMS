@@ -472,34 +472,34 @@ defineExpose({
   max-width: 200px;
 }
 :deep(.hiprint-printElement-type > li > ul > li > a) {
-  padding: 4px 4px;
-  color: white;
-  background-color: #9c27b0;
-  font-family: 'Roboto', sans-serif;
-  font-weight: 500;
-  line-height: normal;
-  vertical-align: middle;
-  justify-content: center;
-  height: 30px;
-  border-radius: 4px;
-  border-style: none;
-  text-overflow: ellipsis;
-  font-size: 14px;
+  padding: 4px 4px !important;
+  color: white !important;
+  background-color: #9c27b0 !important;
+  font-family: 'Roboto', sans-serif !important;
+  font-weight: 500 !important;
+  line-height: normal !important;
+  vertical-align: middle !important;
+  justify-content: center !important;
+  height: 30px !important;
+  border-radius: 4px !important;
+  border-style: none !important;
+  text-overflow: ellipsis !important;
+  font-size: 14px !important;
   box-shadow: 0 3px 1px -2px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.2)),
-    0 2px 2px 0 var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.14)), 0 1px 5px 0 var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.12));
+    0 2px 2px 0 var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.14)), 0 1px 5px 0 var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.12)) !important;
 }
 :deep(.hiprint-printElement-type > li > .title) {
-  color: #000000de;
-  font-family: 'Roboto', sans-serif;
-  font-weight: 500;
+  color: #000000de !important;
+  font-family: 'Roboto', sans-serif !important;
+  font-weight: 500 !important;
 }
 // 最右边样式，确认按钮背景色
 :deep(.hiprint-option-item-settingBtn) {
-  background: #9c27b0;
+  background: #9c27b0 !important;
 }
 // 最右边样式，删除按钮背景色
 :deep(.hiprint-option-item-deleteBtn) {
-  background: #8d9098;
+  background: #8d9098 !important;
 }
 // 默认图片
 :deep(.hiprint-printElement-image-content) {
@@ -515,4 +515,3 @@ defineExpose({
   overflow-y: auto;
 }
 </style>
-@/index@/hiprint/index.js
