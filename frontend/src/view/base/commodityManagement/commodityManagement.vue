@@ -187,7 +187,7 @@
     <addOrUpdateDialog :show-dialog="data.showDialog" :form="data.dialogForm" @close="method.closeDialog" @saveSuccess="method.saveSuccess" />
 
     <!-- Print QR code -->
-    <qr-code-dialog ref="qrCodeDialogRef">
+    <qr-code-dialog ref="qrCodeDialogRef" :menu="'commodityManagement'">
       <template #left="{ slotData }">
         {{ $t('base.commodityManagement.spu_code') }}:{{ slotData.spu_code }}<br />
         {{ $t('base.commodityManagement.spu_name') }}:{{ slotData.spu_name }}<br />
@@ -197,7 +197,7 @@
     </qr-code-dialog>
 
     <!-- Print barcode -->
-    <bar-code-dialog ref="barCodeDialogRef" />
+    <bar-code-dialog ref="barCodeDialogRef" :menu="'commodityManagement'" />
   </div>
 </template>
 

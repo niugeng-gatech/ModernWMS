@@ -29,7 +29,9 @@
       "noData": "暂无数据",
       "revoke": "撤回",
       "preview": "预览",
-      "rowsNumber": "每行放置数量"
+      "rowsNumber": "每行放置数量",
+      "gridRowGap": "行间距(px)",
+      "gridColumnGap": "列间距(px)"
     },
     "tips": {
       "success": "成功!",

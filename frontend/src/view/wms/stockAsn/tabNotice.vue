@@ -98,7 +98,7 @@
   <skuInfo :show-dialog="data.showDialogShowInfo" :form="data.dialogForm" @close="method.closeDialogShowInfo" />
 
   <!-- Print QR code -->
-  <qr-code-dialog ref="qrCodeDialogRef">
+  <qr-code-dialog ref="qrCodeDialogRef" :menu="'stockAsnInfo-notice'">
     <template #left="{ slotData }"> {{ $t('wms.stockAsnInfo.num') }}:{{ slotData.asn_no }} </template>
   </qr-code-dialog>
 </template>

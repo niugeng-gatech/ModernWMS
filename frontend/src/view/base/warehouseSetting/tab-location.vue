@@ -102,7 +102,7 @@
   <add-or-update-dialog :show-dialog="data.showDialog" :form="data.dialogForm" @close="method.closeDialog" @saveSuccess="method.saveSuccess" />
 
   <!-- Print QR code -->
-  <qr-code-dialog ref="qrCodeDialogRef">
+  <qr-code-dialog ref="qrCodeDialogRef" :menu="'warehouseSetting-location'">
     <template #left="{ slotData }">
       {{ $t('base.warehouseSetting.warehouse_name') }}:{{ slotData.warehouse_name }}<br />
       {{ $t('base.warehouseSetting.area_name') }}:{{ slotData.warehouse_area_name }}<br />
@@ -111,7 +111,7 @@
   </qr-code-dialog>
 
   <!-- Print barcode -->
-  <bar-code-dialog ref="barCodeDialogRef" />
+  <bar-code-dialog ref="barCodeDialogRef" :menu="'warehouseSetting-location'" />
 </template>
 
 <script lang="ts" setup>

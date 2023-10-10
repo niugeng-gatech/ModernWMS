@@ -55,3 +55,18 @@ export const removeObjectNull = (obj: any) => {
   })
   return copy
 }
+
+// 从浏览器中的缓存中获取数据
+export const getStorage = (key: string) => {
+  // printCommidity...
+  const value = localStorage.getItem(key)
+  if (value) {
+    return JSON.parse(value)
+  }
+  return null
+}
+
+// 将数据存储到浏览器的缓存中
+export const setStorage = (key: string, value: any) => {
+  localStorage.setItem(key, JSON.stringify(value))
+}
