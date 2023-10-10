@@ -51,19 +51,17 @@
       height: cardHeight
     }"
   >
-    <vxe-table 
+    <vxe-table
       ref="xTable"
-      :column-config="{ minWidth: '100px' }" 
-      :data="data.tableData" 
-      :height="tableHeight" 
+      :column-config="{ minWidth: '100px' }"
+      :data="data.tableData"
+      :height="tableHeight"
       align="center"
-      @checkbox-all="method.selectAllEvent"
-      @checkbox-change="method.selectChangeEvent"
     >
       <template #empty>
         {{ i18n.global.t('system.page.noData') }}
       </template>
-      <vxe-column type="checkbox" width="50"></vxe-column>
+      <vxe-column type="checkbox" width="50" fixed="left"></vxe-column>
       <vxe-column type="seq" width="60"></vxe-column>
       <vxe-column field="asn_no" :title="$t('wms.stockAsnInfo.asn_no')"></vxe-column>
       <vxe-column field="asn_batch" :title="$t('wms.stockAsnInfo.asn_batch')"></vxe-column>
@@ -73,15 +71,15 @@
         :title="$t('wms.stockAsnInfo.estimated_arrival_time')"
       ></vxe-column>
       <vxe-column field="goods_owner_name" :title="$t('wms.stockAsnInfo.goods_owner_name')"></vxe-column>
-      <vxe-column field="operate" :title="$t('system.page.operate')" width="180px" :resizable="false" show-overflow>
+      <vxe-column field="operate" :title="$t('system.page.operate')" width="140px" :resizable="false" show-overflow>
         <template #default="{ row }">
-          <tooltip-btn
+          <!-- <tooltip-btn
             :flat="true"
             icon="mdi-qrcode"
             :tooltip-text="$t('base.commodityManagement.printQrCode')"
             :disabled="!data.authorityList.includes('notice-printQrCode')"
             @click="method.printQrCode(row)"
-          ></tooltip-btn>
+          ></tooltip-btn> -->
           <tooltip-btn
             :flat="true"
             icon="mdi-pencil-outline"
@@ -93,7 +91,7 @@
             :flat="true"
             icon="mdi-delete-outline"
             :tooltip-text="$t('system.page.delete')"
-            :icon-color="!data.authorityList.includes('notice-delete')?'':errorColor"
+            :icon-color="!data.authorityList.includes('notice-delete') ? '' : errorColor"
             :disabled="!data.authorityList.includes('notice-delete')"
             @click="method.deleteRow(row)"
           ></tooltip-btn>
@@ -116,7 +114,7 @@
 
   <!-- Print QR code -->
   <qr-code-dialog ref="qrCodeDialogRef">
-    <template #left="{slotData}">
+    <template #left="{ slotData }">
       <p>{{ $t('wms.stockAsnInfo.num') }}:{{ slotData.asn_no }}</p> &nbsp;
       <p>{{ $t('wms.stockAsnInfo.asn_batch') }}:{{ slotData.asn_batch }}</p> &nbsp;
     </template>
@@ -181,22 +179,31 @@ const data = reactive({
   btnList: [] as btnGroupItem[],
   // Menu operation permissions
   authorityList: getMenuAuthorityList(),
-  selectRowData: [],
+  selectRowData: []
 })
 
 const method = reactive({
   // Print QR code
-  printQrCode: (row: never) => {
-    data.selectRowData.length === 0 ? data.selectRowData = [row] : ''
-    const records:any[] = data.selectRowData
-    for (const item of records) {
-      item.type = 'asn'
+  printQrCode: () => {
+    const records = xTable.value.getCheckboxRecords()
+
+    // data.selectRowData.length === 0 ? data.selectRowData = [row] : ''
+    // const records:any[] = data.selectRowData
+    if (records.length > 0) {
+      for (const item of records) {
+        item.type = 'asn'
+      }
+      qrCodeDialogRef.value.openDialog(records)
+    } else {
+      hookComponent.$message({
+        type: 'error',
+        content: i18n.global.t('base.userManagement.checkboxIsNull')
+      })
     }
-    qrCodeDialogRef.value.openDialog(records)
   },
   selectAllEvent({ checked }) {
     const records = xTable.value.getCheckboxRecords()
-    checked ? data.selectRowData = records : data.selectRowData = []
+    checked ? (data.selectRowData = records) : (data.selectRowData = [])
   },
   selectChangeEvent() {
     data.selectRowData = xTable.value.getCheckboxRecords()
@@ -319,6 +326,12 @@ onMounted(() => {
       icon: 'mdi-export-variant',
       code: 'notice-export',
       click: method.exportTable
+    },
+    {
+      name: i18n.global.t('base.commodityManagement.printQrCode'),
+      icon: 'mdi-qrcode',
+      code: 'notice-printQrCode',
+      click: method.printQrCode
     }
   ]
 })

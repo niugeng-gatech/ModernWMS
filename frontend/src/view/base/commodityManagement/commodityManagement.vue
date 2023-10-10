@@ -76,13 +76,11 @@
               :height="tableHeight"
               align="center"
               :tree-config="data.tableTreeConfig"
-              @checkbox-all="method.selectAllEvent"
-              @checkbox-change="method.selectChangeEvent"
             >
               <template #empty>
                 {{ i18n.global.t('system.page.noData') }}
               </template>
-              <vxe-column type="checkbox" width="50"></vxe-column>
+              <vxe-column type="checkbox" width="50" fixed="left"></vxe-column>
               <vxe-column type="seq" width="60"></vxe-column>
               <vxe-column tree-node width="60">
                 <template #header>
@@ -166,7 +164,7 @@
               <vxe-column field="brand" :title="$t('base.commodityManagement.brand')"></vxe-column>
               <vxe-column field="unit" :title="$t('base.commodityManagement.unit')"></vxe-column>
               <vxe-column field="cost" :title="$t('base.commodityManagement.cost')"></vxe-column> -->
-              <vxe-column field="operate" :title="$t('system.page.operate')" width="210px" :resizable="false" show-overflow>
+              <vxe-column field="operate" :title="$t('system.page.operate')" width="160px" :resizable="false" show-overflow>
                 <template #default="{ row }">
                   <div v-if="!row.parent_id || row.parent_id <= 0">
                     <tooltip-btn
@@ -180,26 +178,26 @@
                       :flat="true"
                       icon="mdi-delete-outline"
                       :tooltip-text="$t('system.page.delete')"
-                      :icon-color="!data.authorityList.includes('delete')?'':errorColor"
+                      :icon-color="!data.authorityList.includes('delete') ? '' : errorColor"
                       :disabled="!data.authorityList.includes('delete')"
                       @click="method.deleteRow(row)"
                     ></tooltip-btn>
                   </div>
                   <div v-else>
-                    <tooltip-btn
+                    <!-- <tooltip-btn
                       :flat="true"
                       icon="mdi-qrcode"
                       :tooltip-text="$t('base.commodityManagement.printQrCode')"
                       :disabled="!data.authorityList.includes('printQrCode')"
                       @click="method.printQrCode(row)"
-                    ></tooltip-btn>
-                    <tooltip-btn
+                    ></tooltip-btn> -->
+                    <!-- <tooltip-btn
                       :flat="true"
                       icon="mdi-barcode"
                       :tooltip-text="$t('base.commodityManagement.printBarCode')"
                       :disabled="!data.authorityList.includes('printBarCode')"
                       @click="method.printBarCode(row)"
-                    ></tooltip-btn>
+                    ></tooltip-btn> -->
                     <tooltip-btn
                       :flat="true"
                       icon="mdi-alarm-light"
@@ -232,7 +230,7 @@
 
     <!-- Print QR code -->
     <qr-code-dialog ref="qrCodeDialogRef">
-      <template #left="{slotData}">
+      <template #left="{ slotData }">
         <p>{{ $t('base.commodityManagement.spu_code') }}:{{ slotData.spu_code }}</p>
         <p>{{ $t('base.commodityManagement.spu_name') }}:{{ slotData.spu_name }}</p>
         <p>{{ $t('base.commodityManagement.sku_code') }}:{{ slotData.sku_code }}</p>
@@ -263,7 +261,7 @@ import { exportData } from '@/utils/exportTable'
 import { DEBOUNCE_TIME } from '@/constant/system'
 import BtnGroup from '@/components/system/btnGroup.vue'
 import updateSkuSafetyStock from './update-sku-safety-stock.vue'
-import qrCodeDialogDialog from './qrCodeDialog.vue'
+// import qrCodeDialogDialog from './qrCodeDialog.vue'
 import BarCodeDialog from '@/components/codeDialog/barCodeDialog.vue'
 import QrCodeDialog from '@/components/codeDialog/qrCodeDialog.vue'
 
@@ -311,38 +309,56 @@ const data: DataProps = reactive({
   },
   btnList: [],
   authorityList: getMenuAuthorityList(),
-  selectRowData: [],
+  selectRowData: []
 })
 
 const method = reactive({
   // Check if the checkbox can be checked
   getCheckBoxDisableState: ({ row }: { row: any }): boolean => row.parent_id,
   // Print QR code
-  printQrCode: (row: any) => {
-    data.selectRowData.length === 0 ? data.selectRowData = [row] : ''
-    let records:any[] = data.selectRowData
-    records = records.filter(item => item.parent_id)
-    for (const parent of data.selectRowData) {
-      for (const child of records) {
-        if (parent.id === child.parent_id) {
-          child.spu_code = parent.spu_code
-          child.spu_name = parent.spu_name
-          child.type = 'commodity'
+  printQrCode: () => {
+    let records = xTable.value.getCheckboxRecords()
+    records = records.filter((item) => item.parent_id)
+
+    // data.selectRowData.length === 0 ? (data.selectRowData = [row]) : ''
+    // let records: any[] = data.selectRowData
+    if (records.length > 0) {
+      for (const parent of data.selectRowData) {
+        for (const child of records) {
+          if (parent.id === child.parent_id) {
+            child.spu_code = parent.spu_code
+            child.spu_name = parent.spu_name
+            child.type = 'commodity'
+          }
         }
       }
+      qrCodeDialogRef.value.openDialog(records)
+    } else {
+      hookComponent.$message({
+        type: 'error',
+        content: i18n.global.t('base.userManagement.checkboxIsNull')
+      })
     }
-    qrCodeDialogRef.value.openDialog(records)
   },
-  printBarCode: (row: any) => {
-    data.selectRowData.length === 0 ? data.selectRowData = [row] : ''
-    let records = data.selectRowData
-    records = records.filter(item => item.parent_id)
-    records = records.filter(item => item.bar_code)
-    barCodeDialogRef.value.openDialog(records)
+  printBarCode: () => {
+    let records = xTable.value.getCheckboxRecords()
+    records = records.filter((item: any) => item.parent_id)
+    records = records.filter((item: any) => item.bar_code)
+
+    // data.selectRowData.length === 0 ? (data.selectRowData = [row]) : ''
+    // let records = data.selectRowData
+    if (records.length > 0) {
+      barCodeDialogRef.value.openDialog(records)
+    } else {
+      hookComponent.$message({
+        type: 'error',
+        content: i18n.global.t('base.userManagement.checkboxIsNull')
+      })
+    }
   },
   selectAllEvent({ checked }) {
     const records = xTable.value.getCheckboxRecords()
-    checked ? data.selectRowData = records : data.selectRowData = []
+    checked ? (data.selectRowData = records) : (data.selectRowData = [])
   },
   selectChangeEvent() {
     data.selectRowData = xTable.value.getCheckboxRecords()
@@ -499,6 +515,18 @@ onMounted(async () => {
       icon: 'mdi-export-variant',
       code: 'export',
       click: method.exportTable
+    },
+    {
+      name: i18n.global.t('base.commodityManagement.printQrCode'),
+      icon: 'mdi-qrcode',
+      code: 'printQrCode',
+      click: method.printQrCode
+    },
+    {
+      name: i18n.global.t('base.commodityManagement.printBarCode'),
+      icon: 'mdi-barcode',
+      code: 'printBarCode',
+      click: method.printBarCode
     }
     // {
     //   name: i18n.global.t('base.commodityManagement.printQrCode'),

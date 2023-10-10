@@ -56,8 +56,6 @@
       :data="data.tableData"
       :height="tableHeight"
       align="center"
-      @checkbox-all="method.selectAllEvent"
-      @checkbox-change="method.selectChangeEvent"
     >
       <vxe-column type="seq" width="60"></vxe-column>
       <vxe-column type="checkbox" width="50"></vxe-column>
@@ -83,22 +81,22 @@
           <span>{{ formatIsValid(row[column.property]) }}</span>
         </template>
       </vxe-column>
-      <vxe-column field="operate" :title="$t('system.page.operate')" width="280px" :resizable="false" show-overflow>
+      <vxe-column field="operate" :title="$t('system.page.operate')" width="140px" :resizable="false" show-overflow>
         <template #default="{ row }">
-          <tooltip-btn
+          <!-- <tooltip-btn
             :flat="true"
             icon="mdi-qrcode"
             :tooltip-text="$t('base.commodityManagement.printQrCode')"
             :disabled="!data.authorityList.includes('location-printQrCode')"
             @click="method.printQrCode(row)"
-          ></tooltip-btn>
-          <tooltip-btn
+          ></tooltip-btn> -->
+          <!-- <tooltip-btn
             :flat="true"
             icon="mdi-barcode"
             :tooltip-text="$t('base.commodityManagement.printBarCode')"
             :disabled="!data.authorityList.includes('location-printBarCode')"
             @click="method.printBarCode(row)"
-          ></tooltip-btn>
+          ></tooltip-btn> -->
           <tooltip-btn
             :flat="true"
             icon="mdi-pencil-outline"
@@ -132,7 +130,7 @@
 
   <!-- Print QR code -->
   <qr-code-dialog ref="qrCodeDialogRef">
-    <template #left="{slotData}">
+    <template #left="{ slotData }">
       <p>{{ $t('base.warehouseSetting.warehouse_name') }}:{{ slotData.warehouse_name }}</p> &nbsp;
       <p>{{ $t('base.warehouseSetting.area_name') }}:{{ slotData.warehouse_area_name }}</p> &nbsp;
       <p>{{ $t('base.warehouseSetting.location_name') }}:{{ slotData.location_name }}</p> &nbsp;
@@ -207,23 +205,41 @@ const data = reactive({
 
 const method = reactive({
   // Print QR code
-  printQrCode: (row: never) => {
-    data.selectRowData.length === 0 ? data.selectRowData = [row] : ''
-    const records:any[] = data.selectRowData
-    for (const item of records) {
-      item.type = 'warehouse'
+  printQrCode: () => {
+    const records = xTableGoodsLocation.value.getCheckboxRecords()
+
+    // data.selectRowData.length === 0 ? (data.selectRowData = [row]) : ''
+    // const records: any[] = data.selectRowData
+    if (records.length > 0) {
+      for (const item of records) {
+        item.type = 'warehouse'
+      }
+      qrCodeDialogRef.value.openDialog(records)
+    } else {
+      hookComponent.$message({
+        type: 'error',
+        content: i18n.global.t('base.userManagement.checkboxIsNull')
+      })
     }
-    qrCodeDialogRef.value.openDialog(records)
   },
-  printBarCode: (row: never) => {
-    data.selectRowData.length === 0 ? data.selectRowData = [row] : ''
-    let records:any[] = data.selectRowData
-    records = records.filter(item => item.id)
-    barCodeDialogRef.value.openDialog(records)
+  printBarCode: () => {
+    let records = xTableGoodsLocation.value.getCheckboxRecords()
+    records = records.filter((item) => item.id)
+    // data.selectRowData.length === 0 ? (data.selectRowData = [row]) : ''
+    // let records: any[] = data.selectRowData
+
+    if (records.length > 0) {
+      barCodeDialogRef.value.openDialog(records)
+    } else {
+      hookComponent.$message({
+        type: 'error',
+        content: i18n.global.t('base.userManagement.checkboxIsNull')
+      })
+    }
   },
   selectAllEvent({ checked }) {
     const records = xTableGoodsLocation.value.getCheckboxRecords()
-    checked ? data.selectRowData = records : data.selectRowData = []
+    checked ? (data.selectRowData = records) : (data.selectRowData = [])
   },
   selectChangeEvent() {
     data.selectRowData = xTableGoodsLocation.value.getCheckboxRecords()
@@ -340,6 +356,18 @@ onMounted(() => {
       icon: 'mdi-export-variant',
       code: 'location-export',
       click: method.exportTable
+    },
+    {
+      name: i18n.global.t('base.commodityManagement.printQrCode'),
+      icon: 'mdi-qrcode',
+      code: 'location-printQrCode',
+      click: method.printQrCode
+    },
+    {
+      name: i18n.global.t('base.commodityManagement.printBarCode'),
+      icon: 'mdi-barcode',
+      code: 'location-printBarCode',
+      click: method.printBarCode
     }
   ]
 })
