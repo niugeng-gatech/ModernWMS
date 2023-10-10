@@ -7,13 +7,13 @@
           <div class="operateArea">
             <v-row no-gutters>
               <!-- Operate Btn -->
-              <v-col cols="12" sm="3" class="col">
+              <v-col cols="12" sm="4" class="col">
                 <!-- new version -->
                 <BtnGroup :authority-list="data.authorityList" :btn-list="data.btnList" />
               </v-col>
 
               <!-- Search Input -->
-              <v-col cols="12" sm="9">
+              <v-col cols="12" sm="8">
                 <v-row no-gutters @keyup.enter="method.sureSearch">
                   <v-col cols="4">
                     <v-text-field
