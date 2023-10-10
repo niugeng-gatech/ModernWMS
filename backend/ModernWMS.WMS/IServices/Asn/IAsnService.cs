@@ -116,6 +116,13 @@ namespace ModernWMS.WMS.IServices
         Task<(bool flag, string msg)> SortedCancelAsync(int id);
 
         /// <summary>
+        /// get pending putaway data by asn_id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<List<AsnPendingPutawayViewModel>> GetPendingPutawayDataAsync(int id);
+
+        /// <summary>
         /// PutAway
         /// </summary>
         /// <param name="viewModel">args</param>
