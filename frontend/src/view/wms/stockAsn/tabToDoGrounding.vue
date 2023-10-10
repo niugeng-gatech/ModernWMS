@@ -105,7 +105,7 @@
   </div>
   <updateGrounding :show-dialog="data.showDialog" :form="data.dialogForm" @close="method.closeDialog" @saveSuccess="method.saveSuccess" />
 
-  <!-- 上架操作框 -->
+  <!-- Listing operation box -->
   <confirmGroudingDialog ref="confirmGroudingDialogRef" @sure="method.confirmGroudingSure" />
   <skuInfo :show-dialog="data.showDialogShowInfo" :form="data.dialogForm" @close="method.closeDialogShowInfo" />
 </template>
@@ -171,7 +171,7 @@ const data = reactive({
 })
 
 const method = reactive({
-  // 确认上架数据
+  // Confirm listing data
   confirmGroudingSure: async (tableData: any) => {
     const { data: res } = await confirmPutaway(tableData)
     if (!res.isSuccess) {
@@ -189,7 +189,7 @@ const method = reactive({
     confirmGroudingDialogRef.value.closeDialog()
     method.refresh()
   },
-  // 撤回流程
+  // Withdrawal process
   handleRevoke: () => {
     const checkRecords = xTableStockLocation.value.getCheckboxRecords()
     if (checkRecords.length > 0) {

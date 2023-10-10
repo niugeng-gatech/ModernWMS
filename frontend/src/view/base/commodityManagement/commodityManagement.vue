@@ -7,7 +7,7 @@
           <div class="operateArea">
             <v-row no-gutters>
               <!-- Operate Btn -->
-              <v-col cols="12" sm="3" class="col">
+              <v-col cols="12" sm="4" class="col">
                 <!-- <tooltip-btn icon="mdi-plus" :tooltip-text="$t('system.page.add')" @click="method.add()"></tooltip-btn>
                 <tooltip-btn icon="mdi-refresh" :tooltip-text="$t('system.page.refresh')" @click="method.refresh()"></tooltip-btn>
                 <tooltip-btn icon="mdi-export-variant" :tooltip-text="$t('system.page.export')" @click="method.exportTable"></tooltip-btn> -->
@@ -17,7 +17,7 @@
               </v-col>
 
               <!-- Search Input -->
-              <v-col cols="12" sm="9">
+              <v-col cols="12" sm="8">
                 <v-row no-gutters @keyup.enter="method.sureSearch">
                   <v-col cols="4">
                     <v-text-field
@@ -80,6 +80,7 @@
               <template #empty>
                 {{ i18n.global.t('system.page.noData') }}
               </template>
+              <vxe-column type="checkbox" width="50" fixed="left"></vxe-column>
               <vxe-column type="seq" width="60"></vxe-column>
               <vxe-column tree-node width="60">
                 <template #header>
@@ -163,7 +164,7 @@
               <vxe-column field="brand" :title="$t('base.commodityManagement.brand')"></vxe-column>
               <vxe-column field="unit" :title="$t('base.commodityManagement.unit')"></vxe-column>
               <vxe-column field="cost" :title="$t('base.commodityManagement.cost')"></vxe-column> -->
-              <vxe-column field="operate" :title="$t('system.page.operate')" width="160" :resizable="false" show-overflow>
+              <vxe-column field="operate" :title="$t('system.page.operate')" width="160px" :resizable="false" show-overflow>
                 <template #default="{ row }">
                   <div v-if="!row.parent_id || row.parent_id <= 0">
                     <tooltip-btn
@@ -177,12 +178,26 @@
                       :flat="true"
                       icon="mdi-delete-outline"
                       :tooltip-text="$t('system.page.delete')"
-                      :icon-color="errorColor"
+                      :icon-color="!data.authorityList.includes('delete') ? '' : errorColor"
                       :disabled="!data.authorityList.includes('delete')"
                       @click="method.deleteRow(row)"
                     ></tooltip-btn>
                   </div>
                   <div v-else>
+                    <!-- <tooltip-btn
+                      :flat="true"
+                      icon="mdi-qrcode"
+                      :tooltip-text="$t('base.commodityManagement.printQrCode')"
+                      :disabled="!data.authorityList.includes('printQrCode')"
+                      @click="method.printQrCode(row)"
+                    ></tooltip-btn> -->
+                    <!-- <tooltip-btn
+                      :flat="true"
+                      icon="mdi-barcode"
+                      :tooltip-text="$t('base.commodityManagement.printBarCode')"
+                      :disabled="!data.authorityList.includes('printBarCode')"
+                      @click="method.printBarCode(row)"
+                    ></tooltip-btn> -->
                     <tooltip-btn
                       :flat="true"
                       icon="mdi-alarm-light"
@@ -212,11 +227,24 @@
     <addOrUpdateDialog :show-dialog="data.showDialog" :form="data.dialogForm" @close="method.closeDialog" @saveSuccess="method.saveSuccess" />
 
     <update-sku-safety-stock ref="updateSkuSaftyStockRef" @sure="method.updateSkuSaftyStockByRow" />
+
+    <!-- Print QR code -->
+    <qr-code-dialog ref="qrCodeDialogRef">
+      <template #left="{ slotData }">
+        <p>{{ $t('base.commodityManagement.spu_code') }}:{{ slotData.spu_code }}</p>
+        <p>{{ $t('base.commodityManagement.spu_name') }}:{{ slotData.spu_name }}</p>
+        <p>{{ $t('base.commodityManagement.sku_code') }}:{{ slotData.sku_code }}</p>
+        <p>{{ $t('base.commodityManagement.sku_name') }}:{{ slotData.sku_name }}</p>
+      </template>
+    </qr-code-dialog>
+
+    <!-- Print barcode -->
+    <bar-code-dialog ref="barCodeDialogRef" />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, reactive, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { VxePagerEvents } from 'vxe-table'
 import { computedCardHeight, computedTableHeight, errorColor } from '@/constant/style'
 import tooltipBtn from '@/components/tooltip-btn.vue'
@@ -233,9 +261,14 @@ import { exportData } from '@/utils/exportTable'
 import { DEBOUNCE_TIME } from '@/constant/system'
 import BtnGroup from '@/components/system/btnGroup.vue'
 import updateSkuSafetyStock from './update-sku-safety-stock.vue'
+// import qrCodeDialogDialog from './qrCodeDialog.vue'
+import BarCodeDialog from '@/components/codeDialog/barCodeDialog.vue'
+import QrCodeDialog from '@/components/codeDialog/qrCodeDialog.vue'
 
 const xTable = ref()
 const updateSkuSaftyStockRef = ref()
+const qrCodeDialogRef = ref()
+const barCodeDialogRef = ref()
 
 const data: DataProps = reactive({
   searchForm: {
@@ -275,10 +308,62 @@ const data: DataProps = reactive({
     detailList: []
   },
   btnList: [],
-  authorityList: getMenuAuthorityList()
+  authorityList: getMenuAuthorityList(),
+  selectRowData: []
 })
 
 const method = reactive({
+  // Check if the checkbox can be checked
+  getCheckBoxDisableState: ({ row }: { row: any }): boolean => row.parent_id,
+  // Print QR code
+  printQrCode: () => {
+    let records = xTable.value.getCheckboxRecords()
+    const parentRecords = records.filter((item) => !item.parent_id)
+    records = records.filter((item) => item.parent_id)
+
+    // data.selectRowData.length === 0 ? (data.selectRowData = [row]) : ''
+    // let records: any[] = data.selectRowData
+    if (records.length > 0) {
+      for (const parent of parentRecords) {
+        for (const child of records) {
+          if (parent.id === child.parent_id) {
+            child.spu_code = parent.spu_code
+            child.spu_name = parent.spu_name
+            child.type = 'commodity'
+          }
+        }
+      }
+      qrCodeDialogRef.value.openDialog(records)
+    } else {
+      hookComponent.$message({
+        type: 'error',
+        content: i18n.global.t('base.userManagement.checkboxIsNull')
+      })
+    }
+  },
+  printBarCode: () => {
+    let records = xTable.value.getCheckboxRecords()
+    records = records.filter((item: any) => item.parent_id)
+    records = records.filter((item: any) => item.bar_code)
+
+    // data.selectRowData.length === 0 ? (data.selectRowData = [row]) : ''
+    // let records = data.selectRowData
+    if (records.length > 0) {
+      barCodeDialogRef.value.openDialog(records)
+    } else {
+      hookComponent.$message({
+        type: 'error',
+        content: i18n.global.t('base.userManagement.checkboxIsNull')
+      })
+    }
+  },
+  selectAllEvent({ checked }) {
+    const records = xTable.value.getCheckboxRecords()
+    checked ? (data.selectRowData = records) : (data.selectRowData = [])
+  },
+  selectChangeEvent() {
+    data.selectRowData = xTable.value.getCheckboxRecords()
+  },
   expandAllRows: () => {
     const expandRows = xTable.value.getTreeExpandRecords()
     const parentData = data.tableData.filter((item: any) => !item.parent_id)
@@ -431,7 +516,31 @@ onMounted(async () => {
       icon: 'mdi-export-variant',
       code: 'export',
       click: method.exportTable
+    },
+    {
+      name: i18n.global.t('base.commodityManagement.printQrCode'),
+      icon: 'mdi-qrcode',
+      code: 'printQrCode',
+      click: method.printQrCode
+    },
+    {
+      name: i18n.global.t('base.commodityManagement.printBarCode'),
+      icon: 'mdi-barcode',
+      code: 'printBarCode',
+      click: method.printBarCode
     }
+    // {
+    //   name: i18n.global.t('base.commodityManagement.printQrCode'),
+    //   icon: 'mdi-qrcode',
+    //   code: 'printQrCode',
+    //   click: method.printQrCode
+    // },
+    // {
+    //   name: i18n.global.t('base.commodityManagement.printBarCode'),
+    //   icon: 'mdi-barcode',
+    //   code: 'printBarCode',
+    //   click: method.printBarCode
+    // }
   ]
 })
 

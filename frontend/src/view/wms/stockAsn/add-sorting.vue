@@ -87,7 +87,7 @@ const data = reactive({
 })
 
 const method = reactive({
-  // 删除数据
+  // Delete data
   removeItem: (index: number) => {
     hookComponent.$dialog({
       content: i18n.global.t('system.tips.beforeDeleteDetailMessage'),
@@ -122,7 +122,7 @@ const method = reactive({
     }
     const { valid } = await formRef.value.validate()
     if (valid) {
-      const reqData = []
+      const reqData: any = []
 
       for (const item of data.SNList) {
         reqData.push({
@@ -132,7 +132,7 @@ const method = reactive({
         })
       }
 
-      // 如果去除sn码还有剩余则添加没有sn码的明细
+      // If there is still remaining after removing the SN code, add details without the SN code
       if (data.SNList.length !== data.form.sorted_qty) {
         const margin = data.form.sorted_qty - data.SNList.length
         reqData.push({

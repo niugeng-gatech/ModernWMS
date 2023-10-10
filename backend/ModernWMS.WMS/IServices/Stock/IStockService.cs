@@ -67,6 +67,14 @@ namespace ModernWMS.WMS.IServices
         /// <returns></returns>
         Task<List<LocationStockManagementViewModel>> LocationStockForPhoneAsync(LocationStockForPhoneSearchViewModel input, CurrentUser currentUser);
 
+        /// <summary>
+        /// delivery statistic
+        /// </summary>
+        /// <param name="input">input</param>
+        /// <param name="currentUser">current user</param>
+        /// <returns></returns>
+        Task<(List<DeliveryStatisticViewModel> datas, int totals)> DeliveryStatistic(DeliveryStatisticSearchViewModel input, CurrentUser currentUser);
+
         #endregion Api
     }
 }

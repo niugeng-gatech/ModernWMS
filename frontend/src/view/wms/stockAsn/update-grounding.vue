@@ -57,7 +57,7 @@ const data = reactive({
 })
 
 const method = reactive({
-  // 初始化数据
+  // Initialized Data
   initDialogData: async (id: number) => {
     const { data: res } = await getSorting(id)
     if (!res.isSuccess) {

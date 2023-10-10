@@ -94,7 +94,10 @@ export default {
       hline: '横线',
       vline: '竖线',
       rect: '矩形',
-      oval: '椭圆'
+      oval: '椭圆',
+      addScheme: '新增方案',
+      schemeName: '方案名称',
+      repeatScheme: '方案名称已存在'
     }
   },
   router: {
@@ -123,7 +126,9 @@ export default {
       deliveryManagement: '发货管理',
       stockAsn: '收货管理',
       statisticAnalysis: '统计分析',
-      saftyStock: '安全库存'
+      saftyStock: '安全库存',
+      asnStatistic: '收货统计',
+      deliveryStatistic: '发货统计'
     }
   },
   login: {
@@ -312,7 +317,9 @@ export default {
         delivery: '出库',
         setCarrier: '设置承运单位',
         signIn: '签收',
-        saftyStock: '安全库存'
+        saftyStock: '安全库存',
+        printQrCode: '打印二维码',
+        printBarCode: '打印条码'
       },
       modalTitle: {
         editMenuAction: '编辑菜单操作权限',
@@ -341,7 +348,9 @@ export default {
       width: '商品宽度',
       height: '商品高度',
       volume: '商品体积',
-      saftyStock: '安全库存'
+      saftyStock: '安全库存',
+      printQrCode: '打印二维码',
+      printBarCode: '打印条码'
     }
   },
   wms: {
@@ -542,7 +551,8 @@ export default {
       notLocation: '请选择库位后进行上架!',
       selectLocation: '选择库位编码',
       viewDetail: '查看明细',
-      grounding: '上架'
+      grounding: '上架',
+      num: '编号'
     },
     skuInfo: {
       spu_id: '商品spu标识',
@@ -669,6 +679,19 @@ export default {
       qty_locked: '锁定数量',
       qty_frozen: '冻结数量',
       safety_stock_qty: '安全库存数量'
+    },
+    deliveryStatistic: {
+      dispatch_no: '发货单号',
+      warehouse_name: '仓库名称',
+      location_name: '库位名称',
+      sku_code: '规格编码',
+      sku_name: '规格名称',
+      spu_code: '商品编码',
+      spu_name: '商品名称',
+      customer_name: '客户名称',
+      series_number: '序列号',
+      delivery_qty: '出库数量',
+      delivery_date: '出库时间'
     }
   }
 }

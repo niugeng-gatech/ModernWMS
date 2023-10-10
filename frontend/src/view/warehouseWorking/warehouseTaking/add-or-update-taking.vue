@@ -117,7 +117,10 @@ const emit = defineEmits(['close', 'saveSuccess'])
 const isUpdate = computed(() => props.form.id && props.form.id > 0)
 const operateDisabled = computed(() => !!isUpdate.value)
 const isFromStock = computed(() => data.curStockID > 0)
-const qrCodeValue = computed(() => data.form.id.toString())
+const qrCodeValue = computed(() => JSON.stringify({
+    id: data.form.id.toString(),
+    type: 'warehouseTaking'
+  }))
 
 const props = defineProps<{
   showDialog: boolean

@@ -18,6 +18,8 @@ using System.Runtime.Intrinsics.Arm;
 using System.Net.WebSockets;
 using System.Linq;
 using ModernWMS.WMS.Entities.ViewModels.Stock;
+using ModernWMS.Core.Utility;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace ModernWMS.WMS.Services
 {
@@ -585,8 +587,10 @@ namespace ModernWMS.WMS.Services
             var stock_group_datas = from stock in DbSet.AsNoTracking()
                                     join gw in _dBContext.GetDbSet<GoodsownerEntity>().AsNoTracking() on stock.goods_owner_id equals gw.id into gw_left
                                     from gw in gw_left.DefaultIfEmpty()
+                                    join gl in _dBContext.GetDbSet<GoodslocationEntity>().AsNoTracking() on stock.goods_location_id equals gl.id
                                     where stock.tenant_id == currentUser.tenant_id && (input.sku_id == 0 || stock.sku_id == input.sku_id)
                                     && (input.goods_location_id == 0 || stock.goods_location_id == input.goods_location_id)
+                                    && (input.warehouse_id == 0 || gl.warehouse_id == input.warehouse_id)
                                     group new { stock, gw } by new { stock.sku_id, stock.goods_location_id, stock.goods_owner_id, gw.goods_owner_name, stock.series_number } into sg
                                     select new
                                     {
@@ -658,12 +662,80 @@ namespace ModernWMS.WMS.Services
                             qty = sg.qty,
                             location_name = gl.location_name,
                             warehouse_name = gl.warehouse_name,
-                            series_number = sg.series_number
+                            series_number = sg.series_number,
+                            goods_location_id = sg.goods_location_id
                         };
 
             var list = await query.OrderBy(t => t.sku_code)
                        .ToListAsync();
             return list;
+        }
+
+        /// <summary>
+        /// delivery statistic
+        /// </summary>
+        /// <param name="input">input</param>
+        /// <param name="currentUser">current user</param>
+        /// <returns></returns>
+        public async Task<(List<DeliveryStatisticViewModel> datas, int totals)> DeliveryStatistic(DeliveryStatisticSearchViewModel input, CurrentUser currentUser)
+        {
+            var dispatch_DBSet = _dBContext.GetDbSet<DispatchlistEntity>().Where(t => t.tenant_id.Equals(currentUser.tenant_id));
+            var dispatchpick_DBSet = _dBContext.GetDbSet<DispatchpicklistEntity>();
+            var sku_DBSet = _dBContext.GetDbSet<SkuEntity>();
+            var spu_DBSet = _dBContext.GetDbSet<SpuEntity>();
+            var location_DBSet = _dBContext.GetDbSet<WarehouseareaEntity>();
+            var warehouse_DBSet = _dBContext.GetDbSet<WarehouseEntity>();
+            if (input.delivery_date_from > UtilConvert.MinDate)
+            {
+                dispatch_DBSet = dispatch_DBSet.Where(t => t.create_time >= input.delivery_date_from);
+            }
+            if (input.delivery_date_to > UtilConvert.MinDate)
+            {
+                dispatch_DBSet = dispatch_DBSet.Where(t => t.create_time < input.delivery_date_to.AddDays(1));
+            }
+            var query = from dp in dispatch_DBSet.AsNoTracking()
+                        join dpp in dispatchpick_DBSet.AsNoTracking() on dp.id equals dpp.dispatchlist_id
+                        join sku in sku_DBSet.AsNoTracking() on dp.sku_id equals sku.id
+                        join spu in spu_DBSet.AsNoTracking() on sku.spu_id equals spu.id
+                        join location in location_DBSet.AsNoTracking() on dpp.goods_location_id equals location.id
+                        join wh in warehouse_DBSet.AsNoTracking() on location.warehouse_id equals wh.id
+                        where dp.dispatch_status >= 6 && spu.spu_name.Contains(input.spu_name) && spu.spu_code.Contains(input.spu_code)
+                        && sku.sku_name.Contains(input.sku_name) && sku.sku_code.Contains(input.sku_code) && wh.warehouse_name.Contains(input.warehouse_name)
+                        && dp.customer_name.Contains(input.customer_name)
+                        group new { dpp, dp, spu, sku } by
+                        new
+                        {
+                            dp.dispatch_no,
+                            wh.warehouse_name,
+                            location_name = location.area_name,
+                            spu.spu_name,
+                            spu.spu_code,
+                            sku.sku_name,
+                            sku.sku_code,
+                            dpp.series_number,
+                            dp.customer_name,
+                            dp.create_time
+                        }
+                        into dg
+                        select new DeliveryStatisticViewModel
+                        {
+                            dispatch_no = dg.Key.dispatch_no,
+                            warehouse_name = dg.Key.warehouse_name,
+                            location_name = dg.Key.location_name,
+                            spu_name = dg.Key.spu_name,
+                            spu_code = dg.Key.spu_code,
+                            sku_name = dg.Key.sku_name,
+                            sku_code = dg.Key.sku_code,
+                            series_number = dg.Key.series_number,
+                            customer_name = dg.Key.customer_name,
+                            delivery_date = dg.Key.create_time,
+                            delivery_qty = dg.Sum(t => t.dpp.picked_qty)
+                        };
+            int totals = await query.CountAsync();
+            var list = await query.OrderByDescending(t => t.delivery_date)
+                                              .Skip((input.pageIndex - 1) * input.pageSize)
+                                              .Take(input.pageSize).ToListAsync();
+            return (list, totals);
         }
 
         #endregion Api

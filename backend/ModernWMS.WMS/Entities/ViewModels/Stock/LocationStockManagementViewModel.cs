@@ -1,4 +1,9 @@
-﻿using System;
+﻿/*
+ * date：2023-9-3
+ * developer：NoNo
+ */
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -79,5 +84,10 @@ namespace ModernWMS.WMS.Entities.ViewModels
         [Display(Name = "series_number")]
         [MaxLength(64, ErrorMessage = "MaxLength")]
         public string series_number { get; set; } = string.Empty;
+
+        /// <summary>
+        /// goods_location_id
+        /// </summary>
+        public int goods_location_id { get; set; } = 0;
     }
 }

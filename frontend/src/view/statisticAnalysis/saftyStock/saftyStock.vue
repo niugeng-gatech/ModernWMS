@@ -119,7 +119,7 @@ const data = reactive({
 })
 
 const method = reactive({
-  // 获取数据
+  // get data
   list: async () => {
     const { data: res } = await getSafetyStockList(data.tablePage)
     if (!res.isSuccess) {
@@ -143,14 +143,14 @@ const method = reactive({
     data.showDialog = false
   },
 
-  // 分页函数
+  // Pagination function
   handlePageChange: ref<VxePagerEvents.PageChange>(({ currentPage, pageSize }) => {
     data.tablePage.pageIndex = currentPage
     data.tablePage.pageSize = pageSize
     method.refresh()
   }),
 
-  // 导出表格
+  // Export Table
   exportTable: () => {
     const $table = xTable.value
     exportData({
