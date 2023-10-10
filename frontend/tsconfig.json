@@ -17,8 +17,16 @@
     "paths": {
       // 用于设置模块名到基于baseUrl的路径映射
       "@/*": ["src/*"]
-    }
+    },
+    "noImplicitAny": false,
+    "allowJs": true
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "src/api/sys/login.tsn.tssrc/api/sys/login.tslogisrc/api/sys/login.tssys/src/api/sys/login.tsapi/sys/login.ts"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "src/api/sys/login.tsn.tssrc/api/sys/login.tslogisrc/api/sys/login.tssys/src/api/sys/login.tsapi/sys/login.ts"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
