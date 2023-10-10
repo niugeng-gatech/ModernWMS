@@ -318,12 +318,13 @@ const method = reactive({
   // Print QR code
   printQrCode: () => {
     let records = xTable.value.getCheckboxRecords()
+    const parentRecords = records.filter((item) => !item.parent_id)
     records = records.filter((item) => item.parent_id)
 
     // data.selectRowData.length === 0 ? (data.selectRowData = [row]) : ''
     // let records: any[] = data.selectRowData
     if (records.length > 0) {
-      for (const parent of data.selectRowData) {
+      for (const parent of parentRecords) {
         for (const child of records) {
           if (parent.id === child.parent_id) {
             child.spu_code = parent.spu_code
