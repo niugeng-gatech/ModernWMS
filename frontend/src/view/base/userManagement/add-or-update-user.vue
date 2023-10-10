@@ -159,7 +159,7 @@ const method = reactive({
       }
       if (dialogTitle.value === 'add') {
         hookComponent.$dialog({
-          content: i18n.global.t('base.userManagement.addSuccessTip') + res.data.errorMessage,
+          content: i18n.global.t('base.userManagement.addSuccessTip') + res.errorMessage,
           handleConfirm: async () => {}
         })
       } else {

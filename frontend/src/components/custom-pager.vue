@@ -82,7 +82,7 @@ const method = reactive({
 })
 
 const PAGER_SIZE_OPTION = computed(() => {
-  const res = []
+  const res: any = []
   for (const pageSize of props.pageSizes) {
     res.push({ label: `${ pageSize }${ i18n.global.t('system.pager.pageSizes') }`, value: pageSize })
   }
