@@ -29,7 +29,9 @@
       "noData": "No data",
       "revoke": "Revoke",
       "preview": "preview",
-      "rowsNumber": "Number placed per row"
+      "rowsNumber": "Number placed per row",
+      "gridRowGap": "Row spacing(px)",
+      "gridColumnGap": "Column spacing(px)"
     },
     "tips": {
       "success": " success!",
@@ -117,7 +119,7 @@
       "warehouseSetting": "Warehouse Setting",
       "customer": "Customer Info",
       "supplier": "Supplier Info",
-      "roleMenu": "Role Menu Settings",
+      "roleMenu": "Permission settings",
       "stockManagement": "Stock Management",
       "warehouseWorkingModule": "Warehouse Working",
       "warehouseProcessing": "Warehouse Processing",
@@ -175,7 +177,8 @@
       "user_register_name": "User Name",
       "email": "Email",
       "auth_string": "Password",
-      "userModalTitle": "User selection"
+      "userModalTitle": "User selection",
+      "addSuccessTip": "Successfully added, user's initial password is: "
     },
     "warehouseSetting": {
       "warehouseSetting": "Warehouse Setting",
@@ -309,6 +312,7 @@
         "confirmOpeartion": "Confirm operation",
         "confirmAdjust": "Confirm adjustment",
         "confirm": "Confirm operation",
+        "stock": "Inventory",
         "freeze": "Freeze",
         "unfreeze": "Unfreeze",
         "editCount": "Edit quantity",
@@ -545,8 +549,8 @@
       "series_number": "Serial number",
       "exceedingPrompt": "The number of serial numbers cannot exceed the sorting quantity!",
       "addSorting": "Sorting",
-      "editSorting": "Edit sorting data",
-      "editGrounding": "Edit listing data",
+      "editSorting": "Edit",
+      "editGrounding": "Edit",
       "putaway_qty": "Number of listings",
       "can_putaway_qty": "Quantity available for listing",
       "exceedTip": "The number of listings cannot exceed the number of listings available!",

@@ -171,7 +171,7 @@
 
     <!-- Print QR code -->
 
-    <qr-code-dialog ref="qrCodeDialogRef">
+    <qr-code-dialog ref="qrCodeDialogRef" :menu="'deliveryManagement-shipment'">
       <template #left="{ slotData }">
         <p>{{ $t('wms.deliveryManagement.dispatch_no') }}:{{ slotData.dispatch_no }}</p> &nbsp;
       </template>

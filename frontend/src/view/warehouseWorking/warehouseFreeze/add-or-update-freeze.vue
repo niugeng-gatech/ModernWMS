@@ -3,7 +3,7 @@
   <v-dialog v-model="isShow" :width="'30%'" transition="dialog-top-transition" :persistent="true">
     <template #default>
       <v-card>
-        <v-toolbar class="" color="white" :title="`${$t('router.sideBar.warehouseFreeze')}（${jobTypeComp}）`"></v-toolbar>
+        <v-toolbar class="" color="white" :title="`${jobTypeComp}`"></v-toolbar>
         <v-card-text>
           <v-form ref="formRef">
             <v-text-field
@@ -30,12 +30,7 @@
               variant="outlined"
               disabled
             ></v-text-field>
-            <v-text-field
-              v-model="data.form.series_number"
-              :label="$t('wms.stockLocation.series_number')"
-              variant="outlined"
-              disabled
-            ></v-text-field>
+            <v-text-field v-model="data.form.series_number" :label="$t('wms.stockLocation.series_number')" variant="outlined" disabled></v-text-field>
             <v-text-field
               v-model="data.form.location_name"
               :label="$t('wms.warehouseWorking.warehouseFreeze.location_name')"
@@ -92,8 +87,8 @@ const props = defineProps<{
 
 const isShow = computed(() => props.showDialog)
 const jobTypeComp = computed(() => (data.form.job_type === FREEZE_JOB_FREEZE
-    ? i18n.global.t('wms.warehouseWorking.warehouseFreeze.freeze')
-    : i18n.global.t('wms.warehouseWorking.warehouseFreeze.unfreeze')))
+    ? i18n.global.t('base.roleMenu.operationTitle.stock') + i18n.global.t('wms.warehouseWorking.warehouseFreeze.freeze')
+    : i18n.global.t('base.roleMenu.operationTitle.stock') + i18n.global.t('wms.warehouseWorking.warehouseFreeze.unfreeze')))
 
 // Unfreeze should be filter freezed.
 const commoditySqlTitle = computed(() => (data.form.job_type === FREEZE_JOB_UNFREEZE ? 'frozen' : ''))

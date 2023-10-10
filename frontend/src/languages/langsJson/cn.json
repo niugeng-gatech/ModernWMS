@@ -29,7 +29,9 @@
       "noData": "暂无数据",
       "revoke": "撤回",
       "preview": "预览",
-      "rowsNumber": "每行放置数量"
+      "rowsNumber": "每行放置数量",
+      "gridRowGap": "行间距(px)",
+      "gridColumnGap": "列间距(px)"
     },
     "tips": {
       "success": "成功!",
@@ -117,7 +119,7 @@
       "warehouseSetting": "仓库设置",
       "customer": "客户信息",
       "supplier": "供应商信息",
-      "roleMenu": "菜单设置",
+      "roleMenu": "权限设置",
       "stockManagement": "库存管理",
       "warehouseWorkingModule": "仓内作业",
       "warehouseProcessing": "仓内加工",
@@ -175,7 +177,8 @@
       "user_register_name": "用户名",
       "email": "Email",
       "auth_string": "密码",
-      "userModalTitle": "用户选择框"
+      "userModalTitle": "用户选择框",
+      "addSuccessTip": "新增成功, 用户初始密码为: "
     },
     "warehouseSetting": {
       "warehouseSetting": "仓库设置",
@@ -309,6 +312,7 @@
         "confirmOpeartion": "确认操作",
         "confirmAdjust": "确认调整",
         "confirm": "确认操作",
+        "stock": "库存",
         "freeze": "冻结",
         "unfreeze": "解冻",
         "editCount": "编辑数量",
@@ -545,8 +549,8 @@
       "series_number": "序列号",
       "exceedingPrompt": "序列号数量不能超过分拣数量!",
       "addSorting": "分拣",
-      "editSorting": "编辑分拣数据",
-      "editGrounding": "编辑上架数据",
+      "editSorting": "编辑",
+      "editGrounding": "编辑",
       "putaway_qty": "上架数量",
       "can_putaway_qty": "可上架数量",
       "exceedTip": "上架数量不可超过可上架数量！",

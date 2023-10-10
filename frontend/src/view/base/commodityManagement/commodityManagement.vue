@@ -229,7 +229,7 @@
     <update-sku-safety-stock ref="updateSkuSaftyStockRef" @sure="method.updateSkuSaftyStockByRow" />
 
     <!-- Print QR code -->
-    <qr-code-dialog ref="qrCodeDialogRef">
+    <qr-code-dialog ref="qrCodeDialogRef" :menu="'commodityManagement'">
       <template #left="{ slotData }">
         <p>{{ $t('base.commodityManagement.spu_code') }}:{{ slotData.spu_code }}</p>
         <p>{{ $t('base.commodityManagement.spu_name') }}:{{ slotData.spu_name }}</p>
@@ -239,7 +239,7 @@
     </qr-code-dialog>
 
     <!-- Print barcode -->
-    <bar-code-dialog ref="barCodeDialogRef" />
+    <bar-code-dialog ref="barCodeDialogRef" :menu="'commodityManagement'" />
   </div>
 </template>
 
