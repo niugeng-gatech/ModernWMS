@@ -302,6 +302,19 @@ namespace ModernWMS.WMS.Controllers
         }
 
         /// <summary>
+        /// get pending putaway data by asn_id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("pending-putaway")]
+        public async Task<ResultModel<List<AsnPendingPutawayViewModel>>> GetPendingPutawayDataAsync(int id)
+        {
+            var data = await _asnService.GetPendingPutawayDataAsync(id);
+            data ??= new List<AsnPendingPutawayViewModel>();
+            return ResultModel<List<AsnPendingPutawayViewModel>>.Success(data);
+        }
+
+        /// <summary>
         /// PutAway
         /// </summary>
         /// <param name="viewModel">args</param>

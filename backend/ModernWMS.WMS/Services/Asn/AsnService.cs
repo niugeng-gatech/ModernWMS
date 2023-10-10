@@ -577,6 +577,32 @@ namespace ModernWMS.WMS.Services
                 return (false, _stringLocalizer["save_failed"]);
             }
         }
+
+        /// <summary>
+        /// get pending putaway data by asn_id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<List<AsnPendingPutawayViewModel>> GetPendingPutawayDataAsync(int id)
+        {
+            var Asns = _dBContext.GetDbSet<AsnEntity>();
+            var Asnsorts = _dBContext.GetDbSet<AsnsortEntity>();
+
+            var data = await (from m in Asns.AsNoTracking()
+                              join s in Asnsorts.AsNoTracking() on m.id equals s.asn_id
+                              where m.id == id
+                              group new { m, s } by new { m.id, m.goods_owner_id, m.goods_owner_name }
+                       into g
+                              select new AsnPendingPutawayViewModel
+                              {
+                                  asn_id = g.Key.id,
+                                  goods_owner_id = g.Key.goods_owner_id,
+                                  goods_owner_name = g.Key.goods_owner_name,
+                                  series_number = "",
+                                  sorted_qty = g.Sum(o => o.s.sorted_qty)
+                              }).ToListAsync();
+            return data;
+        }
         /// <summary>
         /// PutAway
         /// </summary>
