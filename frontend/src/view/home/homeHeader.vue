@@ -14,6 +14,9 @@
       <div class="gitSrc mr-4">
         <img src="@/assets/img/github.png" alt="Gitee" @click="method.toGit('github')" />
       </div>
+      <div class="gitSrc mr-4">
+        <img src="@/assets/img/apifox.png" alt="API" @click="method.toGit('apifox')" />
+      </div>
       <LanguagesSwitch />
       <v-menu>
         <template #activator="{ props }">
@@ -103,6 +106,8 @@ const method = reactive({
       window.open('https://gitee.com/modernwms/ModernWMS', '_blank')
     } else if (type === 'github') {
       window.open('https://github.com/fjykTec/ModernWMS', '_blank')
+    } else if (type === 'apifox') {
+      window.open('https://apifox.com/apidoc/shared-982f0e68-e824-4f04-8278-2a253e957e0d', '_blank')
     }
   }
 })

@@ -177,7 +177,8 @@
       "user_register_name": "User Name",
       "email": "Email",
       "auth_string": "Password",
-      "userModalTitle": "User selection"
+      "userModalTitle": "User selection",
+      "addSuccessTip": "Successfully added, user's initial password is: "
     },
     "warehouseSetting": {
       "warehouseSetting": "Warehouse Setting",
@@ -311,6 +312,7 @@
         "confirmOpeartion": "Confirm operation",
         "confirmAdjust": "Confirm adjustment",
         "confirm": "Confirm operation",
+        "stock": "Inventory",
         "freeze": "Freeze",
         "unfreeze": "Unfreeze",
         "editCount": "Edit quantity",

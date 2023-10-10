@@ -177,7 +177,8 @@
       "user_register_name": "用户名",
       "email": "Email",
       "auth_string": "密码",
-      "userModalTitle": "用户选择框"
+      "userModalTitle": "用户选择框",
+      "addSuccessTip": "新增成功, 用户初始密码为: "
     },
     "warehouseSetting": {
       "warehouseSetting": "仓库设置",
@@ -311,6 +312,7 @@
         "confirmOpeartion": "确认操作",
         "confirmAdjust": "确认调整",
         "confirm": "确认操作",
+        "stock": "库存",
         "freeze": "冻结",
         "unfreeze": "解冻",
         "editCount": "编辑数量",
