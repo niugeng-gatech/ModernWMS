@@ -164,7 +164,7 @@ const data = reactive({
   tableData: ref<StockAsnVO[]>([]),
   tablePage: reactive({
     total: 0,
-    sqlTitle: 'asn_status:0',
+    sqlTitle: 'asn_status:-1',
     pageIndex: 1,
     pageSize: DEFAULT_PAGE_SIZE,
     searchObjects: ref<Array<SearchObject>>([])
