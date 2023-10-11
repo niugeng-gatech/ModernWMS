@@ -266,8 +266,16 @@ const data: DataProps = reactive({
 const method = reactive({
   printQrCode: () => {
     let records = xTable.value.getCheckboxRecords()
-    const parentRecords = records.filter((item: any) => !item.parent_id)
-    records = records.filter((item: any) => item.parent_id)
+    const parent_id_list: any = []
+    records = records.filter((item: any) => {
+      if (!parent_id_list.includes(item.parent_id)) {
+        parent_id_list.push(item.parent_id)
+      }
+
+      return item.parent_id
+    })
+
+    const parentRecords = xTable.value.getTableData().fullData.filter((pItem: any) => parent_id_list.includes(pItem.id))
 
     // data.selectRowData.length === 0 ? (data.selectRowData = [row]) : ''
     // let records: any[] = data.selectRowData
