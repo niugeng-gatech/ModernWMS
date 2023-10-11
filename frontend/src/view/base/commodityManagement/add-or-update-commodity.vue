@@ -222,10 +222,10 @@
         <v-card-actions class="justify-end">
           <v-btn variant="text" @click="method.closeDialog">{{ $t('system.page.close') }}</v-btn>
           <v-btn color="primary" variant="text" @click="method.submit">{{ $t('system.page.submit') }}</v-btn>
-          <v-btn color="primary" variant="text" @click="method.print">打印</v-btn>
+          <v-btn color="primary" variant="text" @click="method.print">{{ $t('system.page.print') }}</v-btn>
         </v-card-actions>
       </v-card>
-      <hprintDialog ref="hprintDialogRef" :form="data.form" :table="data.printTable" :i18n-name="'base.commodityManagement'" :vue-path="'commodityManagement'" :tab-page="'detail'" />
+      <hprintDialog ref="hprintDialogRef" :form="data.form" :tab-page="'commodityManagement'" />
     </template>
   </v-dialog>
 </template>

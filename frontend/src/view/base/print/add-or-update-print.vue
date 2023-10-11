@@ -162,7 +162,7 @@ const data = reactive({
     config_json: '',
     report_length: 0,
     report_width: 0,
-    report_direction: 'st',
+    report_direction: 'A4',
     tenant_id: 0
   } as PrintSolutionVO,
   table: [] as tableInterFace[],
@@ -208,8 +208,7 @@ const data = reactive({
   scaleValue: 1,
   scaleMax: 5,
   scaleMin: 0.5,
-  panel: {},
-  printSolutionList: [] as PrintSolutionVO[]
+  panel: {}
 })
 const method = reactive({
   provider() {
@@ -222,7 +221,7 @@ const method = reactive({
           custom: true,
           type: 'text'
         },
-        { tid: 'providerModule.image', title: 'Logo', data: '', custom: true, type: 'image' }
+        { tid: 'providerModule.image', title: 'Logo', data: '', type: 'image' }
       ])
     ]
     const userList = [] as any[]
@@ -347,7 +346,7 @@ const method = reactive({
         const input = document.createElement('input')
         input.setAttribute('type', 'file')
         input.click()
-        input.onchange = function (evnt:any) {
+        input.onchange = function (evnt: any) {
           const file = evnt?.target?.files[0]
           if (file) {
             const reader = new FileReader()
@@ -374,7 +373,9 @@ const method = reactive({
       } else {
         data.curPaper = { type: 'other', width: value.width, height: value.height }
       }
-      data.hiprintTemplate.handleSetPaper(value.width, value.height)
+      if (data.hiprintTemplate) {
+        data.hiprintTemplate.setPaper(value.width, value.height)
+      }
     } catch (error) {
       // console.log(error)
     }
@@ -394,15 +395,6 @@ const method = reactive({
       data.hiprintTemplate.zoom(scaleValue, true)
       data.scaleValue = scaleValue
     }
-  },
-  handleChangeMode() {
-    const option = data.printSolutionList.filter((item) => item.solution_name === data.mode)
-    if (option.length > 0) {
-      data.panel = JSON.parse(option[0].config_json)
-    } else {
-      data.panel = {}
-    }
-    method.initTemplate()
   },
   handleChangePath() {
     data.form.tab_page = ''
@@ -449,7 +441,7 @@ const method = reactive({
     if (data.hiprintTemplate) {
       const jsonOut = JSON.stringify(data.hiprintTemplate.getJson() || {})
       const form = {
-        id: 0,
+        id: data.form.id,
         vue_path: data.form.vue_path,
         tab_page: data.form.tab_page,
         solution_name: data.form.solution_name,
@@ -459,10 +451,6 @@ const method = reactive({
         report_direction: data.curPaper.type,
         tenant_id: 0
       } as PrintSolutionVO
-      const option = data.printSolutionList.filter((item) => item.solution_name === data.mode)
-      if (option.length > 0) {
-        form.id = option[0].id
-      }
 
       const { data: res } = form.id === 0 ? await addPrintSolution(form) : await updatePrintSolution(form)
       if (!res.isSuccess) {
@@ -530,6 +518,14 @@ watch(
           }
           method.initPageList()
           method.handleChangePage()
+          if (Object.keys(data.paperTypes).includes(data.form.report_direction)) {
+            data.curPaper = {
+              type: data.form.report_direction,
+              width: data.paperTypes[data.form.report_direction].width,
+              height: data.paperTypes[data.form.report_direction].height
+            }
+            method.handleSetPaper(data.curPaper.type, data.curPaper)
+          }
         } else {
           data.form = {
             id: 0,
@@ -540,6 +536,12 @@ watch(
             report_direction: 'st',
             tenant_id: 0
           } as PrintSolutionVO
+          data.curPaper = {
+            type: 'A4',
+            width: 210,
+            height: 296.6
+          }
+          method.handleSetPaper(data.curPaper.type, data.curPaper)
           const dom = document.getElementById('hiprintEpContainer')
           if (dom !== null) {
             dom.innerHTML = ''
@@ -548,6 +550,7 @@ watch(
           if (dom1 !== null) {
             dom1.innerHTML = ''
           }
+          data.panel = {}
         }
       })
     }
@@ -667,7 +670,7 @@ defineExpose({
 // 默认图片
 :deep(.hiprint-printElement-image-content) {
   img {
-    content: url('@/assets/img/logo.png')!important;
+    content: url('@/assets/img/webLogoMini.png') !important;
   }
 }
 

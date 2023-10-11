@@ -10,11 +10,6 @@ body {
   height: 100vh;
   width: 100vw;
 }
-.hiprint-printElement-image-content {
-  img {
-    content: url("~@/assets/img/logo.png");
-  }
-}
 
 .hiprint-headerLine, .hiprint-footerLine {
   border-color: red !important;
@@ -42,4 +37,7 @@ body {
   background: #FFFF;
   top: -12px;
   font-size: 12px;
+}
+.hiprint-printElement-image-content img{
+  content: url('@/assets/img/webLogoMini.png')!important;
 }
