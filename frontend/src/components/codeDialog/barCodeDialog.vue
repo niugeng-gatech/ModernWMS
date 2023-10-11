@@ -7,11 +7,15 @@
             <div class="print-area-scroll">
               <div
                 id="printArea"
-                :style="{'grid-template-columns': `repeat(${data.rowsNumber},1fr)`}"
+                :style="{
+                  'grid-template-columns': `repeat(${data.rowsNumber},1fr)`,
+                  rowGap: `${data.gridRowGap}px`,
+                  columnGap: `${data.gridColumnGap}px`
+                }"
                 class="printArea"
               >
                 <div v-for="(item, index) in data.printData" :key="index" class="code-container">
-                  <svg :id="'printBarCode'+ item.id"></svg>
+                  <svg :id="'printBarCode' + item.id"></svg>
                 </div>
               </div>
             </div>
@@ -20,12 +24,28 @@
 
         <v-card-actions class="justify-space-between">
           <div class="row-number-input">
-            <v-text-field
-              v-model.number="data.rowsNumber"
-              hide-details="auto"
-              :label="$t('system.page.rowsNumber')"
-              width="300px"
-            ></v-text-field>
+            <v-row no-gutters>
+              <v-col cols="6" class="col">
+                <div class="colText">
+                  <v-text-field
+                    v-model.number="data.rowsNumber"
+                    hide-details="auto"
+                    :label="$t('system.page.rowsNumber')"
+                    @update:model-value="method.changePrintParams"
+                  ></v-text-field>
+                </div>
+              </v-col>
+              <v-col cols="6" class="col">
+                <div class="colText">
+                  <v-text-field
+                    v-model.number="data.gridRowGap"
+                    hide-details="auto"
+                    :label="$t('system.page.gridRowGap')"
+                    @update:model-value="method.changePrintParams"
+                  ></v-text-field>
+                </div>
+              </v-col>
+            </v-row>
           </div>
           <div class="padding-lr-16">
             <v-btn variant="text" @click="method.closeDialog">{{ $t('system.page.close') }}</v-btn>
@@ -40,24 +60,54 @@
 <script lang="ts" setup>
 import { computed, nextTick, reactive, watch } from 'vue'
 import JsBarcode from 'jsbarcode'
+import { setStorage, getStorage } from '@/utils/common'
+
+const props = defineProps<{
+  menu: string
+}>()
 
 const data = reactive({
   showDialog: false,
   printData: [] as any,
-  rowsNumber: 5
+  rowsNumber: 5,
+  gridColumnGap: 15,
+  gridRowGap: 15
 })
 const isDisabled = computed(() => data.printData.length === 0)
 
-watch(() => data.printData, () => {
-  if (data.printData.length < 5) {
-    data.rowsNumber = data.printData.length
-  } else {
-    data.rowsNumber = 5
+watch(
+  () => data.printData,
+  () => {
+    if (data.printData.length < 5) {
+      data.rowsNumber = data.printData.length
+    } else {
+      data.rowsNumber = 5
+    }
   }
-})
+)
 
 const method = reactive({
+  changePrintParams: () => {
+    const storage = {
+      cols: data.rowsNumber,
+      rs: data.gridRowGap
+    }
+
+    setStorage(`BarCode-${ props.menu }`, storage)
+  },
   openDialog: (row: any) => {
+    try {
+      const storage: any = getStorage(`BarCode-${ props.menu }`)
+
+      if (storage) {
+        data.rowsNumber = storage.cols
+        data.gridRowGap = storage.rs
+      }
+    } catch {
+      data.rowsNumber = 5
+      data.gridRowGap = 15
+    }
+
     data.printData = row
 
     data.showDialog = true
@@ -85,7 +135,6 @@ defineExpose({
 </script>
 
 <style lang="less" scoped>
-
 .print-area-container {
   background-color: #efefef;
   padding: 15px;
@@ -101,7 +150,7 @@ defineExpose({
 .printArea {
   display: grid;
   align-items: center;
-  grid-gap: 15px;
+  // grid-gap: 15px;
 
   .code-container {
     display: flex;
@@ -111,8 +160,13 @@ defineExpose({
 }
 
 .row-number-input {
-  width: 300px;
+  width: 350px;
   padding: 0 16px;
+}
+
+.colText {
+  box-sizing: border-box;
+  padding: 0 5px;
 }
 
 .padding-lr-16 {

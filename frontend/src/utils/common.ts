@@ -79,3 +79,18 @@ export const getMenuAuthorityList = () => {
 
   return AuthorityList
 }
+
+// Retrieve data from cache in browser
+export const getStorage = (key: string) => {
+  // printCommidity...
+  const value = localStorage.getItem(key)
+  if (value) {
+    return JSON.parse(value)
+  }
+  return null
+}
+
+// Store data in the browser's cache
+export const setStorage = (key: string, value: any) => {
+  localStorage.setItem(key, JSON.stringify(value))
+}

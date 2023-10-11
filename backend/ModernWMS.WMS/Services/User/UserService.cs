@@ -154,7 +154,8 @@ namespace ModernWMS.WMS.Services
             }
             var entity = viewModel.Adapt<userEntity>();
             entity.id = 0;
-            entity.auth_string = Md5Helper.Md5Encrypt32("pwd123456");
+            var new_auth = GetRandomPassword();
+            entity.auth_string = Md5Helper.Md5Encrypt32(new_auth);
             entity.create_time = DateTime.Now;
             entity.last_update_time = DateTime.Now;
             entity.tenant_id = currentUser.tenant_id;
@@ -162,7 +163,7 @@ namespace ModernWMS.WMS.Services
             await _dBContext.SaveChangesAsync();
             if (entity.id > 0)
             {
-                return (entity.id, _stringLocalizer["save_success"]);
+                return (entity.id, new_auth);
             }
             else
             {
@@ -453,6 +454,15 @@ namespace ModernWMS.WMS.Services
                         vue_path_detail = "",
                         vue_directory = "base/customer",
                         sort = 11,
+                        tenant_id = tenant_id
+                    },new MenuEntity
+                    {
+                        menu_name = "print",
+                        module = "baseModule",
+                        vue_path = "print",
+                        vue_path_detail = "",
+                        vue_directory = "base/print",
+                        sort = 12,
                         tenant_id = tenant_id
                     },new MenuEntity
                     {

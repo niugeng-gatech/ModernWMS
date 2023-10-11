@@ -19,7 +19,8 @@
     "paths": {
       // 用于设置模块名到基于baseUrl的路径映射
       "@/*": ["src/*"]
-    }
+    },
+    "allowJs": true
   },
   "include": ["src/**/*.ts","src/**/*", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "src/api/sys/login.tsn.tssrc/api/sys/login.tslogisrc/api/sys/login.tssys/src/api/sys/login.tsapi/sys/login.ts","src/hiprint/etypes/default-etyps-provider.js","src/hiprint/plugins/jquery.hiwprint.js","src/hiprint/plugins/qrcode.js","src/hiprint/plugins/watermark.js","src/hiprint/hiprint.bundle.js","src/hiprint/hiprint.config.js","src/hiprint/index.js"],
   "references": [{ "path": "./tsconfig.node.json" }]

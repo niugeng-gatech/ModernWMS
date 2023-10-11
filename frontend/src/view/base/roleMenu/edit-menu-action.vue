@@ -45,7 +45,7 @@
 </template>
 
 <script lang="tsx" setup>
-import { computed, defineExpose, reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { actionDict, getActionName } from './actionList'
 import { RoleMenuDetailVo } from '@/types/Base/RoleMenu'
 

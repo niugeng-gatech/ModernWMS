@@ -57,8 +57,8 @@
       :height="tableHeight"
       align="center"
     >
+      <vxe-column type="checkbox" width="50" fixed="left"></vxe-column>
       <vxe-column type="seq" width="60"></vxe-column>
-      <vxe-column type="checkbox" width="50"></vxe-column>
       <vxe-column field="warehouse_name" :title="$t('base.warehouseSetting.warehouse_name')"></vxe-column>
       <vxe-column field="warehouse_area_name" :title="$t('base.warehouseSetting.area_name')"></vxe-column>
       <vxe-column field="warehouse_area_property" :title="$t('base.warehouseSetting.area_property')">
@@ -129,7 +129,7 @@
   <add-or-update-dialog :show-dialog="data.showDialog" :form="data.dialogForm" @close="method.closeDialog" @saveSuccess="method.saveSuccess" />
 
   <!-- Print QR code -->
-  <qr-code-dialog ref="qrCodeDialogRef">
+  <qr-code-dialog ref="qrCodeDialogRef" :menu="'warehouseSetting-location'">
     <template #left="{ slotData }">
       <p>{{ $t('base.warehouseSetting.warehouse_name') }}:{{ slotData.warehouse_name }}</p> &nbsp;
       <p>{{ $t('base.warehouseSetting.area_name') }}:{{ slotData.warehouse_area_name }}</p> &nbsp;
@@ -137,7 +137,7 @@
     </template>
   </qr-code-dialog>
   <!-- Print barcode -->
-  <bar-code-dialog ref="barCodeDialogRef" />
+  <bar-code-dialog ref="barCodeDialogRef" :menu="'warehouseSetting-location'" />
 </template>
 
 <script lang="ts" setup>
