@@ -130,7 +130,8 @@
       "statisticAnalysis": "统计分析",
       "saftyStock": "安全库存",
       "asnStatistic": "收货统计",
-      "deliveryStatistic": "发货统计"
+      "deliveryStatistic": "发货统计",
+      "print":"打印设置"
     }
   },
   "login": {
@@ -353,6 +354,12 @@
       "saftyStock": "安全库存",
       "printQrCode": "打印二维码",
       "printBarCode": "打印条码"
+    },
+    "printSolution":{
+      "vue_path":"菜单名称",
+      "tab_page":"页面名称",
+      "solution_name":"方案名称",
+      "detailList":"明细数据"
     }
   },
   "wms": {

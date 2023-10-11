@@ -8,6 +8,7 @@ export const actionDict: any = {
   commodityCategorySetting: ['save', 'delete', 'export'],
   commodityManagement: ['save', 'delete', 'export', 'saftyStock', 'printQrCode', 'printBarCode'],
   supplier: ['save', 'delete', 'import', 'export'],
+  print: ['save', 'delete', 'export'],
   warehouseSetting: [
     'warehouse-save',
     'warehouse-delete',

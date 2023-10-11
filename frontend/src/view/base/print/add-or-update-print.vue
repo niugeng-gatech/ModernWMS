@@ -1,24 +1,56 @@
 <template>
-  <v-dialog v-model="data.formVisible" fullscreen :scrim="false" transition="dialog-bottom-transition">
+  <v-dialog v-model="isShow" fullscreen :scrim="false" transition="dialog-bottom-transition">
     <v-card>
       <div style="padding: 15px 15px">
-        <v-row>
-          <v-col cols="2">
-            <div class="left-top-box">
-              <v-select
-                v-model="data.mode"
-                :items="data.modeList"
-                density="compact"
-                hide-details
-                clearable
-                @update:model-value="method.handleChangeMode"
-              ></v-select>
-              <v-btn icon="mdi-plus" style="font-size: 14px; margin-left: 10px" size="small" @click="method.handleAddScheme"></v-btn>
-            </div>
-
-            <div class="left-box">
-              <div id="hiprintEpContainer" class="rect-printElement-types hiprintEpContainer"> </div>
-            </div>
+        <v-row no-gutters>
+          <v-col cols="4">
+            <v-row no-gutters>
+              <v-col :cols="4">
+                <v-select
+                  v-model="data.form.vue_path"
+                  :items="menuList"
+                  item-title="label"
+                  item-value="value"
+                  :label="$t('base.printSolution.vue_path')"
+                  density="compact"
+                  hide-details
+                  clearable
+                  variant="outlined"
+                  :disabled="props.form.id > 0"
+                  @update:model-value="method.handleChangePath()"
+                ></v-select>
+              </v-col>
+              <v-col cols="4">
+                <div style="padding-left: 5px;">
+                  <v-select
+                    v-model="data.form.tab_page"
+                    :items="data.pageList"
+                    item-title="label"
+                    item-value="value"
+                    :label="$t('base.printSolution.tab_page')"
+                    density="compact"
+                    hide-details
+                    :disabled="props.form.id > 0"
+                    clearable
+                    variant="outlined"
+                    @update:model-value="method.handleChangePage()"
+                  ></v-select>
+                </div>
+              </v-col>
+              <v-col cols="4">
+                <div style="padding-left: 5px;">
+                  <v-text-field
+                    v-model="data.form.solution_name"
+                    :label="$t('base.printSolution.solution_name')"
+                    density="compact"
+                    hide-details
+                    clearable
+                    variant="outlined"
+                    :disabled="props.form.id > 0"
+                  ></v-text-field>
+                </div>
+              </v-col>
+            </v-row>
           </v-col>
           <v-col cols="7">
             <div class="center-btn-box">
@@ -46,24 +78,41 @@
                 ></v-btn>
               </div>
               <div>
-                <v-btn style="font-size: 14px; margin-left: 10px" @click="method.handlePreView()"> {{ $t('system.page.preView') }} </v-btn>
-                <v-btn style="font-size: 14px; margin-left: 10px" :disabled="!data.mode" color="primary" @click="method.handleSubmit">
+                <v-btn style="font-size: 14px; margin-left: 10px" @click="method.handlePreView()">
+                  {{
+                    $t('system.page.preView') }}
+                </v-btn>
+                <v-btn
+                  style="font-size: 14px; margin-left: 10px"
+                  :disabled="!data.form.solution_name || !data.form.tab_page"
+                  color="primary"
+                  @click="method.handleSubmit"
+                >
                   {{ $t('system.page.submit') }}
                 </v-btn>
               </div>
             </div>
-
+          </v-col>
+          <v-col cols="1">
+            <div class="right-top-box">
+              <v-btn icon style="font-size: 14px; margin-left: 10px" size="small" @click="method.handleClose()">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </div>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="2">
+            <div class="left-box">
+              <div id="hiprintEpContainer" class="rect-printElement-types hiprintEpContainer"> </div>
+            </div>
+          </v-col>
+          <v-col cols="7">
             <div class="center-box card-design">
               <div id="hiprint-printTemplate" style="margin-top: 20px" class="hiprint-printTemplate"></div>
             </div>
           </v-col>
           <v-col cols="3">
-            <div class="right-top-box">
-              <v-btn icon style="font-size: 14px; margin-left: 10px" size="small" @click="data.formVisible = false">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-            </div>
-
             <div class="right-box">
               <div id="PrintElementOptionSetting"></div>
             </div>
@@ -72,18 +121,19 @@
       </div>
     </v-card>
     <preViewDialog ref="preViewDialogRef" />
-    <addSchemeDialog ref="addSchemeDialogRef" :mode-list="data.modeList" @addScheme="method.addScheme" />
   </v-dialog>
 </template>
 <script lang="ts" setup>
 import { reactive, ref, computed, watch, nextTick } from 'vue'
 import { hiprint } from 'yk-vue-plugin-hiprint'
 import { hookComponent } from '@/components/system/index'
-import { addPrintSolution, updatePrintSolution, listByPath } from '@/api/base/printSolution'
-import { PrintSolutionVO, PrintSolutionGetByPathVo } from '@/types/Base/PrintSolution'
+import { addPrintSolution, updatePrintSolution } from '@/api/base/printSolution'
+import { PrintSolutionVO } from '@/types/Base/PrintSolution'
 import i18n from '@/languages/i18n'
-import preViewDialog from './preView.vue'
-import addSchemeDialog from './add-scheme.vue'
+import preViewDialog from '@/components/hiprint/preView.vue'
+import { PRINT_MENU } from '@/constant/print'
+
+const emit = defineEmits(['close', 'saveSuccess'])
 
 interface paperTypeData {
   width: number
@@ -94,20 +144,34 @@ interface tableInterFace {
   field: string
   columns: Array<string>
 }
+interface selectInterFace {
+  value: string
+  label: string,
+  form: any,
+}
 const props = defineProps<{
-  form: object
-  table?: Array<tableInterFace>
-  i18nName: string
-  vuePath: string
-  tabPage: string
+  showDialog: boolean
+  form: PrintSolutionVO
 }>()
+const isShow = computed(() => props.showDialog)
 const preViewDialogRef = ref()
-const addSchemeDialogRef = ref()
 const data = reactive({
-  formVisible: false,
+  form: {
+    id: 0,
+    solution_name: '',
+    config_json: '',
+    report_length: 0,
+    report_width: 0,
+    report_direction: 'st',
+    tenant_id: 0
+  } as PrintSolutionVO,
+  table: [] as tableInterFace[],
+  i18nName: '',
+  pageForm: {} as any,
   hiprintTemplate: {} as any,
   mode: '',
   modeList: [] as string[],
+  pageList: [] as selectInterFace[],
   // 当前纸张
   curPaper: {
     type: 'A4',
@@ -157,13 +221,13 @@ const method = reactive({
           customText: i18n.global.t('system.hiprint.text'),
           custom: true,
           type: 'text'
-        }
-        // { tid: 'providerModule.image', title: 'Logo', data: '', type: 'image' }
+        },
+        { tid: 'providerModule.image', title: 'Logo', data: '', custom: true, type: 'image' }
       ])
     ]
     const userList = [] as any[]
-    for (const key in props.form) {
-      const i18nName = `${ props.i18nName }.${ key }`
+    for (const key in data.pageForm) {
+      const i18nName = `${ data.i18nName }.${ key }`
       const labelName = i18n.global.t(i18nName)
       if (labelName !== i18nName && !key.includes('detailList')) {
         userList.push({
@@ -184,7 +248,7 @@ const method = reactive({
       }
     }
     let index = 1
-    props.table?.forEach((item) => {
+    data.table.forEach((item) => {
       const object = {
         tid: `providerModule.table${ index.toString() }`,
         title: item.name,
@@ -204,7 +268,7 @@ const method = reactive({
       object.columns[0] = []
       object.options.fields = []
       item.columns.forEach((col) => {
-        const i18nName = `${ props.i18nName }.${ col }`
+        const i18nName = `${ data.i18nName }.${ col }`
         const labelName = i18n.global.t(i18nName)
         if (i18nName !== labelName) {
           object.columns[0].push({ title: labelName, align: 'center', field: col, width: 50 })
@@ -278,29 +342,30 @@ const method = reactive({
       //   // hiprintTemplate.update(json)
       //   // console.log(hiprintTemplate.historyList)
       // },
+      onImageChooseClick: (target) => {
+        // 创建input，模拟点击，然后 target.refresh 更新
+        const input = document.createElement('input')
+        input.setAttribute('type', 'file')
+        input.click()
+        input.onchange = function (evnt:any) {
+          const file = evnt?.target?.files[0]
+          if (file) {
+            const reader = new FileReader()
+            // 通过文件流行文件转换成Base64字行串 
+            reader.readAsDataURL(file)
+            // 转换成功后
+            reader.onloadend = function () {
+              // 通过 target.refresh 更新图片元素
+              target.refresh(reader.result)
+            }
+          }
+        }
+        input.remove()
+      },
       settingContainer: '#PrintElementOptionSetting',
       paginationContainer: '.hiprint-printPagination'
     })
     data.hiprintTemplate.design('#hiprint-printTemplate')
-  },
-  async init() {
-    const form = {
-      vue_path: props.vuePath,
-      tab_page: props.tabPage
-    } as PrintSolutionGetByPathVo
-    const { data: res } = await listByPath(form)
-    if (res.isSuccess) {
-      data.printSolutionList = res.data
-      data.modeList = data.printSolutionList.map((item) => item.solution_name)
-    }
-    if (!data.mode && data.modeList.length > 0) {
-      data.mode = data.printSolutionList[0].solution_name
-      method.handleSetPaper(data.printSolutionList[0].report_direction, {
-        height: data.printSolutionList[0].report_length,
-        width: data.printSolutionList[0].report_width
-      })
-    }
-    method.handleChangeMode()
   },
   handleSetPaper(type: string, value: paperTypeData) {
     try {
@@ -339,14 +404,55 @@ const method = reactive({
     }
     method.initTemplate()
   },
+  handleChangePath() {
+    data.form.tab_page = ''
+    method.initPageList()
+  },
+  initPageList() {
+    data.pageList = []
+    const option = PRINT_MENU.filter(item => item.vue_path === data.form.vue_path)
+    if (option.length > 0) {
+      data.i18nName = option[0].i18nName
+      data.pageList = option[0].children.map(item => {
+        let label = item.tab_page
+        if (item.tab_page === option[0].vue_path) {
+          label = i18n.global.t(`router.sideBar.${ item.tab_page }`)
+        } else {
+          label = i18n.global.t(`${ data.i18nName }.${ item.tab_page }`)
+        }
+        return { value: item.tab_page, label, form: item.form }
+      })
+    }
+  },
+  handleChangePage() {
+    const option = data.pageList.filter(item => item.value === data.form.tab_page)
+    data.table = []
+    if (option.length > 0) {
+      data.pageForm = option[0].form
+      for (const key in data.pageForm) {
+        if (key.indexOf('detailList') > -1) {
+          const detailList = data.pageForm[key]
+          let name = ''
+          if (detailList.name === data.form.vue_path) {
+            name = i18n.global.t('base.printSolution.detailList')
+          } else {
+            name = i18n.global.t(`${ data.i18nName }.${ detailList.name }`)
+          }
+          data.table.push({ name, field: key, columns: detailList.columns })
+        }
+      }
+    }
+    method.initProvier()
+    method.initTemplate()
+  },
   async handleSubmit() {
     if (data.hiprintTemplate) {
       const jsonOut = JSON.stringify(data.hiprintTemplate.getJson() || {})
       const form = {
         id: 0,
-        vue_path: props.vuePath,
-        tab_page: props.tabPage,
-        solution_name: data.mode,
+        vue_path: data.form.vue_path,
+        tab_page: data.form.tab_page,
+        solution_name: data.form.solution_name,
         config_json: jsonOut,
         report_length: data.curPaper.height,
         report_width: data.curPaper.width,
@@ -366,39 +472,83 @@ const method = reactive({
         })
         return
       }
-      method.init()
       hookComponent.$message({
         type: 'success',
         content: `${ i18n.global.t('system.page.submit') }${ i18n.global.t('system.tips.success') }`
       })
+      emit('saveSuccess')
     }
   },
-  handleAddScheme() {
-    const ref = addSchemeDialogRef.value
-    ref.data.formVisible = true
+  handleClose() {
+    emit('close')
   },
-  addScheme(scheme: string) {
-    data.modeList.push(scheme)
-    data.mode = scheme
-    method.handleChangeMode()
-  },
-
   handlePreView() {
     const ref = preViewDialogRef.value
     ref.data.width = data.curPaper.width
     ref.data.hiprintTemplate = data.hiprintTemplate
-    ref.data.printData = props.form
+    const printData = {}
+    for (const key in data.pageForm) {
+      if (!key.includes('detailList')) {
+        let value = key
+        const i18nName = `${ data.i18nName }.${ key }`
+        const labelName = i18n.global.t(i18nName)
+        if (labelName !== i18nName) {
+          value = labelName
+        }
+        printData[key] = value
+      } else {
+        const detailList = data.pageForm[key]
+        const obj = {}
+        detailList.columns.forEach(col => {
+          const i18nName = `${ data.i18nName }.${ col }`
+          const labelName = i18n.global.t(i18nName)
+          if (i18nName !== labelName) {
+            obj[col] = labelName
+          } else {
+            obj[col] = col
+          }
+        })
+        printData[key] = [obj]
+      }
+    }
+    ref.data.printData = printData
     ref.method.show()
   }
 })
 
 watch(
-  () => data.formVisible,
+  () => isShow.value,
   (val) => {
     if (val) {
       nextTick(() => {
-        method.initProvier()
-        method.init()
+        if (props.form.id > 0) {
+          data.form = props.form
+          if (data.form.config_json) {
+            data.panel = JSON.parse(data.form.config_json)
+          } else {
+            data.panel = {}
+          }
+          method.initPageList()
+          method.handleChangePage()
+        } else {
+          data.form = {
+            id: 0,
+            solution_name: '',
+            config_json: '',
+            report_length: 0,
+            report_width: 0,
+            report_direction: 'st',
+            tenant_id: 0
+          } as PrintSolutionVO
+          const dom = document.getElementById('hiprintEpContainer')
+          if (dom !== null) {
+            dom.innerHTML = ''
+          }
+          const dom1 = document.getElementById('hiprint-printTemplate')
+          if (dom1 !== null) {
+            dom1.innerHTML = ''
+          }
+        }
       })
     }
   }
@@ -420,6 +570,7 @@ const curPaperType = computed(() => {
   }
   return type
 })
+const menuList = computed(() => PRINT_MENU.map(item => ({ value: item.vue_path, label: i18n.global.t(`router.sideBar.${ item.vue_path }`) })))
 
 defineExpose({
   data
@@ -427,50 +578,58 @@ defineExpose({
 </script>
 <style scoped lang="less">
 .center-btn-box {
+  margin-left: 10px;
   margin-bottom: 5px;
   display: flex;
-  justify-content: space-between;
+  justify-content: start;
 }
+
 .center-box {
-  height: calc(100vh - 83px);
+  height: calc(100vh - 100px);
   border: 2px solid #e8e8e8;
   box-sizing: border-box;
   border-radius: 2px;
   padding: 0 5px;
   display: flex;
-  justify-content: center; /* 水平居中对齐 */
+  justify-content: center;
+  /* 水平居中对齐 */
 }
+
 .left-top-box {
   display: flex;
-  justify-content: space-between; /* 水平居中对齐 */
+  justify-content: space-between;
+  /* 水平居中对齐 */
 }
+
 .left-box {
-  height: calc(100vh - 83px);
+  height: calc(100vh - 100px);
   border: 2px solid #e8e8e8;
   box-sizing: border-box;
   border-radius: 2px;
   padding: 0 5px;
   display: flex;
-  justify-content: center; /* 水平居中对齐 */
-  margin-top: 5px;
+  justify-content: center;
 }
+
 .right-top-box {
   display: flex;
   justify-content: flex-end;
 }
+
 .right-box {
-  height: calc(100vh - 83px);
+  height: calc(100vh - 100px);
   border: 2px solid #e8e8e8;
   box-sizing: border-box;
   border-radius: 2px;
   padding: 0 5px;
   display: flex;
-  justify-content: center; /* 水平居中对齐 */
-  margin-top: 5px;
+  justify-content: center;
 }
+
 .hiprintEpContainer {
   max-width: 200px;
 }
+
 :deep(.hiprint-printElement-type > li > ul > li > a) {
   padding: 4px 4px !important;
   color: white !important;
@@ -488,19 +647,23 @@ defineExpose({
   box-shadow: 0 3px 1px -2px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.2)),
     0 2px 2px 0 var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.14)), 0 1px 5px 0 var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.12)) !important;
 }
+
 :deep(.hiprint-printElement-type > li > .title) {
   color: #000000de !important;
   font-family: 'Roboto', sans-serif !important;
   font-weight: 500 !important;
 }
+
 // 最右边样式，确认按钮背景色
 :deep(.hiprint-option-item-settingBtn) {
   background: #9c27b0 !important;
 }
+
 // 最右边样式，删除按钮背景色
 :deep(.hiprint-option-item-deleteBtn) {
   background: #8d9098 !important;
 }
+
 // 默认图片
 :deep(.hiprint-printElement-image-content) {
   img {
@@ -515,3 +678,4 @@ defineExpose({
   overflow-y: auto;
 }
 </style>
+@/api/base/printSolution

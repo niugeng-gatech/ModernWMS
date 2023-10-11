@@ -130,7 +130,8 @@
       "statisticAnalysis": "Statistic Analysis",
       "saftyStock": "Safety Stock",
       "asnStatistic": "Receiving statistics",
-      "deliveryStatistic": "Shipment statistics"
+      "deliveryStatistic": "Shipment statistics",
+      "print": "Print Settings"
     }
   },
   "login": {
@@ -353,6 +354,12 @@
       "saftyStock": "Safety stock",
       "printQrCode": "Print QR code",
       "printBarCode": "Print barcode"
+    },
+    "printSolution":{
+      "vue_path":"menuName",
+      "tab_page":"pageName",
+      "solution_name":"schemeName",
+      "detailList":"detailList"
     }
   },
   "wms": {
