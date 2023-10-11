@@ -1274,7 +1274,7 @@ namespace ModernWMS.WMS.Services
             var picks_g = pick_sql.AsNoTracking().GroupBy(e => new { e.goods_location_id, e.sku_id, e.goods_owner_id, e.series_number }).Select(c => new { c.Key.goods_location_id, c.Key.sku_id, c.Key.goods_owner_id, c.Key.series_number, picked_qty = c.Sum(t => t.picked_qty) });
             var picks = await picks_g.ToListAsync();
             var stocks = await (from stock in stock_DBSet
-                                where picks_g.Any(t => t.goods_location_id == stock.goods_location_id && t.sku_id == stock.sku_id && t.goods_owner_id == stock.goods_owner_id && t.series_number == stock.series_number)
+                                where pick_sql.Any(t => t.goods_location_id == stock.goods_location_id && t.sku_id == stock.sku_id && t.goods_owner_id == stock.goods_owner_id && t.series_number == stock.series_number)
                                 select stock).ToListAsync();
             foreach (var pick in picks)
             {
