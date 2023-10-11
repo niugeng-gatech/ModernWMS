@@ -1252,7 +1252,7 @@ namespace ModernWMS.WMS.Services
             var picks_g = pick_sql.AsNoTracking().GroupBy(e => new { e.goods_location_id, e.sku_id, e.goods_owner_id }).Select(c => new { c.Key.goods_location_id, c.Key.sku_id, c.Key.goods_owner_id, picked_qty = c.Sum(t => t.picked_qty) });
             var picks = await picks_g.ToListAsync();
             var stocks = await (from stock in stock_DBSet
-                                where picks_g.Any(t => t.goods_location_id == stock.goods_location_id && t.sku_id == stock.sku_id && t.goods_owner_id == stock.goods_owner_id)
+                                where pick_sql.Any(t => t.goods_location_id == stock.goods_location_id && t.sku_id == stock.sku_id && t.goods_owner_id == stock.goods_owner_id)
                                 select stock).ToListAsync();
             foreach (var pick in picks)
             {
@@ -1263,12 +1263,14 @@ namespace ModernWMS.WMS.Services
                 }
                 s.qty -= pick.picked_qty;
                 s.last_update_time = time;
+                stock_DBSet.Update(s);
             }
             foreach (var pick in pick_datas)
             {
                 pick.is_update_stock = true;
                 pick.last_update_time = DateTime.Now;
             }
+            pick_DBSet.UpdateRange(pick_datas);
             var saved = false;
             int res = 0;
             while (!saved)
