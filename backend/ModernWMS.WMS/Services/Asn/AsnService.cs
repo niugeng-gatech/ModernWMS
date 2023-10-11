@@ -67,7 +67,12 @@ namespace ModernWMS.WMS.Services
                 });
             }
             Byte asn_status = 255;
-            if (pageSearch.sqlTitle.ToLower().Contains("asn_status"))
+            bool isShowAllData = false;
+            if (pageSearch.sqlTitle.ToLower().Contains("asn_status:-1"))
+            {
+                isShowAllData = true;
+            }
+            else if (pageSearch.sqlTitle.ToLower().Contains("asn_status"))
             {
                 asn_status = Convert.ToByte(pageSearch.sqlTitle.Trim().ToLower().Replace("asn_status","").Replace("：", "").Replace(":", "").Replace("=", ""));
                 asn_status = asn_status.Equals(4) ? (Byte)255 : asn_status;
@@ -79,7 +84,7 @@ namespace ModernWMS.WMS.Services
                         join p in Spus.AsNoTracking() on m.spu_id equals p.id
                         join k in Skus.AsNoTracking() on m.sku_id equals k.id
                         where m.tenant_id == currentUser.tenant_id
-                        && (asn_status == 0 || asn_status == 255 || m.asn_status == asn_status)
+                        && (isShowAllData == true || asn_status == 255 || m.asn_status == asn_status)
                         select new AsnViewModel
                         {
                             id = m.id,
@@ -591,7 +596,7 @@ namespace ModernWMS.WMS.Services
             var data = await (from m in Asns.AsNoTracking()
                               join s in Asnsorts.AsNoTracking() on m.id equals s.asn_id
                               where m.id == id
-                              group new { m, s } by new { m.id, m.goods_owner_id, m.goods_owner_name }
+                              group new { m, s } by new { m.id, m.goods_owner_id, m.goods_owner_name, m.actual_qty }
                        into g
                               select new AsnPendingPutawayViewModel
                               {
@@ -599,7 +604,7 @@ namespace ModernWMS.WMS.Services
                                   goods_owner_id = g.Key.goods_owner_id,
                                   goods_owner_name = g.Key.goods_owner_name,
                                   series_number = "",
-                                  sorted_qty = g.Sum(o => o.s.sorted_qty)
+                                  sorted_qty = g.Sum(o => o.s.sorted_qty) - g.Key.actual_qty
                               }).ToListAsync();
             return data;
         }
