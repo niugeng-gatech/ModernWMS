@@ -645,4 +645,10 @@
   <data name="username_existed" xml:space="preserve">
     <value>用户名已存在</value>
   </data>
+  <data name="dest_stock_freeze" xml:space="preserve">
+    <value>目标库位被冻结</value>
+  </data>
+  <data name="qty_not_available" xml:space="preserve">
+    <value>可用数量不足</value>
+  </data>
 </root>
