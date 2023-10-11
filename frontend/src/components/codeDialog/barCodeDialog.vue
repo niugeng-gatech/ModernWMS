@@ -58,7 +58,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, nextTick, reactive, watch, defineProps } from 'vue'
+import { computed, nextTick, reactive, watch } from 'vue'
 import JsBarcode from 'jsbarcode'
 import { setStorage, getStorage } from '@/utils/common'
 

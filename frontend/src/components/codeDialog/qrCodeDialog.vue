@@ -63,7 +63,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, defineProps } from 'vue'
+import { computed, reactive } from 'vue'
 import VueQr from 'vue-qr/src/packages/vue-qr.vue'
 import { setStorage, getStorage } from '@/utils/common'
 
