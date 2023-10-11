@@ -471,7 +471,7 @@ namespace ModernWMS.WMS.Services
                                     where stock.tenant_id == currentUser.tenant_id && (input.sku_id == 0 || stock.sku_id == input.sku_id)
                                     && (input.goods_location_id == 0 || stock.goods_location_id == input.goods_location_id)
                                     && (input.warehouse_id == 0 || gl.warehouse_id == input.warehouse_id)
-                                    group new { stock, gw } by new { stock.sku_id, stock.goods_location_id, stock.goods_owner_id, gw.goods_owner_name, stock } into sg
+                                    group new { stock, gw } by new { stock.sku_id, stock.goods_location_id, stock.goods_owner_id, gw.goods_owner_name } into sg
                                     select new
                                     {
                                         sku_id = sg.Key.sku_id,
