@@ -79,7 +79,7 @@ namespace ModernWMS.WMS.Services
                         join p in Spus.AsNoTracking() on m.spu_id equals p.id
                         join k in Skus.AsNoTracking() on m.sku_id equals k.id
                         where m.tenant_id == currentUser.tenant_id
-                        && (asn_status == 255 || m.asn_status == asn_status)
+                        && (asn_status == 0 || asn_status == 255 || m.asn_status == asn_status)
                         select new AsnViewModel
                         {
                             id = m.id,
