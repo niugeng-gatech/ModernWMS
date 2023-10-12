@@ -14,7 +14,7 @@
     <div class="copyRight">
       <a href="https://modernwms.ikeyly.com" target="_blank">CopyRight © 2023 ModernWMS All Rights Reserve</a>
     </div>
-    <!-- <div class="ICP" @click="method.toICP"> 闽ICP备2021008548号 </div> -->
+    <div class="ICP" @click="method.toICP"> 闽ICP备2021008548号 </div>
   </div>
 </template>
 
@@ -26,9 +26,9 @@ import Logo from '@/components/system/logo.vue'
 import { emitter } from '@/utils/bus.js'
 
 const method = reactive({
-  // toICP: () => {
-  //   window.open('https://beian.miit.gov.cn/', '_blank')
-  // }
+  toICP: () => {
+    window.open('https://beian.miit.gov.cn/', '_blank')
+  }
 })
 
 // 回到登录界面清除状态
