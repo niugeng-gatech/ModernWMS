@@ -27,7 +27,8 @@
     "vxe-table": "4.3.7",
     "vxe-table-plugin-export-xlsx": "3.0.4",
     "xe-utils": "3.5.7",
-    "xlsx": "0.18.5"
+    "xlsx": "0.18.5",
+    "yk-vue-plugin-hiprint": "0.0.8"
   },
   "devDependencies": {
     "@mdi/font": "7.1.96",
