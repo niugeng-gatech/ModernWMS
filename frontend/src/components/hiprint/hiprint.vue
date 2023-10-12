@@ -70,13 +70,6 @@
         </v-row>
       </div>
     </v-card>
-    <img
-      v-if="data.loadLogo"
-      id="imgContainer"
-      ref="logoRef"
-      style="height: 50px;width: 50px;display: none;"
-      src="@/assets/img/webLogoMini.png"
-    />
     <preViewDialog ref="preViewDialogRef" />
   </v-dialog>
 </template>
@@ -148,8 +141,6 @@ const data = reactive({
       height: 175.6
     }
   },
-  loadLogo: true,
-  logoBase64: '',
   scaleValue: 1,
   scaleMax: 5,
   scaleMin: 0.5,
@@ -193,7 +184,7 @@ const method = reactive({
           custom: true,
           type: 'text'
         },
-        // { tid: 'providerModule.image', title: 'Logo', data: data.logoBase64, custom: true, type: 'image' }
+        { tid: 'providerModule.image', title: 'Logo', data: '', custom: true, type: 'image' }
       ])
     ]
     const userList = [] as any[]
@@ -402,32 +393,6 @@ const method = reactive({
     ref.data.printData = props.form
     ref.method.show()
   },
-  initLogo() {
-    if (!data.logoBase64) {
-      data.loadLogo = true
-      const img = document.getElementById('imgContainer')
-      if (img) {
-        img.onload = function () {
-          const canvas = document.createElement('CANVAS') as any
-          const cts = canvas.getContext('2d')
-          canvas.height = 50
-          canvas.width = 50
-          cts.drawImage(img, 0, 0, 50, 50)
-          const dataURL = canvas.toDataURL()
-          data.logoBase64 = dataURL
-          data.loadLogo = false
-          method.initSetting()
-          method.initProvier()
-          method.init()
-        }
-      }
-    } else {
-      data.loadLogo = false
-      method.initSetting()
-      method.initProvier()
-      method.init()
-    }
-  }
 })
 
 watch(
@@ -435,7 +400,9 @@ watch(
   (val) => {
     if (val) {
       nextTick(() => {
-        method.initLogo()
+        method.initSetting()
+        method.initProvier()
+        method.init()
       })
     }
   }
@@ -558,11 +525,11 @@ defineExpose({
 }
 
 // 默认图片
-:deep(.hiprint-printElement-image-content) {
-  img {
-    content: url('@/assets/img/webLogoMini.png') !important;
-  }
-}
+// :deep(.hiprint-printElement-image-content) {
+//   img {
+//     content: url('@/assets/img/webLogoMini.png') !important;
+//   }
+// }
 
 // 设计容器
 .card-design {

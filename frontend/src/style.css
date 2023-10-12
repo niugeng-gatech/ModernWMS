@@ -38,6 +38,6 @@ body {
   top: -12px;
   font-size: 12px;
 }
-.hiprint-printElement-image-content img{
+/* .hiprint-printElement-image-content img{
   content: url('@/assets/img/webLogoMini.png')!important;
-}
+} */
