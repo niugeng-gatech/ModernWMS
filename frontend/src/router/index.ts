@@ -25,6 +25,11 @@ const routes: RouteRecordRaw[] = [
     redirect: 'homepage',
     component: () => import('@/view/home/home.vue'),
     children: []
+  },
+  {
+    name: 'VWMS',
+    path: '/VWMS',
+    component: () => import('@/view/VWMS/VWms.vue')
   }
 ]
 
@@ -87,7 +92,9 @@ router.beforeEach((to, from, next) => {
     dynamicRouter = []
     return next()
   }
-
+  if (to.path === '/VWMS') {
+    next()
+  }
   // dont have token, back login
   if (!store.getters['user/token']) {
     return next('/login')
