@@ -70,19 +70,28 @@
         </v-row>
       </div>
     </v-card>
+    <img
+      v-if="data.loadLogo"
+      id="imgContainer"
+      ref="logoRef"
+      style="height: 50px;width: 50px;display: none;"
+      src="@/assets/img/webLogoMini.png"
+    />
     <preViewDialog ref="preViewDialogRef" />
   </v-dialog>
 </template>
 <script lang="ts" setup>
-import { reactive, ref, computed, watch, nextTick } from 'vue'
+import { reactive, ref, computed, watch, nextTick, getCurrentInstance, ComponentInternalInstance } from 'vue'
 import { useRouter } from 'vue-router'
-import { hiprint } from 'yk-vue-plugin-hiprint'
 import { listByPath } from '@/api/base/printSolution'
 import { PrintSolutionVO, PrintSolutionGetByPathVo } from '@/types/Base/PrintSolution'
 import i18n from '@/languages/i18n'
 import preViewDialog from './preView.vue'
 import { PRINT_MENU } from '@/constant/print'
 
+const { appContext } = getCurrentInstance() as ComponentInternalInstance
+const proxy = appContext.config.globalProperties
+const { hiprint } = proxy
 interface paperTypeData {
   width: number
   height: number
@@ -139,6 +148,8 @@ const data = reactive({
       height: 175.6
     }
   },
+  loadLogo: true,
+  logoBase64: '',
   scaleValue: 1,
   scaleMax: 5,
   scaleMin: 0.5,
@@ -153,9 +164,10 @@ const method = reactive({
     const option_path = PRINT_MENU.filter(item => item.vue_path === vuePath.value)
     if (option_path.length > 0) {
       data.i18nName = option_path[0].i18nName
-      const option_page = option_path[0].children.filter(item => item.tab_page === props.tabPage)
-      if (option_page.length > 0) {
-        data.pageForm = option_page[0].form
+      const children = option_path[0].children as any[]
+      const option_page = children.find(item => item.tab_page === props.tabPage)
+      if (option_page) {
+        data.pageForm = option_page.form
         for (const key in data.pageForm) {
           if (key.indexOf('detailList') > -1) {
             const detailList = data.pageForm[key]
@@ -181,7 +193,7 @@ const method = reactive({
           custom: true,
           type: 'text'
         },
-        { tid: 'providerModule.image', title: 'Logo', data: '', type: 'image' }
+        // { tid: 'providerModule.image', title: 'Logo', data: data.logoBase64, custom: true, type: 'image' }
       ])
     ]
     const userList = [] as any[]
@@ -389,6 +401,32 @@ const method = reactive({
     ref.data.hiprintTemplate = data.hiprintTemplate
     ref.data.printData = props.form
     ref.method.show()
+  },
+  initLogo() {
+    if (!data.logoBase64) {
+      data.loadLogo = true
+      const img = document.getElementById('imgContainer')
+      if (img) {
+        img.onload = function () {
+          const canvas = document.createElement('CANVAS') as any
+          const cts = canvas.getContext('2d')
+          canvas.height = 50
+          canvas.width = 50
+          cts.drawImage(img, 0, 0, 50, 50)
+          const dataURL = canvas.toDataURL()
+          data.logoBase64 = dataURL
+          data.loadLogo = false
+          method.initSetting()
+          method.initProvier()
+          method.init()
+        }
+      }
+    } else {
+      data.loadLogo = false
+      method.initSetting()
+      method.initProvier()
+      method.init()
+    }
   }
 })
 
@@ -397,9 +435,7 @@ watch(
   (val) => {
     if (val) {
       nextTick(() => {
-        method.initSetting()
-        method.initProvier()
-        method.init()
+        method.initLogo()
       })
     }
   }

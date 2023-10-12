@@ -38,7 +38,7 @@ const method = reactive({
   },
   show() {
     data.formVisible = true
-    setTimeout(() => {
+    setTimeout(() => {      
       $('#preview_content_custom').html(data.hiprintTemplate.getHtml(data.printData))
     }, 500)
   },

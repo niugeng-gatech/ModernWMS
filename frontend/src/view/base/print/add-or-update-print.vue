@@ -120,12 +120,20 @@
         </v-row>
       </div>
     </v-card>
+
+    <img
+      v-if="data.loadLogo"
+      id="imgContainer"
+      ref="logoRef"
+      style="height: 50px;width: 50px;display: none;"
+      src="@/assets/img/webLogoMini.png"
+    />
+
     <preViewDialog ref="preViewDialogRef" />
   </v-dialog>
 </template>
 <script lang="ts" setup>
-import { reactive, ref, computed, watch, nextTick } from 'vue'
-import { hiprint } from 'yk-vue-plugin-hiprint'
+import { reactive, ref, computed, watch, nextTick, getCurrentInstance, ComponentInternalInstance } from 'vue'
 import { hookComponent } from '@/components/system/index'
 import { addPrintSolution, updatePrintSolution } from '@/api/base/printSolution'
 import { PrintSolutionVO } from '@/types/Base/PrintSolution'
@@ -133,6 +141,10 @@ import i18n from '@/languages/i18n'
 import preViewDialog from '@/components/hiprint/preView.vue'
 import { PRINT_MENU } from '@/constant/print'
 
+const logoRef = ref()
+const { appContext } = getCurrentInstance() as ComponentInternalInstance
+const proxy = appContext.config.globalProperties
+const { hiprint } = proxy
 const emit = defineEmits(['close', 'saveSuccess'])
 
 interface paperTypeData {
@@ -205,11 +217,14 @@ const data = reactive({
       height: 175.6
     }
   },
+  loadLogo: true,
+  logoBase64: '',
   scaleValue: 1,
   scaleMax: 5,
   scaleMin: 0.5,
   panel: {}
 })
+
 const method = reactive({
   provider() {
     const elementList = [
@@ -221,7 +236,21 @@ const method = reactive({
           custom: true,
           type: 'text'
         },
-        { tid: 'providerModule.image', title: 'Logo', data: '', type: 'image' }
+        // {
+        //   tid: 'providerModule.image',
+        //   title: 'Logo',
+        //   data: data.logoBase64,
+        //   custom: true,
+        //   type: 'image',
+        //   options: {
+        //     height: 50,
+        //     width: 50,
+        //     data: data.logoBase64,
+        //     fit: '',
+				// coordinateSync: false,
+				// widthHeightSync: false
+        //   }
+        // }
       ])
     ]
     const userList = [] as any[]
@@ -440,6 +469,8 @@ const method = reactive({
   async handleSubmit() {
     if (data.hiprintTemplate) {
       const jsonOut = JSON.stringify(data.hiprintTemplate.getJson() || {})
+      console.log(jsonOut)
+      
       const form = {
         id: data.form.id,
         vue_path: data.form.vue_path,
@@ -501,6 +532,27 @@ const method = reactive({
     }
     ref.data.printData = printData
     ref.method.show()
+  },
+  initLogo() {
+    if (!data.logoBase64) {
+      data.loadLogo = true
+      const img = document.getElementById('imgContainer')
+      if (img) {
+        img.onload = function () {
+          const canvas = document.createElement('CANVAS') as any
+          const cts = canvas.getContext('2d')
+          canvas.height = 50
+          canvas.width = 50
+          cts.drawImage(img, 0, 0, 50, 50)
+          const dataURL = canvas.toDataURL()
+          data.logoBase64 = dataURL
+          data.loadLogo = false
+          console.log(dataURL)
+        }
+      }
+    } else {
+      data.loadLogo = false
+    }
   }
 })
 
@@ -509,6 +561,7 @@ watch(
   (val) => {
     if (val) {
       nextTick(() => {
+        method.initLogo()
         if (props.form.id > 0) {
           data.form = props.form
           if (data.form.config_json) {
@@ -668,11 +721,11 @@ defineExpose({
 }
 
 // 默认图片
-:deep(.hiprint-printElement-image-content) {
-  img {
-    content: url('@/assets/img/webLogoMini.png') !important;
-  }
-}
+// :deep(.hiprint-printElement-image-content) {
+//   img {
+//     content: url('@/assets/img/webLogoMini.png') !important;
+//   }
+// }
 
 // 设计容器
 .card-design {
@@ -681,4 +734,3 @@ defineExpose({
   overflow-y: auto;
 }
 </style>
-@/api/base/printSolution
