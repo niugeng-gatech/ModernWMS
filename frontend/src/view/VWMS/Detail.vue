@@ -7,87 +7,87 @@
 <template>
   <div class="warehouse-info VWms-card">
     <Transition name="slide-fade">
-      <div v-if="presentData?.type === 'warehouse'">
-        <p class="name">{{ presentData?.warehouse_name }}</p>
+      <div v-if="props.presentData?.type === 'warehouse'">
+        <p class="name">{{ props.presentData?.warehouse_name }}</p>
         <div class="text-grid">
           <p>位置:</p>
-          <p>{{ presentData?.address }}</p>
+          <p>{{ props.presentData?.address }}</p>
           <p>负责人:</p>
-          <p>{{ presentData?.manager }}</p>
+          <p>{{ props.presentData?.manager }}</p>
           <p>联系电话:</p>
-          <p>{{ presentData?.contact_tel }}</p>
+          <p>{{ props.presentData?.contact_tel }}</p>
           <p>Email:</p>
-          <p>{{ presentData?.email }}</p>
+          <p>{{ props.presentData?.email }}</p>
         </div>
         <div class="data-grid">
           <div class="column-center data-container">
             <p class="data-label">库区数</p>
-            <p class="data-number">{{ presentData?.factory_number }}</p>
+            <p class="data-number">{{ props.presentData?.factory_number }}</p>
           </div>
           <div class="column-center data-container">
             <p class="data-label">库存量</p>
-            <p class="data-number">{{ presentData?.warehouse_product_number }}</p>
+            <p class="data-number">{{ props.presentData?.warehouse_product_number }}</p>
           </div>
         </div>
       </div>
     </Transition>
     <Transition name="slide-fade">
-      <div v-show="presentData?.type === 'factory'">
-        <p class="name">{{ presentData?.area_name }}</p>
-        <p><span class="em">库区类别: </span>{{ formatAreaProperty(presentData?.area_property) }}</p>
+      <div v-show="props.presentData?.type === 'factory'">
+        <p class="name">{{ props.presentData?.area_name }}</p>
+        <p><span class="em">库区类别: </span>{{ formatAreaProperty(props.presentData?.area_property) }}</p>
         <div class="data-grid">
           <div class="column-center data-container">
             <p class="data-label">总货架数</p>
-            <p class="data-number">{{ presentData?.shelf_number }}</p>
+            <p class="data-number">{{ props.presentData?.shelf_number }}</p>
           </div>
           <div class="column-center data-container">
             <p class="data-label">总库位数</p>
-            <p class="data-number">{{ presentData?.shelf_item_number }}</p>
+            <p class="data-number">{{ props.presentData?.shelf_item_number }}</p>
           </div>
           <div class="column-center data-container">
             <p class="data-label">剩余库位</p>
-            <p class="data-number">{{ presentData?.surplus_number }}</p>
+            <p class="data-number">{{ props.presentData?.surplus_number }}</p>
           </div>
           <div class="column-center data-container">
             <p class="data-label">总货物数</p>
-            <p class="data-number">{{ presentData?.factory_product_number }}</p>
+            <p class="data-number">{{ props.presentData?.factory_product_number }}</p>
           </div>
         </div>
       </div>
     </Transition>
     <Transition name="slide-fade">
-      <div v-show="presentData?.type === 'shelf'">
+      <div v-show="props.presentData?.type === 'shelf'">
         <div class="flex-center-between">
-          <p class="name">{{ presentData?.shelf_name }}</p>
-          <p><span class="em">货架规格: </span>{{ presentData?.layer }} * {{ presentData?.column }}</p>
+          <p class="name">{{ props.presentData?.shelf_name }}</p>
+          <p><span class="em">货架规格: </span>{{ props.presentData?.layer }} * {{ props.presentData?.column }}</p>
         </div>
         <div class="data-grid">
           <div class="column-center data-container">
             <p class="data-label">闲置库位</p>
-            <p class="data-number">{{ presentData?.surplus_number }}</p>
+            <p class="data-number">{{ props.presentData?.surplus_number }}</p>
           </div>
           <div class="column-center data-container">
             <p class="data-label">总货物数</p>
-            <p class="data-number">{{ presentData?.shelf_product_number }}</p>
+            <p class="data-number">{{ props.presentData?.shelf_product_number }}</p>
           </div>
         </div>
       </div>
     </Transition>
     <Transition name="slide-fade">
-      <div v-show="presentData?.type === 'shelfItem'">
-        <p class="name">{{ presentData?.tag_number }}号库位</p>
+      <div v-show="props.presentData?.type === 'shelfItem'">
+        <p class="name">{{ props.presentData?.tag_number }}号库位</p>
         <div class="text-grid">
           <p>层号:</p>
-          <p>{{ presentData?.layer_number }}</p>
+          <p>{{ props.presentData?.layer_number }}</p>
           <p>货架编码:</p>
-          <p>{{ presentData?.location_name }}</p>
+          <p>{{ props.presentData?.location_name }}</p>
         </div>
         <div>
-          <div v-if="presentData?.product?.length === 0">空库位</div>
+          <div v-if="props.presentData?.product?.length === 0">空库位</div>
           <div v-else class="product-info-container">
             <vxe-table
               align="center"
-              :data="presentData?.product"
+              :data="props.presentData?.product"
               border
               height="170"
               :row-config="{isHover: true}"
@@ -105,12 +105,9 @@
 </template>
 
 <script setup lang="ts">
-import { factoryShowDataType, shelfItemShowDataType, shelfShowDataType, warehouseShowDataType } from '@/view/VWMS/types'
 import { formatAreaProperty } from '@/utils/format/formatWarehouse'
 
-defineProps<{
-  presentData?:warehouseShowDataType | factoryShowDataType | shelfShowDataType | shelfItemShowDataType
-}>()
+const props = defineProps(['presentData'])
 </script>
 
 <style scoped lang="less">
