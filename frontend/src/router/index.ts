@@ -29,7 +29,7 @@ const routes: RouteRecordRaw[] = [
   {
     name: 'VWMS',
     path: '/VWMS',
-    component: () => import('@/view/VWMS/VWms.vue')
+    component: () => import('@/view/vwms/VWms.vue')
   }
 ]
 
