@@ -100,26 +100,26 @@ const tabsConfig = [
     icon: 'mdi-list-box',
     tabName: i18n.global.t('wms.deliveryManagement.newShipment')
   },
-  // {
-  //   value: 'tabGoodsToBePicked',
-  //   icon: 'mdi-dolly',
-  //   tabName: i18n.global.t('wms.deliveryManagement.goodsToBePicked')
-  // },
-  // {
-  //   value: 'tabPicked',
-  //   icon: 'mdi-human-dolly',
-  //   tabName: i18n.global.t('wms.deliveryManagement.picked')
-  // },
-  // {
-  //   value: 'tabToBePackaged',
-  //   icon: 'mdi-package-variant',
-  //   tabName: i18n.global.t('wms.deliveryManagement.toBePackaged')
-  // },
-  // {
-  //   value: 'tabPackaged',
-  //   icon: 'mdi-package-variant-closed-check',
-  //   tabName: i18n.global.t('wms.deliveryManagement.packaged')
-  // },
+  {
+    value: 'tabGoodsToBePicked',
+    icon: 'mdi-dolly',
+    tabName: i18n.global.t('wms.deliveryManagement.goodsToBePicked')
+  },
+  {
+    value: 'tabPicked',
+    icon: 'mdi-human-dolly',
+    tabName: i18n.global.t('wms.deliveryManagement.picked')
+  },
+  {
+    value: 'tabToBePackaged',
+    icon: 'mdi-package-variant',
+    tabName: i18n.global.t('wms.deliveryManagement.toBePackaged')
+  },
+  {
+    value: 'tabPackaged',
+    icon: 'mdi-package-variant-closed-check',
+    tabName: i18n.global.t('wms.deliveryManagement.packaged')
+  },
   {
     value: 'tabToBeWeighed',
     icon: 'mdi-basket-fill',
