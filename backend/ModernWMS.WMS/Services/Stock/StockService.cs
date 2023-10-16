@@ -468,9 +468,13 @@ namespace ModernWMS.WMS.Services
                                     join gw in _dBContext.GetDbSet<GoodsownerEntity>().AsNoTracking() on stock.goods_owner_id equals gw.id into gw_left
                                     from gw in gw_left.DefaultIfEmpty()
                                     join gl in _dBContext.GetDbSet<GoodslocationEntity>().AsNoTracking() on stock.goods_location_id equals gl.id
+                                    join sku in _dBContext.GetDbSet<SkuEntity>().AsNoTracking() on stock.sku_id equals sku.id
+                                    join spu in _dBContext.GetDbSet<SpuEntity>().AsNoTracking() on sku.spu_id equals spu.id
                                     where stock.tenant_id == currentUser.tenant_id && (input.sku_id == 0 || stock.sku_id == input.sku_id)
                                     && (input.goods_location_id == 0 || stock.goods_location_id == input.goods_location_id)
                                     && (input.warehouse_id == 0 || gl.warehouse_id == input.warehouse_id)
+                                    && (input.spu_name == "" || spu.spu_name.Contains(input.spu_name))
+                                    && (input.location_name == "" || gl.location_name.Contains(input.location_name))
                                     group new { stock, gw } by new { stock.sku_id, stock.goods_location_id, stock.goods_owner_id, gw.goods_owner_name } into sg
                                     select new
                                     {

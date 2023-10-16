@@ -27,8 +27,18 @@ namespace ModernWMS.WMS.Entities.ViewModels
         public int goods_location_id { get; set; } = 0;
 
         /// <summary>
-        /// 仓库标识
+        /// warehouse_id
         /// </summary>
         public int warehouse_id { get; set; } = 0;
+
+        /// <summary>
+        /// spu name
+        /// </summary>
+        public string spu_name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// location name
+        /// </summary>
+        public string location_name { get; set; } = string.Empty;
     }
 }
