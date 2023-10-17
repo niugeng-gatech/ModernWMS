@@ -4,11 +4,14 @@
   <meta charset='utf-8'>
   <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
   <title>WMS</title>
-  <link href="../unity/TemplateData/favicon.ico" rel='shortcut icon'>
-  <link href="../unity/TemplateData/style.css" rel='stylesheet'>
 </head>
 <style>
+    html {
+        height: 100%;
+    }
     body {
+        padding: 0;
+        margin: 0;
         width: 100%;
         height: 100%;
         overflow: hidden;
@@ -69,9 +72,9 @@
   var buildUrl = "Build";
   var loaderUrl = buildUrl + "/wms.loader.js";
   var config = {
-    dataUrl: buildUrl + "/wms.data",
-    frameworkUrl: buildUrl + "/wms.framework.js",
-    codeUrl: buildUrl + "/wms.wasm",
+    dataUrl: buildUrl + "/wms.data.unityweb",
+    frameworkUrl: buildUrl + "/wms.framework.js.unityweb",
+    codeUrl: buildUrl + "/wms.wasm.unityweb",
     streamingAssetsUrl: "StreamingAssets",
     companyName: "DefaultCompany",
     productName: "My project",

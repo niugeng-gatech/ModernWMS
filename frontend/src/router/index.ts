@@ -24,13 +24,17 @@ const routes: RouteRecordRaw[] = [
     path: '/home',
     redirect: 'homepage',
     component: () => import('@/view/home/home.vue'),
-    children: []
+    children: [
+      {
+        name: 'vwms',
+        path: '/vwms',
+        component: () => import('@/view/vwms/VWms.vue'),
+        meta: {
+          menuPath: 'vwms'
+        }
+      }
+    ]
   },
-  {
-    name: 'VWMS',
-    path: '/VWMS',
-    component: () => import('@/view/vwms/VWms.vue')
-  }
 ]
 
 // create router

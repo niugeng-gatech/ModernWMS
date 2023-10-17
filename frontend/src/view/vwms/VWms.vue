@@ -5,19 +5,18 @@
  @date : 2023/10/6
 -->
 <template>
-  <div class="VWms-container">
+  <div id="vwms" class="VWms-container">
     <Transition name="fade">
       <loading-page v-show="loading" />
     </Transition>
     <div class="VWms-header">
-      <div class="warehouse-name">{{ warehouseInfo?.warehouse_name }}</div>
-
+      <div class="warehouse-name">猛牛一号仓库</div>
       <div class="tooltip">
-        <div>
-          <v-icon icon="mdi-menu-left"></v-icon>
+        <div class="opr-item" @click="toggleFullScreen">
+          <v-icon icon="mdi-arrow-top-right-bottom-left"></v-icon>
         </div>
-        <div>
-          <v-icon icon="mdi-menu-left"></v-icon>
+        <div class="opr-item" @click="handleShowRightContainer">
+          <v-icon :icon="`mdi-arrow-expand-${showRightContainer?'left':'right'}`"></v-icon>
         </div>
         <div>
           <v-btn v-if="presentData?.type === 'shelf' || presentData?.type === 'shelfItem'" @click="handleShelfGrid">
@@ -35,20 +34,22 @@
       />
     </div>
     <div>
-      <Transition name="slide-fade-grid">
+      <transition name="slide-fade-grid">
         <shelf-grid
           v-if="presentData?.type === 'shelf' && showShelfGrid || presentData?.type === 'shelfItem' && showShelfGrid"
           :select-index="selectShelfItemTagNumber"
           :shelf-grid-data="shelfGridData"
           @selectShelfItem="handleShelfGridSelect"
         ></shelf-grid>
-      </Transition>
+      </transition>
     </div>
-    <div v-if="!loading" class="right-container">
-      <Detail :present-data="presentData"></Detail>
-      <Bar :bar-data="barData"></Bar>
-      <Pie :pie-data="pieData"></Pie>
-    </div>
+    <transition name="slide-fade-right">
+      <div v-if="showRightContainer" class="right-container">
+        <Detail :present-data="presentData"></Detail>
+        <Bar :bar-data="barData"></Bar>
+        <Pie :pie-data="pieData"></Pie>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -56,6 +57,7 @@
 import { useRoute } from 'vue-router'
 import { onMounted, reactive, ref, watch } from 'vue'
 import _ from 'lodash'
+import screenfull from 'screenfull'
 import LoadingPage from '@/view/vwms/LoadingPage.vue'
 import {
   getGoodsLocation,
@@ -84,6 +86,7 @@ import Detail from '@/view/vwms/Detail.vue'
 import Bar from '@/view/vwms/chat/Bar.vue'
 import Pie from '@/view/vwms/chat/Pie.vue'
 import ShelfGrid from '@/view/vwms/ShelfGrid.vue'
+import { factoryData, productData, shelfItemData, warehouseData } from '@/view/vwms/data/data'
 
 const VWmsIframe = ref()
 const route = useRoute()
@@ -93,11 +96,21 @@ const warehouseId = parseInt(route.query.warehouseId as string)
 onMounted(async () => {
   window.addEventListener('message', unityWatch)
 })
-
+const showRightContainer = ref(false)
+const handleShowRightContainer = () => {
+  showRightContainer.value = !showRightContainer.value
+}
 const showShelfGrid = ref(true)
 const handleShelfGrid = () => {
   showShelfGrid.value = !showShelfGrid.value
 }
+const toggleFullScreen = () => {
+  if (screenfull.isEnabled) {
+    const vwms = document.getElementById('vwms')
+    screenfull.toggle(vwms!)
+  }
+}
+
 const handleShelfGridSelect = (index) => {
   selectObjectList.push({
     itemName: 'shelfItem',
@@ -129,6 +142,7 @@ const handleLoadSuccess = async () => {
   startPostJson()
   setTimeout(() => {
     loading.value = false
+    showRightContainer.value = true
   }, 2500)
 }
 
@@ -162,10 +176,10 @@ const handleSelectBreak = () => {
   }
 }
 
-const warehouseInfo = ref<warehouseInfoType>()
-const factoryInfo = ref<factoryInfoType[]>([])
-const shelfItemInfo = ref<shelfItemInfoType[]>([])
-const productInfo = ref<productInfoType[]>([])
+const warehouseInfo = ref<warehouseInfoType>(warehouseData)
+const factoryInfo = ref<factoryInfoType[]>(factoryData)
+const shelfItemInfo = ref<shelfItemInfoType[]>(shelfItemData)
+const productInfo = ref<productInfoType[]>(productData)
 const formatData = ref<factoryDataType[]>([])
 const selectFactoryData = ref<factoryDataType>()
 const selectShelfName = ref()
@@ -346,21 +360,21 @@ watch(selectObjectList, () => {
 })
 
 const initData = async () => {
-  try {
-    const promises = [
-      await getWarehouse(warehouseId),
-      await getWarehouseAreaSelect(warehouseId),
-      await getGoodsLocation(),
-      await getWarehouseProduct({ warehouse_id: warehouseId })
-    ]
-    const responses: any = await Promise.all(promises)
-    warehouseInfo.value = responses[0].data.data
-    factoryInfo.value = responses[1].data.data
-    shelfItemInfo.value = responses[2].data.data
-    productInfo.value = responses[3].data.data
-  } catch (error) {
-    loading.value = true
-  }
+  // try {
+  //   const promises = [
+  //     await getWarehouse(warehouseId),
+  //     await getWarehouseAreaSelect(warehouseId),
+  //     await getGoodsLocation(),
+  //     await getWarehouseProduct({ warehouse_id: warehouseId })
+  //   ]
+  //   const responses: any = await Promise.all(promises)
+  //   warehouseInfo.value = responses[0].data.data
+  //   factoryInfo.value = responses[1].data.data
+  //   shelfItemInfo.value = responses[2].data.data
+  //   productInfo.value = responses[3].data.data
+  // } catch (error) {
+  //   loading.value = true
+  // }
   selectObjectList.push({
     itemName: 'playground',
     itemId: warehouseId
@@ -371,10 +385,14 @@ const initData = async () => {
 
 const startPostJson = () => {
   const data: formatDataType = handlePostJson(factoryInfo.value, shelfItemInfo.value, productInfo.value)
-  VWmsIframe.value.contentWindow.parent.postMessage({
-    guid: JSON.stringify(data),
-    event: 'sendData'
-  }, '*')
+  try {
+    VWmsIframe.value.contentWindow.parent.postMessage({
+      guid: JSON.stringify(data),
+      event: 'sendData'
+    }, '*')
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 </script>
@@ -385,8 +403,8 @@ const startPostJson = () => {
 }
 
 .VWms-container {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   position: relative;
   display: flex;
@@ -396,7 +414,7 @@ const startPostJson = () => {
 }
 
 .VWms-header {
-  position: fixed;
+  position: absolute;
   top: 10px;
   left: 10px;
   z-index: 10;
@@ -404,12 +422,8 @@ const startPostJson = () => {
   height: 70px;
   align-items: center;
   background-color: rgba(255, 255, 255, 0.9);
-  padding: 10px;
+  padding: 10px 20px;
   border-radius: 2px;
-
-  & > div {
-    margin: 10px;
-  }
 
   .warehouse-name {
     font-size: 18px;
@@ -420,9 +434,10 @@ const startPostJson = () => {
     display: flex;
     align-items: center;
     margin-left: 10px;
-
-    & > div {
-      margin-left: 10px;
+    .opr-item {
+      margin-left: 20px;
+      width: 40px;
+      cursor: pointer;
     }
   }
 }
@@ -436,14 +451,13 @@ const startPostJson = () => {
 
 .right-container {
   display: grid;
-  grid-template-columns: 450px;
+  grid-template-columns: 400px;
   grid-gap: 15px;
   position: absolute;
   right: 0;
   height: 100%;
-  width: 500px;
   overflow: auto;
-  padding: 10px 0;
+  padding: 10px;
   justify-content: center
 
 }
@@ -486,6 +500,20 @@ const startPostJson = () => {
 .slide-fade-grid-enter-from,
 .slide-fade-grid-leave-to {
   transform: translateX(-200px);
+  opacity: 0;
+}
+
+.slide-fade-right-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.slide-fade-right-leave-active {
+  transition: all 0.5s ease-out;
+}
+
+.slide-fade-right-enter-from,
+.slide-fade-right-leave-to {
+  transform: translateX(200px);
   opacity: 0;
 }
 </style>

@@ -20,9 +20,14 @@ export interface factoryInfoType {
   is_valid:boolean,
   last_update_time:string,
   warehouse_id:number,
+  warehouse_name:string,
+  parent_id:number,
+  tenant_id:number,
 }
 export interface shelfItemInfoType {
   id:number,
+  warehouse_name:string,
+  warehouse_area_property:number,
   layer_number:string,
   location_heigth:number,
   location_length:number,
@@ -35,7 +40,11 @@ export interface shelfItemInfoType {
   tag_number:string,
   warehouse_area_id:number,
   warehouse_area_name:string,
-  warehouse_id:number
+  warehouse_id:number,
+  create_time:string,
+  last_update_time:string,
+  is_valid:boolean,
+  tenant_id:number
 }
 export interface productInfoType {
   goods_location_id:number,

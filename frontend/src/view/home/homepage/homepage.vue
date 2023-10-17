@@ -1,15 +1,5 @@
 <template>
   <div class="container">
-    <div class="VWMS">
-      <v-select
-        label="Select"
-        :items="warehouseInfo"
-        item-title="name"
-        item-value="value"
-        @update:model-value="selectWarehouse"
-      ></v-select>
-      <v-btn @click="goVWMS">click</v-btn>
-    </div>
     <div class="textBox">
       <div class="mainTitle">ModernWMS</div>
       <div class="subTitle">{{ i18n.global.t('homepage.subTitle') }}</div>
@@ -23,38 +13,9 @@
 </template>
 
 <script lang="ts" setup>
-import { useRouter } from 'vue-router'
-import { ref, onMounted } from 'vue'
 import lottie from '@/components/lottie.vue'
 import dataJson from '@/assets/warehouse.json'
 import i18n from '@/languages/i18n'
-import { getWarehouseSelect } from '@/api/base/warehouseSetting'
-
-const router = useRouter()
-
-onMounted(() => {
-  getWarehouseInfo()
-})
-const warehouseInfo = ref()
-const getWarehouseInfo = async () => {
-  const { data: res } = await getWarehouseSelect()
-  if (res.isSuccess) {
-    warehouseInfo.value = res.data
-  }
-}
-const warehouseId = ref()
-const selectWarehouse = (val:string) => {
-  warehouseId.value = val
-}
-const goVWMS = () => {
-  const href = router.resolve({
-    path: '/VWMS',
-    query: {
-      warehouseId: warehouseId.value,
-    },
-  })
-  window.open(href.href, '_blank')
-}
 </script>
 
 <style scoped lang="less">
