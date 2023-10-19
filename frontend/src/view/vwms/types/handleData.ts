@@ -6,7 +6,7 @@ import {
   productInfoType,
   shelfDataType,
   shelfItemInfoType
-} from '@/view/vwms/types'
+} from '@/view/vwms/types/types'
 
 export const handlePostJson = (warehouseAreaInfo: factoryInfoType[], goodsLocationInfo: shelfItemInfoType[], productInfo: productInfoType[]) => {
   const data: formatDataType = {

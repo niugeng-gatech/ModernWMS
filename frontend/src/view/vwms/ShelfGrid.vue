@@ -56,7 +56,7 @@ const selectProduct = (e) => {
 <style lang="less" scoped>
 
 .shelf-container {
-  position: fixed;
+  position: absolute;
   left: 10px;
   top: 90px;
   padding: 15px;

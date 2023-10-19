@@ -7,6 +7,7 @@
 <template>
   <div class="VWms-card">
     <div>{{ props.barData?.barTitle }}</div>
+    <v-divider></v-divider>
     <div ref="chatRef" class="chat"></div>
   </div>
 </template>
@@ -45,8 +46,13 @@ const initCharts = () => {
             shadowOffsetX: 0,
             shadowColor: 'rgba(0, 0, 0, 0.5)'
           }
-        }
-      }
+        },
+        label: {
+          show: true,
+          position: 'outside',
+          formatter: '{b} : {d}%'
+        },
+      },
     ]
   })
 }

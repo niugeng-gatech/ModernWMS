@@ -7,22 +7,28 @@
 <template>
   <div id="vwms" class="VWms-container">
     <Transition name="fade">
-      <loading-page v-show="loading" />
+      <loading-page v-show="loading" :progress="loadingProgress" />
     </Transition>
+
     <div class="VWms-header">
-      <div class="warehouse-name">猛牛一号仓库</div>
       <div class="tooltip">
-        <div class="opr-item" @click="toggleFullScreen">
-          <v-icon icon="mdi-arrow-top-right-bottom-left"></v-icon>
-        </div>
-        <div class="opr-item" @click="handleShowRightContainer">
-          <v-icon :icon="`mdi-arrow-expand-${showRightContainer?'left':'right'}`"></v-icon>
-        </div>
-        <div>
-          <v-btn v-if="presentData?.type === 'shelf' || presentData?.type === 'shelfItem'" @click="handleShelfGrid">
-            {{ showShelfGrid ? '关闭' : '打开' }}货架二维视图
-          </v-btn>
-        </div>
+        <v-btn icon variant="text" @click="handleShowRightContainer">
+          <v-tooltip activator="parent" location="bottom">{{ showRightContainer?'收起':'展开' }}右栏</v-tooltip>
+          <v-icon :icon="`mdi-arrow-expand-${showRightContainer?'right':'left'}`"></v-icon>
+        </v-btn>
+
+        <v-btn icon variant="text" @click="toggleFullScreen">
+          <v-tooltip activator="parent" location="bottom">全屏</v-tooltip>
+          <v-icon :icon="`mdi-arrow-${fullScreen?'collapse':'expand'}`"></v-icon>
+        </v-btn>
+
+        <v-btn icon variant="text" @click="handleBreak">
+          <v-tooltip activator="parent" location="bottom">回退</v-tooltip>
+          <v-icon icon="mdi-reply"></v-icon>
+        </v-btn>
+        <v-btn v-if="presentData?.type === 'shelf' || presentData?.type === 'shelfItem'" @click="handleShelfGrid">
+          {{ showShelfGrid ? '关闭' : '打开' }}货架二维视图
+        </v-btn>
       </div>
     </div>
     <div class="VWMSIframe">
@@ -65,7 +71,7 @@ import {
   getWarehouseAreaSelect,
   getWarehouseProduct
 } from '@/api/base/warehouseSetting'
-import { getGroupsData, handlePostJson } from '@/view/vwms/handleData'
+import { getGroupsData, handlePostJson } from '@/view/vwms/types/handleData'
 import {
   factoryDataType,
   factoryInfoType,
@@ -81,7 +87,7 @@ import {
   shelfShowDataType,
   warehouseInfoType,
   warehouseShowDataType
-} from '@/view/vwms/types'
+} from '@/view/vwms/types/types'
 import Detail from '@/view/vwms/Detail.vue'
 import Bar from '@/view/vwms/chat/Bar.vue'
 import Pie from '@/view/vwms/chat/Pie.vue'
@@ -104,11 +110,19 @@ const showShelfGrid = ref(true)
 const handleShelfGrid = () => {
   showShelfGrid.value = !showShelfGrid.value
 }
+const fullScreen = ref(false)
 const toggleFullScreen = () => {
   if (screenfull.isEnabled) {
     const vwms = document.getElementById('vwms')
     screenfull.toggle(vwms!)
+    fullScreen.value = !fullScreen.value
   }
+}
+const handleBreak = () => {
+  VWmsIframe.value.contentWindow.parent.postMessage({
+    guid: '',
+    event: 'ReturnToUpper'
+  }, '*')
 }
 
 const handleShelfGridSelect = (index) => {
@@ -127,11 +141,12 @@ const unityWatch = ({ data }) => {
     event,
     guid
   } = data
-  const allowEvent = ['loadSuccess', 'select', 'selectBreak']
+  const allowEvent = ['loadSuccess', 'select', 'selectBreak', 'loadingProgress']
   const unityEventHandleMap = {
     loadSuccess: handleLoadSuccess,
     select: handleSelect,
-    selectBreak: handleSelectBreak
+    selectBreak: handleSelectBreak,
+    loadingProgress: handleLoadingProgress
   }
   if (allowEvent.includes(event)) {
     unityEventHandleMap[event](guid)
@@ -174,6 +189,10 @@ const handleSelectBreak = () => {
       selectObjectList.pop()
     }
   }
+}
+const loadingProgress = ref()
+const handleLoadingProgress = (progress) => {
+  loadingProgress.value = parseInt(progress) * 100
 }
 
 const warehouseInfo = ref<warehouseInfoType>(warehouseData)
@@ -403,6 +422,7 @@ const startPostJson = () => {
 }
 
 .VWms-container {
+  letter-spacing: 1px;
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -413,33 +433,20 @@ const startPostJson = () => {
   background-color: #317972;
 }
 
+:deep(.v-divider) {
+  margin: 10px 0;
+}
+
 .VWms-header {
   position: absolute;
   top: 10px;
   left: 10px;
   z-index: 10;
   display: flex;
-  height: 70px;
   align-items: center;
   background-color: rgba(255, 255, 255, 0.9);
-  padding: 10px 20px;
-  border-radius: 2px;
-
-  .warehouse-name {
-    font-size: 18px;
-    font-weight: 600;
-  }
-
-  .tooltip {
-    display: flex;
-    align-items: center;
-    margin-left: 10px;
-    .opr-item {
-      margin-left: 20px;
-      width: 40px;
-      cursor: pointer;
-    }
-  }
+  padding: 5px;
+  border-radius: 4px;
 }
 
 .VWMSIframe {

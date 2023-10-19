@@ -8,10 +8,11 @@
   <div class="warehouse-info VWms-card">
     <Transition name="slide-fade">
       <div v-if="props.presentData?.type === 'warehouse'">
-        <p class="name">{{ props.presentData?.warehouse_name }}</p>
+        <div class="header">
+          <p class="main-title">{{ props.presentData?.warehouse_name }}</p>
+          <p class="sub-title">{{ props.presentData?.address }}</p>
+        </div>
         <div class="text-grid">
-          <p>位置:</p>
-          <p>{{ props.presentData?.address }}</p>
           <p>负责人:</p>
           <p>{{ props.presentData?.manager }}</p>
           <p>联系电话:</p>
@@ -19,6 +20,7 @@
           <p>Email:</p>
           <p>{{ props.presentData?.email }}</p>
         </div>
+        <v-divider></v-divider>
         <div class="data-grid">
           <div class="column-center data-container">
             <p class="data-label">库区数</p>
@@ -33,8 +35,11 @@
     </Transition>
     <Transition name="slide-fade">
       <div v-show="props.presentData?.type === 'factory'">
-        <p class="name">{{ props.presentData?.area_name }}</p>
-        <p><span class="em">库区类别: </span>{{ formatAreaProperty(props.presentData?.area_property) }}</p>
+        <div class="header">
+          <p class="main-title">{{ props.presentData?.area_name }}</p>
+          <p class="sub-title">{{ formatAreaProperty(props.presentData?.area_property) }}</p>
+        </div>
+        <v-divider></v-divider>
         <div class="data-grid">
           <div class="column-center data-container">
             <p class="data-label">总货架数</p>
@@ -58,9 +63,12 @@
     <Transition name="slide-fade">
       <div v-show="props.presentData?.type === 'shelf'">
         <div class="flex-center-between">
-          <p class="name">{{ props.presentData?.shelf_name }}</p>
+          <div class="header">
+            <p class="main-title">{{ props.presentData?.shelf_name }}</p>
+          </div>
           <p><span class="em">货架规格: </span>{{ props.presentData?.layer }} * {{ props.presentData?.column }}</p>
         </div>
+        <v-divider></v-divider>
         <div class="data-grid">
           <div class="column-center data-container">
             <p class="data-label">闲置库位</p>
@@ -75,13 +83,16 @@
     </Transition>
     <Transition name="slide-fade">
       <div v-show="props.presentData?.type === 'shelfItem'">
-        <p class="name">{{ props.presentData?.tag_number }}号库位</p>
+        <div class="header">
+          <p class="main-title">{{ props.presentData?.tag_number }}号库位</p>
+        </div>
         <div class="text-grid">
           <p>层号:</p>
           <p>{{ props.presentData?.layer_number }}</p>
           <p>货架编码:</p>
           <p>{{ props.presentData?.location_name }}</p>
         </div>
+        <v-divider></v-divider>
         <div>
           <div v-if="props.presentData?.product?.length === 0">空库位</div>
           <div v-else class="product-info-container">
@@ -89,7 +100,7 @@
               align="center"
               :data="props.presentData?.product"
               border
-              height="170"
+              height="160"
               :row-config="{isHover: true}"
             >
               <vxe-column type="seq" width="60"></vxe-column>
@@ -119,8 +130,16 @@ const props = defineProps(['presentData'])
 }
 .warehouse-info {
   height: 300px;
-  & > p {
-    margin-bottom: 5px;
+  .header {
+    .main-title {
+      font-weight: 700;
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
+    .sub-title {
+      font-size: 14px;
+      color: #64676b;
+    }
   }
   .text-grid {
     display: grid;
@@ -130,7 +149,7 @@ const props = defineProps(['presentData'])
   }
   .data-grid {
     display: grid;
-    margin: 20px;
+    margin: 0 20px;
     grid-template-columns: repeat(2, 1fr);
     grid-gap: 15px;
     justify-content: center;
@@ -154,11 +173,6 @@ const props = defineProps(['presentData'])
     background-color: #FFFFFF;
     border-radius: 5px;
     text-align: center;
-  }
-  .name {
-    font-weight: 600;
-    font-size: 18px;
-    margin: 5px 0;
   }
 }
 .slide-fade-enter-active {

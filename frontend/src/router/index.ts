@@ -96,7 +96,7 @@ router.beforeEach((to, from, next) => {
     dynamicRouter = []
     return next()
   }
-  if (to.path === '/VWMS') {
+  if (to.path === '/vwms') {
     next()
   }
   // dont have token, back login
