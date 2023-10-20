@@ -121,7 +121,7 @@ const toggleFullScreen = () => {
 const handleBreak = () => {
   VWmsIframe.value.contentWindow.parent.postMessage({
     guid: '',
-    event: 'ReturnToUpper'
+    event: 'returnToUpper'
   }, '*')
 }
 
@@ -192,7 +192,7 @@ const handleSelectBreak = () => {
 }
 const loadingProgress = ref()
 const handleLoadingProgress = (progress) => {
-  loadingProgress.value = parseInt(progress) * 100
+  loadingProgress.value = Math.ceil(progress * 100)
 }
 
 const warehouseInfo = ref<warehouseInfoType>(warehouseData)

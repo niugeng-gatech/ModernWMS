@@ -159,7 +159,7 @@
     window.parent.postMessage({
       guid: s,
       event: 'start'
-    }, '*')
+    },  '*')
   }
 
   function SendFinish(s) {
@@ -190,7 +190,7 @@
     if (e.data.event === 'selectShelfItem') {
       WMSUnityInstance.SendMessage('Init', 'MoveToProduct', e.data.guid)
     }
-    if (e.data.event === 'ReturnToUpper') {
+    if (e.data.event === 'returnToUpper') {
       WMSUnityInstance.SendMessage('Init', 'ReturnToUpper', e.data.guid)
     }
   })

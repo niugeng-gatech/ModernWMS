@@ -16,7 +16,7 @@
         height="25"
         striped
       >
-        <strong>{{ Math.ceil(props.progress) }}%</strong>
+        <strong>{{ props.progress }}%</strong>
       </v-progress-linear>
     </div>
   </div>
