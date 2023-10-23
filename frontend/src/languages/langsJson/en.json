@@ -93,7 +93,7 @@
     "hiprint": {
       "routine": "routine",
       "text": "text",
-      "customer": "customer",
+      "field": "field",
       "auxiliary": "auxiliary",
       "hline": "horizontalLine",
       "vline": "verticalLine",
@@ -101,7 +101,8 @@
       "oval": "oval",
       "addScheme": "addScheme",
       "schemeName": "schemeName",
-      "repeatScheme": "SchemeName Is Repeat"
+      "repeatScheme": "SchemeName Is Repeat",
+      "emptyScheme":"Empty Scheme"
     }
   },
   "router": {

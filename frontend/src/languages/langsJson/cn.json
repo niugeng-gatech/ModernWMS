@@ -93,7 +93,7 @@
     "hiprint": {
       "routine": "常规",
       "text": "文本",
-      "customer": "客户",
+      "field": "字段",
       "auxiliary": "辅助",
       "hline": "横线",
       "vline": "竖线",
@@ -101,7 +101,8 @@
       "oval": "椭圆",
       "addScheme": "新增方案",
       "schemeName": "方案名称",
-      "repeatScheme": "方案名称已存在"
+      "repeatScheme": "方案名称已存在",
+      "emptyScheme":"不存在方案"
     }
   },
   "router": {

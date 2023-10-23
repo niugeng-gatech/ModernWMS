@@ -246,7 +246,7 @@ import { removeArrayNull } from '@/utils/common'
 import { StringLength } from '@/utils/dataVerification/formRule'
 import { isDecimal } from '@/utils/dataVerification/tableRule'
 import { exportData } from '@/utils/exportTable'
-import hprintDialog from '@/components/hiprint/hiprint.vue'
+import hprintDialog from '@/components/hiprint/hiprintFast.vue'
 
 const formRef = ref()
 const emit = defineEmits(['close', 'saveSuccess'])
@@ -603,7 +603,7 @@ const method = reactive({
   },
   print() {
     const ref = hprintDialogRef.value
-    ref.data.formVisible = true
+    ref.method.handleOpen()
   },
   editRow: (row: CommodityDetailVO) => {
     const $table = xTable.value
