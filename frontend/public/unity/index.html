@@ -1,32 +1,37 @@
 <!DOCTYPE html>
-<html lang='en-us'>
+<html lang="en-us">
 <head>
-  <meta charset='utf-8'>
-  <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
+  <meta charset="utf-8">
+  <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
   <title>WMS</title>
-  <link href="../unity/TemplateData/favicon.ico" rel='shortcut icon'>
-  <link href="../unity/TemplateData/style.css" rel='stylesheet'>
 </head>
 <style>
+    html {
+        height: 100%;
+    }
+
     body {
+        padding: 0;
+        margin: 0;
         width: 100%;
         height: 100%;
         overflow: hidden;
     }
+
     ::-webkit-scrollbar {
         display: none !important; /* Chrome Safari */
     }
 </style>
 <body>
-<div id='unity-container' class='unity-desktop' style='width: 100%;height: 100%;overflow: hidden'>
-  <canvas id='unity-canvas' style='width: 100%;height: 100%;overflow: hidden'></canvas>
-  <div id='unity-loading-bar'>
-    <div id='unity-logo'></div>
-    <div id='unity-progress-bar-empty'>
-      <div id='unity-progress-bar-full'></div>
+<div id="unity-container" class="unity-desktop" style="width: 100%;height: 100%;overflow: hidden">
+  <canvas id="unity-canvas" style="width: 100%;height: 100%;overflow: hidden"></canvas>
+  <div id="unity-loading-bar">
+    <div id="unity-logo"></div>
+    <div id="unity-progress-bar-empty">
+      <div id="unity-progress-bar-full"></div>
     </div>
   </div>
-  <div id='unity-warning'></div>
+  <!--  <div id='unity-warning'></div>-->
   <!--      <div id="unity-footer">-->
   <!--        <div id="unity-webgl-logo"></div>-->
   <!--        <div id="unity-fullscreen-button"></div>-->
@@ -55,10 +60,11 @@
     var div = document.createElement('div')
     div.innerHTML = msg
     warningBanner.appendChild(div)
-    if (type == 'error') div.style = 'background: red; padding: 10px;'
-    else {
+    if (type == 'error') {
+      div.style = 'background: red; padding: 10px;'
+    } else {
       if (type == 'warning') div.style = 'background: yellow; padding: 10px;'
-      setTimeout(function() {
+      setTimeout(function () {
         warningBanner.removeChild(div)
         updateBannerVisibility()
       }, 5000)
@@ -66,19 +72,18 @@
     updateBannerVisibility()
   }
 
-  var buildUrl = "Build";
-  var loaderUrl = buildUrl + "/wms.loader.js";
+  var buildUrl = 'Build'
+  var loaderUrl = buildUrl + '/wms.loader.js'
   var config = {
-    dataUrl: buildUrl + "/wms.data",
-    frameworkUrl: buildUrl + "/wms.framework.js",
-    codeUrl: buildUrl + "/wms.wasm",
-    streamingAssetsUrl: "StreamingAssets",
-    companyName: "DefaultCompany",
-    productName: "My project",
-    productVersion: "0.1",
-    showBanner: unityShowBanner,
-  };
-
+    dataUrl: buildUrl + '/wms.data.unityweb',
+    frameworkUrl: buildUrl + '/wms.framework.js.unityweb',
+    codeUrl: buildUrl + '/wms.wasm.unityweb',
+    streamingAssetsUrl: 'StreamingAssets',
+    companyName: 'DefaultCompany',
+    productName: 'My project',
+    productVersion: '0.1',
+    showBanner: unityShowBanner
+  }
 
   // By default Unity keeps WebGL canvas render target size matched with
   // the DOM size of the canvas element (scaled by window.devicePixelRatio)
@@ -115,47 +120,78 @@
   script.src = loaderUrl
   var WMSUnityInstance
   script.onload = () => {
+    let timer = null;
     createUnityInstance(canvas, config, (progress) => {
-      progressBarFull.style.width = 100 * progress + '%'
-    }).then((unityInstance) => {
-      loadingBar.style.display = 'none'
-      WMSUnityInstance = unityInstance
-      LoadSuccess()
-      // fullscreenButton.onclick = () => {
-      //   unityInstance.SetFullscreen(1);
-      // };
-    }).catch((message) => {
-      alert(message)
+      if (!timer) {
+        timer = setTimeout(() => {
+          LoadingProgress(progress)
+          timer = null;
+        }, 500);
+      }
     })
+      .then((unityInstance) => {
+        loadingBar.style.display = 'none'
+        WMSUnityInstance = unityInstance
+        LoadSuccess()
+      })
+      .catch((message) => {
+        alert(message)
+      })
   }
   document.body.appendChild(script)
 
+  function LoadingProgress(progress) {
+    console.log(progress)
+    window.parent.postMessage({
+      guid: progress,
+      event: 'loadingProgress'
+    }, '*')
+  }
+
   function LoadSuccess() {
-    window.parent.postMessage({ guid: 'loadSuccess', event: 'loadSuccess' }, '*')
+    window.parent.postMessage({
+      guid: 'loadSuccess',
+      event: 'loadSuccess'
+    }, '*')
   }
 
   function SendStart(s) {
-    window.parent.postMessage({ guid: s, event: 'start' }, '*')
+    window.parent.postMessage({
+      guid: s,
+      event: 'start'
+    },  '*')
   }
 
   function SendFinish(s) {
-    window.parent.postMessage({ guid: s, event: 'finish' }, '*')
+    window.parent.postMessage({
+      guid: s,
+      event: 'finish'
+    }, '*')
   }
 
   function SendSelectBreak() {
-    window.parent.postMessage({guid:'selectBreak',event:"selectBreak"},"*");
+    window.parent.postMessage({
+      guid: 'selectBreak',
+      event: 'selectBreak'
+    }, '*')
   }
 
   function SendSelectFactory(s) {
-    window.parent.postMessage({ guid: s, event: 'select' }, '*')
+    window.parent.postMessage({
+      guid: s,
+      event: 'select'
+    }, '*')
   }
 
-  window.parent.addEventListener('message', function(e) {
+  window.parent.addEventListener('message', function (e) {
     if (e.data.event === 'sendData') {
       WMSUnityInstance.SendMessage('Init', 'CreateArea', e.data.guid)
     }
     if (e.data.event === 'selectShelfItem') {
       WMSUnityInstance.SendMessage('Init', 'MoveToProduct', e.data.guid)
+    }
+    if (e.data.event === 'returnToUpper') {
+      WMSUnityInstance.SendMessage('Init', 'ReturnToUpper', e.data.guid)
     }
   })
 </script>
