@@ -228,9 +228,9 @@
       "create_time": "创建时间",
       "last_update_time": "最后更新时间",
       "is_valid": "是否有效",
-      "print_page_main":"客户管理-列表",
+      "print_page_main":"客户信息-列表",
       "print_data_main":"数据列表",
-      "print_page_detail":"客户管理"
+      "print_page_detail":"客户信息"
     },
     "supplier": {
       "supplier_name": "供应商名称",
