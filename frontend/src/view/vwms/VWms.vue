@@ -13,7 +13,7 @@
     <div class="VWms-header">
       <div class="tooltip">
         <v-btn icon variant="text" @click="handleShowRightContainer">
-          <v-tooltip activator="parent" location="bottom">{{ showRightContainer?'收起':'展开' }}右栏</v-tooltip>
+          <v-tooltip activator="parent" location="bottom">{{ showRightContainer ? '收起' : '展开' }}右栏</v-tooltip>
           <v-icon :icon="`mdi-arrow-expand-${showRightContainer?'right':'left'}`"></v-icon>
         </v-btn>
 
@@ -65,12 +65,6 @@ import { onMounted, reactive, ref, watch } from 'vue'
 import _ from 'lodash'
 import screenfull from 'screenfull'
 import LoadingPage from '@/view/vwms/LoadingPage.vue'
-import {
-  getGoodsLocation,
-  getWarehouse,
-  getWarehouseAreaSelect,
-  getWarehouseProduct
-} from '@/api/base/warehouseSetting'
 import { getGroupsData, handlePostJson } from '@/view/vwms/types/handleData'
 import {
   factoryDataType,
@@ -302,6 +296,7 @@ const getShelfData = (id: number): shelfShowDataType => {
   getShelfChatData(shelfProduct, shelf)
   // 货架二维图数据
   shelfGridData.value = {
+    shelf_name: `${ shelf.shelf_name }号货架`,
     layer: shelf.layer,
     column: shelf.column,
     products: shelf.shelfItems.map(shelfItem => {
@@ -375,6 +370,7 @@ watch(selectObjectList, () => {
     shelf: getShelfData,
     shelfItem: getShelfItemData
   }
+  console.log(targetData)
   presentData.value = handleMap[targetData.itemName](targetData.itemId)
 })
 

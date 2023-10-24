@@ -101,6 +101,7 @@ export interface factoryShowDataType {
 }
 
 export interface shelfGridDataType {
+  shelf_name:string,
   layer:number,
   column:number,
   products:number[]
