@@ -240,6 +240,7 @@
 
     <!-- Print barcode -->
     <bar-code-dialog ref="barCodeDialogRef" :menu="'commodityManagement'" />
+    <hprintDialog ref="hprintDialogRef" :form="printDate.printForm" :tab-page="'print_page_main'" />
   </div>
 </template>
 
@@ -264,11 +265,13 @@ import updateSkuSafetyStock from './update-sku-safety-stock.vue'
 // import qrCodeDialogDialog from './qrCodeDialog.vue'
 import BarCodeDialog from '@/components/codeDialog/barCodeDialog.vue'
 import QrCodeDialog from '@/components/codeDialog/qrCodeDialog.vue'
+import hprintDialog from '@/components/hiprint/hiprintFast.vue'
 
 const xTable = ref()
 const updateSkuSaftyStockRef = ref()
 const qrCodeDialogRef = ref()
 const barCodeDialogRef = ref()
+const hprintDialogRef = ref()
 
 const data: DataProps = reactive({
   searchForm: {
@@ -311,7 +314,9 @@ const data: DataProps = reactive({
   authorityList: getMenuAuthorityList(),
   selectRowData: []
 })
-
+const printDate = reactive({
+  printForm: {} as any
+})
 const method = reactive({
   // Check if the checkbox can be checked
   getCheckBoxDisableState: ({ row }: { row: any }): boolean => row.parent_id,
@@ -350,6 +355,19 @@ const method = reactive({
     // let records = data.selectRowData
     if (records.length > 0) {
       barCodeDialogRef.value.openDialog(records)
+    } else {
+      hookComponent.$message({
+        type: 'error',
+        content: i18n.global.t('base.userManagement.checkboxIsNull')
+      })
+    }
+  },
+  print: () => {
+    const records = xTable.value.getCheckboxRecords()
+    if (records.length > 0) {
+      printDate.printForm = { detailList: records }
+      const ref = hprintDialogRef.value
+      ref.method.handleOpen()
     } else {
       hookComponent.$message({
         type: 'error',
@@ -528,6 +546,12 @@ onMounted(async () => {
       icon: 'mdi-barcode',
       code: 'printBarCode',
       click: method.printBarCode
+    },
+    {
+      name: i18n.global.t('system.page.print'),
+      icon: 'mdi-printer',
+      code: '',
+      click: method.print
     }
     // {
     //   name: i18n.global.t('base.commodityManagement.printQrCode'),

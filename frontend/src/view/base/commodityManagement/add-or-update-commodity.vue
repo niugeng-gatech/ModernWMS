@@ -225,7 +225,7 @@
           <v-btn color="primary" variant="text" @click="method.print">{{ $t('system.page.print') }}</v-btn>
         </v-card-actions>
       </v-card>
-      <hprintDialog ref="hprintDialogRef" :form="data.form" :tab-page="'commodityManagement'" />
+      <hprintDialog ref="hprintDialogRef" :form="data.form" :tab-page="'print_page_detail'" />
     </template>
   </v-dialog>
 </template>
@@ -486,10 +486,7 @@ const data = reactive({
     ],
     category_name: [],
     supplier_name: []
-  }),
-  printTable: [
-    { name: '明细数据', field: 'detailList', columns: ['sku_code', 'sku_name', 'unit', 'weight', 'width', 'height', 'volume', 'cost', 'price'] }
-  ]
+  })
 })
 
 const method = reactive({

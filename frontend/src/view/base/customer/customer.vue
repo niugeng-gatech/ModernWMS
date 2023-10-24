@@ -119,6 +119,7 @@
   </div>
   <addOrUpdateDialog :show-dialog="data.showDialog" :form="data.dialogForm" @close="method.closeDialog" @saveSuccess="method.saveSuccess" />
   <importCustomerTable :show-dialog="data.showDialogImport" @close="method.closeDialogImport" @saveSuccess="method.saveSuccessImport" />
+  <hprintDialog ref="hprintDialogRef" :form="data.printForm" :tab-page="'print_page_main'" />
 </template>
 
 <script lang="tsx" setup>
@@ -139,8 +140,10 @@ import importCustomerTable from './import-customer-table.vue'
 import customPager from '@/components/custom-pager.vue'
 import { exportData } from '@/utils/exportTable'
 import BtnGroup from '@/components/system/btnGroup.vue'
+import hprintDialog from '@/components/hiprint/hiprintFast.vue'
 
 const xTable = ref()
+const hprintDialogRef = ref()
 
 const data = reactive({
   searchForm: {
@@ -166,6 +169,7 @@ const data = reactive({
     pageSize: DEFAULT_PAGE_SIZE,
     searchObjects: ref<Array<SearchObject>>([])
   },
+   printForm: {} as any,
   timer: ref<any>(null),
   btnList: [] as btnGroupItem[],
   // Menu operation permissions
@@ -267,7 +271,20 @@ const method = reactive({
     }
     data.tableData = res.data.rows
     data.tablePage.total = res.data.totals
-  }
+  },
+    print: () => {
+    const records = xTable.value.getCheckboxRecords()
+    if (records.length > 0) {
+      data.printForm = { detailList: records }
+      const ref = hprintDialogRef.value
+      ref.method.handleOpen()
+    } else {
+      hookComponent.$message({
+        type: 'error',
+        content: i18n.global.t('base.userManagement.checkboxIsNull')
+      })
+    }
+  },
 })
 onMounted(() => {
   data.btnList = [
@@ -294,6 +311,12 @@ onMounted(() => {
       icon: 'mdi-export-variant',
       code: 'export',
       click: method.exportTable
+    },
+    {
+      name: i18n.global.t('system.page.print'),
+      icon: 'mdi-printer',
+      code: '',
+      click: method.print
     }
   ]
 

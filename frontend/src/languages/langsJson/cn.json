@@ -227,7 +227,10 @@
       "creator": "创建人",
       "create_time": "创建时间",
       "last_update_time": "最后更新时间",
-      "is_valid": "是否有效"
+      "is_valid": "是否有效",
+      "print_page_main":"客户管理-列表",
+      "print_data_main":"数据列表",
+      "print_page_detail":"客户管理"
     },
     "supplier": {
       "supplier_name": "供应商名称",
@@ -358,7 +361,11 @@
       "volume": "商品体积",
       "saftyStock": "安全库存",
       "printQrCode": "打印二维码",
-      "printBarCode": "打印条码"
+      "printBarCode": "打印条码",
+      "print_page_main":"商品管理-列表",
+      "print_data_main":"数据列表",
+      "print_page_detail":"商品管理",
+      "print_data_detail":"明细数据"
     },
     "printSolution":{
       "vue_path":"菜单名称",

@@ -93,8 +93,8 @@ const method = reactive({
       method.handleClose()
     } else {
       data.mode = data.printSolutionList[0].solution_name
+      method.handleChangeMode()
     }
-    method.handleChangeMode()
   },
   handleChangeMode() {
     const option = data.printSolutionList.filter((item) => item.solution_name === data.mode)

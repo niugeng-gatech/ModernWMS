@@ -227,7 +227,10 @@
       "creator": "Creator",
       "create_time": "Create Time",
       "last_update_time": "Last Update Time",
-      "is_valid": "Valid"
+      "is_valid": "Valid",
+      "print_page_main":"Customer List",
+      "print_data_main":"Data List",
+      "print_page_detail":"Customer"
     },
     "supplier": {
       "supplier_name": "Supplier Name",
@@ -358,7 +361,11 @@
       "volume": "Commodity Volume",
       "saftyStock": "Safety stock",
       "printQrCode": "Print QR code",
-      "printBarCode": "Print barcode"
+      "printBarCode": "Print barcode",
+      "print_page_main":"commodityManagement-List",
+      "print_data_main":"Data List",
+      "print_page_detail":"commodityManagement",
+      "print_data_detail":"Detail List"
     },
     "printSolution":{
       "vue_path":"menuName",

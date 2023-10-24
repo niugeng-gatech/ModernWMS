@@ -21,7 +21,7 @@
                 ></v-select>
               </v-col>
               <v-col cols="4">
-                <div style="padding-left: 5px;">
+                <div style="padding-left: 5px">
                   <v-select
                     v-model="data.form.tab_page"
                     :items="data.pageList"
@@ -38,7 +38,7 @@
                 </div>
               </v-col>
               <v-col cols="4">
-                <div style="padding-left: 5px;">
+                <div style="padding-left: 5px">
                   <v-text-field
                     v-model="data.form.solution_name"
                     :label="$t('base.printSolution.solution_name')"
@@ -79,8 +79,7 @@
               </div>
               <div>
                 <v-btn style="font-size: 14px; margin-left: 10px" @click="method.handlePreView()">
-                  {{
-                    $t('system.page.preView') }}
+                  {{ $t('system.page.preView') }}
                 </v-btn>
                 <v-btn
                   style="font-size: 14px; margin-left: 10px"
@@ -150,8 +149,8 @@ interface tableInterFace {
 }
 interface selectInterFace {
   value: string
-  label: string,
-  form: any,
+  label: string
+  form: any
 }
 const props = defineProps<{
   showDialog: boolean
@@ -230,7 +229,7 @@ const method = reactive({
           tid: 'providerModule.image',
           title: 'Logo',
           custom: true,
-          type: 'image',
+          type: 'image'
         }
       ])
     ]
@@ -360,7 +359,7 @@ const method = reactive({
           const file = evnt?.target?.files[0]
           if (file) {
             const reader = new FileReader()
-            // 通过文件流行文件转换成Base64字行串 
+            // 通过文件流行文件转换成Base64字行串
             reader.readAsDataURL(file)
             // 转换成功后
             reader.onloadend = function () {
@@ -412,10 +411,10 @@ const method = reactive({
   },
   initPageList() {
     data.pageList = []
-    const option = PRINT_MENU.filter(item => item.vue_path === data.form.vue_path)
+    const option = PRINT_MENU.filter((item) => item.vue_path === data.form.vue_path)
     if (option.length > 0) {
       data.i18nName = option[0].i18nName
-      data.pageList = option[0].children.map(item => {
+      data.pageList = option[0].children.map((item) => {
         let label = item.tab_page
         if (item.tab_page === option[0].vue_path) {
           label = i18n.global.t(`router.sideBar.${ item.tab_page }`)
@@ -427,19 +426,14 @@ const method = reactive({
     }
   },
   handleChangePage() {
-    const option = data.pageList.filter(item => item.value === data.form.tab_page)
+    const option = data.pageList.filter((item) => item.value === data.form.tab_page)
     data.table = []
     if (option.length > 0) {
       data.pageForm = option[0].form
       for (const key in data.pageForm) {
         if (key.indexOf('detailList') > -1) {
           const detailList = data.pageForm[key]
-          let name = ''
-          if (detailList.name === data.form.vue_path) {
-            name = i18n.global.t('base.printSolution.detailList')
-          } else {
-            name = i18n.global.t(`${ data.i18nName }.${ detailList.name }`)
-          }
+          const name = i18n.global.t(`${ data.i18nName }.${ detailList.name }`)
           data.table.push({ name, field: key, columns: detailList.columns })
         }
       }
@@ -497,7 +491,7 @@ const method = reactive({
       } else {
         const detailList = data.pageForm[key]
         const obj = {}
-        detailList.columns.forEach(col => {
+        detailList.columns.forEach((col) => {
           const i18nName = `${ data.i18nName }.${ col }`
           const labelName = i18n.global.t(i18nName)
           if (i18nName !== labelName) {
@@ -511,7 +505,7 @@ const method = reactive({
     }
     ref.data.printData = printData
     ref.method.show()
-  },
+  }
 })
 
 watch(
@@ -583,7 +577,7 @@ const curPaperType = computed(() => {
   }
   return type
 })
-const menuList = computed(() => PRINT_MENU.map(item => ({ value: item.vue_path, label: i18n.global.t(`router.sideBar.${ item.vue_path }`) })))
+const menuList = computed(() => PRINT_MENU.map((item) => ({ value: item.vue_path, label: i18n.global.t(`router.sideBar.${ item.vue_path }`) })))
 
 defineExpose({
   data
