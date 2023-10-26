@@ -225,7 +225,7 @@
           <v-btn color="primary" variant="text" @click="method.print">{{ $t('system.page.print') }}</v-btn>
         </v-card-actions>
       </v-card>
-      <hprintDialog ref="hprintDialogRef" :form="data.form" :tab-page="'commodityManagement'" />
+      <hprintDialog ref="hprintDialogRef" :form="data.form" :tab-page="'print_page_detail'" />
     </template>
   </v-dialog>
 </template>
@@ -246,7 +246,7 @@ import { removeArrayNull } from '@/utils/common'
 import { StringLength } from '@/utils/dataVerification/formRule'
 import { isDecimal } from '@/utils/dataVerification/tableRule'
 import { exportData } from '@/utils/exportTable'
-import hprintDialog from '@/components/hiprint/hiprint.vue'
+import hprintDialog from '@/components/hiprint/hiprintFast.vue'
 
 const formRef = ref()
 const emit = defineEmits(['close', 'saveSuccess'])
@@ -486,10 +486,7 @@ const data = reactive({
     ],
     category_name: [],
     supplier_name: []
-  }),
-  printTable: [
-    { name: '明细数据', field: 'detailList', columns: ['sku_code', 'sku_name', 'unit', 'weight', 'width', 'height', 'volume', 'cost', 'price'] }
-  ]
+  })
 })
 
 const method = reactive({
@@ -603,7 +600,7 @@ const method = reactive({
   },
   print() {
     const ref = hprintDialogRef.value
-    ref.data.formVisible = true
+    ref.method.handleOpen()
   },
   editRow: (row: CommodityDetailVO) => {
     const $table = xTable.value

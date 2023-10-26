@@ -241,7 +241,7 @@ const method = reactive({
       index += 1
     })
     if (userList.length > 0) {
-      elementList.push(new hiprint.PrintElementTypeGroup(i18n.global.t('system.hiprint.customer'), userList))
+      elementList.push(new hiprint.PrintElementTypeGroup(i18n.global.t('system.hiprint.field'), userList))
     }
     elementList.push(
       new hiprint.PrintElementTypeGroup(i18n.global.t('system.hiprint.auxiliary'), [

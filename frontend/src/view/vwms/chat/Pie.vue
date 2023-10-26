@@ -7,6 +7,7 @@
 <template>
   <div class="VWms-card">
     <div>{{ props.pieData?.pieTitle }}</div>
+    <v-divider></v-divider>
     <div ref="chatRef" class="chat"></div>
   </div>
 </template>
@@ -36,6 +37,12 @@ const initCharts = () => {
     yAxis: {
       type: 'value'
     },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      }
+    },
     series: [
       {
         data: props.pieData?.yData,
@@ -43,7 +50,15 @@ const initCharts = () => {
         showBackground: true,
         backgroundStyle: {
           color: 'rgba(180, 180, 180, 0.2)'
-        }
+        },
+        tooltip: {
+          valueFormatter(value) {
+            return `存货数量：${ value }`
+          }
+        },
+        markLine: {
+          data: [{ type: 'average', name: 'Avg' }]
+        },
       }
     ]
   })

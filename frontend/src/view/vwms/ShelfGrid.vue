@@ -6,7 +6,8 @@
 -->
 <template>
   <div class="shelf-container">
-    <div class="info">{{ props.shelfGridData?.layer }} * {{ props.shelfGridData?.column }}</div>
+    <div> {{ props.shelfGridData?.shelf_name }}</div>
+    <div class="info">货架规格：{{ props.shelfGridData?.layer }} * {{ props.shelfGridData?.column }}</div>
     <div :style="styleObject" class="shelf-grid" @click="selectProduct">
       <div
         v-for="(index) in formatIndex"
@@ -20,7 +21,7 @@
 </template>
 
 <script setup>
-import { reactive, computed } from 'vue'
+import { computed } from 'vue'
 
 const props = defineProps({
   shelfGridData: {
@@ -31,10 +32,10 @@ const props = defineProps({
   }
 })
 const emit = defineEmits(['selectShelfItem'])
-const styleObject = reactive({
+const styleObject = computed(() => ({
   gridTemplateColumns: `repeat(${ props.shelfGridData.column }, 1fr)`,
   gridTemplateRows: `repeat(${ props.shelfGridData.layer }, 1fr)`
-})
+}))
 
 const formatIndex = computed(() => {
   const arr = Array.from({ length: props.shelfGridData.layer * props.shelfGridData.column }, (_, index) => index + 1)
@@ -56,7 +57,7 @@ const selectProduct = (e) => {
 <style lang="less" scoped>
 
 .shelf-container {
-  position: fixed;
+  position: absolute;
   left: 10px;
   top: 90px;
   padding: 15px;

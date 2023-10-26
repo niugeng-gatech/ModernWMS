@@ -5,25 +5,30 @@
  @date : 2023/10/6
 -->
 <template>
-  <div class="VWms-container">
+  <div id="vwms" class="VWms-container">
     <Transition name="fade">
-      <loading-page v-show="loading" />
+      <loading-page v-show="loading" :progress="loadingProgress" />
     </Transition>
-    <div class="VWms-header">
-      <div class="warehouse-name">{{ warehouseInfo?.warehouse_name }}</div>
 
+    <div class="VWms-header">
       <div class="tooltip">
-        <div>
-          <v-icon icon="mdi-menu-left"></v-icon>
-        </div>
-        <div>
-          <v-icon icon="mdi-menu-left"></v-icon>
-        </div>
-        <div>
-          <v-btn v-if="presentData?.type === 'shelf' || presentData?.type === 'shelfItem'" @click="handleShelfGrid">
-            {{ showShelfGrid ? '关闭' : '打开' }}货架二维视图
-          </v-btn>
-        </div>
+        <v-btn icon variant="text" @click="handleShowRightContainer">
+          <v-tooltip activator="parent" location="bottom">{{ showRightContainer ? '收起' : '展开' }}右栏</v-tooltip>
+          <v-icon :icon="`mdi-arrow-expand-${showRightContainer?'right':'left'}`"></v-icon>
+        </v-btn>
+
+        <v-btn icon variant="text" @click="toggleFullScreen">
+          <v-tooltip activator="parent" location="bottom">全屏</v-tooltip>
+          <v-icon :icon="`mdi-arrow-${fullScreen?'collapse':'expand'}`"></v-icon>
+        </v-btn>
+
+        <v-btn icon variant="text" @click="handleBreak">
+          <v-tooltip activator="parent" location="bottom">回退</v-tooltip>
+          <v-icon icon="mdi-reply"></v-icon>
+        </v-btn>
+        <v-btn v-if="presentData?.type === 'shelf' || presentData?.type === 'shelfItem'" @click="handleShelfGrid">
+          {{ showShelfGrid ? '关闭' : '打开' }}货架二维视图
+        </v-btn>
       </div>
     </div>
     <div class="VWMSIframe">
@@ -35,20 +40,22 @@
       />
     </div>
     <div>
-      <Transition name="slide-fade-grid">
+      <transition name="slide-fade-grid">
         <shelf-grid
           v-if="presentData?.type === 'shelf' && showShelfGrid || presentData?.type === 'shelfItem' && showShelfGrid"
           :select-index="selectShelfItemTagNumber"
           :shelf-grid-data="shelfGridData"
           @selectShelfItem="handleShelfGridSelect"
         ></shelf-grid>
-      </Transition>
+      </transition>
     </div>
-    <div v-if="!loading" class="right-container">
-      <Detail :present-data="presentData"></Detail>
-      <Bar :bar-data="barData"></Bar>
-      <Pie :pie-data="pieData"></Pie>
-    </div>
+    <transition name="slide-fade-right">
+      <div v-if="showRightContainer" class="right-container">
+        <Detail :present-data="presentData"></Detail>
+        <Bar :bar-data="barData"></Bar>
+        <Pie :pie-data="pieData"></Pie>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -56,14 +63,9 @@
 import { useRoute } from 'vue-router'
 import { onMounted, reactive, ref, watch } from 'vue'
 import _ from 'lodash'
+import screenfull from 'screenfull'
 import LoadingPage from '@/view/vwms/LoadingPage.vue'
-import {
-  getGoodsLocation,
-  getWarehouse,
-  getWarehouseAreaSelect,
-  getWarehouseProduct
-} from '@/api/base/warehouseSetting'
-import { getGroupsData, handlePostJson } from '@/view/vwms/handleData'
+import { getGroupsData, handlePostJson } from '@/view/vwms/types/handleData'
 import {
   factoryDataType,
   factoryInfoType,
@@ -79,11 +81,12 @@ import {
   shelfShowDataType,
   warehouseInfoType,
   warehouseShowDataType
-} from '@/view/vwms/types'
+} from '@/view/vwms/types/types'
 import Detail from '@/view/vwms/Detail.vue'
 import Bar from '@/view/vwms/chat/Bar.vue'
 import Pie from '@/view/vwms/chat/Pie.vue'
 import ShelfGrid from '@/view/vwms/ShelfGrid.vue'
+import { factoryData, productData, shelfItemData, warehouseData } from '@/view/vwms/data/data'
 
 const VWmsIframe = ref()
 const route = useRoute()
@@ -93,11 +96,29 @@ const warehouseId = parseInt(route.query.warehouseId as string)
 onMounted(async () => {
   window.addEventListener('message', unityWatch)
 })
-
+const showRightContainer = ref(false)
+const handleShowRightContainer = () => {
+  showRightContainer.value = !showRightContainer.value
+}
 const showShelfGrid = ref(true)
 const handleShelfGrid = () => {
   showShelfGrid.value = !showShelfGrid.value
 }
+const fullScreen = ref(false)
+const toggleFullScreen = () => {
+  if (screenfull.isEnabled) {
+    const vwms = document.getElementById('vwms')
+    screenfull.toggle(vwms!)
+    fullScreen.value = !fullScreen.value
+  }
+}
+const handleBreak = () => {
+  VWmsIframe.value.contentWindow.parent.postMessage({
+    guid: '',
+    event: 'returnToUpper'
+  }, '*')
+}
+
 const handleShelfGridSelect = (index) => {
   selectObjectList.push({
     itemName: 'shelfItem',
@@ -114,11 +135,12 @@ const unityWatch = ({ data }) => {
     event,
     guid
   } = data
-  const allowEvent = ['loadSuccess', 'select', 'selectBreak']
+  const allowEvent = ['loadSuccess', 'select', 'selectBreak', 'loadingProgress']
   const unityEventHandleMap = {
     loadSuccess: handleLoadSuccess,
     select: handleSelect,
-    selectBreak: handleSelectBreak
+    selectBreak: handleSelectBreak,
+    loadingProgress: handleLoadingProgress
   }
   if (allowEvent.includes(event)) {
     unityEventHandleMap[event](guid)
@@ -129,6 +151,7 @@ const handleLoadSuccess = async () => {
   startPostJson()
   setTimeout(() => {
     loading.value = false
+    showRightContainer.value = true
   }, 2500)
 }
 
@@ -161,11 +184,15 @@ const handleSelectBreak = () => {
     }
   }
 }
+const loadingProgress = ref()
+const handleLoadingProgress = (progress) => {
+  loadingProgress.value = Math.ceil(progress * 100)
+}
 
-const warehouseInfo = ref<warehouseInfoType>()
-const factoryInfo = ref<factoryInfoType[]>([])
-const shelfItemInfo = ref<shelfItemInfoType[]>([])
-const productInfo = ref<productInfoType[]>([])
+const warehouseInfo = ref<warehouseInfoType>(warehouseData)
+const factoryInfo = ref<factoryInfoType[]>(factoryData)
+const shelfItemInfo = ref<shelfItemInfoType[]>(shelfItemData)
+const productInfo = ref<productInfoType[]>(productData)
 const formatData = ref<factoryDataType[]>([])
 const selectFactoryData = ref<factoryDataType>()
 const selectShelfName = ref()
@@ -269,6 +296,7 @@ const getShelfData = (id: number): shelfShowDataType => {
   getShelfChatData(shelfProduct, shelf)
   // 货架二维图数据
   shelfGridData.value = {
+    shelf_name: `${ shelf.shelf_name }号货架`,
     layer: shelf.layer,
     column: shelf.column,
     products: shelf.shelfItems.map(shelfItem => {
@@ -342,25 +370,26 @@ watch(selectObjectList, () => {
     shelf: getShelfData,
     shelfItem: getShelfItemData
   }
+  console.log(targetData)
   presentData.value = handleMap[targetData.itemName](targetData.itemId)
 })
 
 const initData = async () => {
-  try {
-    const promises = [
-      await getWarehouse(warehouseId),
-      await getWarehouseAreaSelect(warehouseId),
-      await getGoodsLocation(),
-      await getWarehouseProduct({ warehouse_id: warehouseId })
-    ]
-    const responses: any = await Promise.all(promises)
-    warehouseInfo.value = responses[0].data.data
-    factoryInfo.value = responses[1].data.data
-    shelfItemInfo.value = responses[2].data.data
-    productInfo.value = responses[3].data.data
-  } catch (error) {
-    loading.value = true
-  }
+  // try {
+  //   const promises = [
+  //     await getWarehouse(warehouseId),
+  //     await getWarehouseAreaSelect(warehouseId),
+  //     await getGoodsLocation(),
+  //     await getWarehouseProduct({ warehouse_id: warehouseId })
+  //   ]
+  //   const responses: any = await Promise.all(promises)
+  //   warehouseInfo.value = responses[0].data.data
+  //   factoryInfo.value = responses[1].data.data
+  //   shelfItemInfo.value = responses[2].data.data
+  //   productInfo.value = responses[3].data.data
+  // } catch (error) {
+  //   loading.value = true
+  // }
   selectObjectList.push({
     itemName: 'playground',
     itemId: warehouseId
@@ -371,10 +400,14 @@ const initData = async () => {
 
 const startPostJson = () => {
   const data: formatDataType = handlePostJson(factoryInfo.value, shelfItemInfo.value, productInfo.value)
-  VWmsIframe.value.contentWindow.parent.postMessage({
-    guid: JSON.stringify(data),
-    event: 'sendData'
-  }, '*')
+  try {
+    VWmsIframe.value.contentWindow.parent.postMessage({
+      guid: JSON.stringify(data),
+      event: 'sendData'
+    }, '*')
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 </script>
@@ -385,8 +418,9 @@ const startPostJson = () => {
 }
 
 .VWms-container {
-  width: 100vw;
-  height: 100vh;
+  letter-spacing: 1px;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   position: relative;
   display: flex;
@@ -395,36 +429,20 @@ const startPostJson = () => {
   background-color: #317972;
 }
 
+:deep(.v-divider) {
+  margin: 10px 0;
+}
+
 .VWms-header {
-  position: fixed;
+  position: absolute;
   top: 10px;
   left: 10px;
   z-index: 10;
   display: flex;
-  height: 70px;
   align-items: center;
   background-color: rgba(255, 255, 255, 0.9);
-  padding: 10px;
-  border-radius: 2px;
-
-  & > div {
-    margin: 10px;
-  }
-
-  .warehouse-name {
-    font-size: 18px;
-    font-weight: 600;
-  }
-
-  .tooltip {
-    display: flex;
-    align-items: center;
-    margin-left: 10px;
-
-    & > div {
-      margin-left: 10px;
-    }
-  }
+  padding: 5px;
+  border-radius: 4px;
 }
 
 .VWMSIframe {
@@ -436,14 +454,13 @@ const startPostJson = () => {
 
 .right-container {
   display: grid;
-  grid-template-columns: 450px;
+  grid-template-columns: 400px;
   grid-gap: 15px;
   position: absolute;
   right: 0;
   height: 100%;
-  width: 500px;
   overflow: auto;
-  padding: 10px 0;
+  padding: 10px;
   justify-content: center
 
 }
@@ -486,6 +503,20 @@ const startPostJson = () => {
 .slide-fade-grid-enter-from,
 .slide-fade-grid-leave-to {
   transform: translateX(-200px);
+  opacity: 0;
+}
+
+.slide-fade-right-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.slide-fade-right-leave-active {
+  transition: all 0.5s ease-out;
+}
+
+.slide-fade-right-enter-from,
+.slide-fade-right-leave-to {
+  transform: translateX(200px);
   opacity: 0;
 }
 </style>
