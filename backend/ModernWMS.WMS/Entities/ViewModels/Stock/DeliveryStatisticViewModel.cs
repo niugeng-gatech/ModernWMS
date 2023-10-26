@@ -89,6 +89,16 @@ namespace ModernWMS.WMS.Entities.ViewModels.Stock
         [DataType(DataType.DateTime, ErrorMessage = "DataType_DateTime")]
         public DateTime delivery_date { get; set; } = UtilConvert.MinDate;
 
+        /// <summary>
+        /// goods owner name
+        /// </summary>
+        public string goods_owner_name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// delivery amount
+        /// </summary>
+        public decimal delivery_amount { get; set; } = 0;
+
         #endregion Property
     }
 }

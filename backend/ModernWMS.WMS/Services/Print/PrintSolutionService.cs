@@ -138,6 +138,7 @@ namespace ModernWMS.WMS.Services
             var entity = viewModel.Adapt<PrintSolutionEntity>();
             entity.id = 0;
             entity.tenant_id = currentUser.tenant_id;
+            entity.last_update_time = DateTime.Now;
             await DbSet.AddAsync(entity);
             await _dBContext.SaveChangesAsync();
             if (entity.id > 0)
@@ -163,7 +164,6 @@ namespace ModernWMS.WMS.Services
             {
                 return (false, _stringLocalizer["not_exists_entity"]);
             }
-            entity.id = viewModel.id;
             entity.vue_path = viewModel.vue_path;
             entity.tab_page = viewModel.tab_page;
             entity.solution_name = viewModel.solution_name;
@@ -171,6 +171,7 @@ namespace ModernWMS.WMS.Services
             entity.report_length = viewModel.report_length;
             entity.report_width = viewModel.report_width;
             entity.report_direction = viewModel.report_direction;
+            entity.last_update_time = DateTime.Now;
             var qty = await _dBContext.SaveChangesAsync();
             if (qty > 0)
             {
