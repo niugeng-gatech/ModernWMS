@@ -380,7 +380,7 @@ namespace ModernWMS.WMS.Services
                             qty_locked = (dp.qty_locked == null ? 0 : dp.qty_locked) + (pl.qty_locked == null ? 0 : pl.qty_locked) + (m.qty_locked == null ? 0 : m.qty_locked),
                             qty = sg.qty,
                             warehouse_name = gl.warehouse_name,
-                            safety_stock_qty = sss.safety_stock_qty==null?0: sss.safety_stock_qty,
+                            safety_stock_qty = sss.safety_stock_qty == null ? 0 : sss.safety_stock_qty,
                         };
             query = query.Where(queries.AsExpression<SafetyStockManagementViewModel>());
             int totals = await query.CountAsync();
@@ -696,7 +696,7 @@ namespace ModernWMS.WMS.Services
             }
             if (input.delivery_date_to > UtilConvert.MinDate)
             {
-                dispatch_DBSet = dispatch_DBSet.Where(t => t.create_time < input.delivery_date_to.AddDays(1));
+                dispatch_DBSet = dispatch_DBSet.Where(t => t.create_time <= input.delivery_date_to);
             }
             var query = from dp in dispatch_DBSet.AsNoTracking()
                         join dpp in dispatchpick_DBSet.AsNoTracking() on dp.id equals dpp.dispatchlist_id
@@ -722,7 +722,7 @@ namespace ModernWMS.WMS.Services
                             dp.customer_name,
                             dp.create_time,
                             dpp.goods_owner_id,
-                            go.goods_owner_name
+                            go.goods_owner_name,
                         }
                         into dg
                         select new DeliveryStatisticViewModel
