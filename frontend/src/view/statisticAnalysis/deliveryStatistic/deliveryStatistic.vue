@@ -16,44 +16,15 @@
 
                   <!-- Search Input -->
                   <v-col cols="9">
-                    <v-row no-gutters @keyup.enter="method.sureSearch">
-                      <v-col cols="4">
-                        <v-text-field
-                          v-model="data.searchForm.sku_code"
-                          clearable
-                          hide-details
-                          density="comfortable"
-                          class="searchInput ml-5 mt-1"
-                          :label="$t('wms.stockList.sku_code')"
-                          variant="solo"
-                        >
-                        </v-text-field>
-                      </v-col>
-                      <v-col cols="4">
-                        <v-text-field
-                          v-model="data.searchForm.warehouse_name"
-                          clearable
-                          hide-details
-                          density="comfortable"
-                          class="searchInput ml-5 mt-1"
-                          :label="$t('base.warehouseSetting.warehouse_name')"
-                          variant="solo"
-                        >
-                        </v-text-field>
-                      </v-col>
-                      <v-col cols="4">
-                        <v-text-field
-                          v-model="data.searchForm.customer_name"
-                          clearable
-                          hide-details
-                          density="comfortable"
-                          class="searchInput ml-5 mt-1"
-                          :label="$t('base.customer.customer_name')"
-                          variant="solo"
-                        >
-                        </v-text-field>
-                      </v-col>
-                    </v-row>
+                    <search-group
+                      ref="searchGroupRef"
+                      v-model="data.searchForm"
+                      :search-setting="data.searchSetting"
+                      :menu-name="data.menu_name"
+                      i18n-prefix="wms.deliveryStatistic"
+                      @refreshSetSearch="method.refreshSearchSetting"
+                      @sure-search="method.sureSearch"
+                    />
                   </v-col>
                 </v-row>
               </div>
@@ -112,7 +83,7 @@ import { VxePagerEvents } from 'vxe-table'
 import { computedCardHeight, computedTableHeight } from '@/constant/style'
 import { PAGE_SIZE, PAGE_LAYOUT, DEFAULT_PAGE_SIZE } from '@/constant/vxeTable'
 import { DEBOUNCE_TIME } from '@/constant/system'
-import { getMenuAuthorityList } from '@/utils/common'
+import { getMenuAuthorityList, getMenuSearchSetting } from '@/utils/common'
 import { SearchObject, btnGroupItem } from '@/types/System/Form'
 import i18n from '@/languages/i18n'
 import customPager from '@/components/custom-pager.vue'
@@ -121,17 +92,24 @@ import BtnGroup from '@/components/system/btnGroup.vue'
 import { list as getDeliveryStatisticList } from '@/api/wms/deliveryStatistic'
 import { hookComponent } from '@/components/system'
 import { DeliveryStatisticVo } from '@/types/WMS/DeliveryStatistic'
+import SearchGroup from '@/components/system/search-group.vue'
 
 const xTable = ref()
+const searchGroupRef = ref()
 
 const data = reactive({
   showDialog: false,
   timer: ref<any>(null),
   activeTab: null,
   searchForm: {
+    spu_code: '',
+    spu_name: '',
     sku_code: '',
+    sku_name: '',
     warehouse_name: '',
-    customer_name: ''
+    customer_name: '',
+    delivery_date_from: '',
+    delivery_date_to: ''
   },
   tableData: ref<DeliveryStatisticVo[]>([]),
   tablePage: reactive({
@@ -142,7 +120,10 @@ const data = reactive({
   }),
   btnList: [] as btnGroupItem[],
   // Menu operation permissions
-  authorityList: getMenuAuthorityList()
+  authorityList: getMenuAuthorityList(),
+  // Local search criteria settings
+  searchSetting: ['sku_code', 'warehouse_name', 'customer_name'],
+  menu_name: 'deliveryStatistic'
 })
 
 const method = reactive({
@@ -200,6 +181,31 @@ const method = reactive({
   sureSearch: () => {
     // data.tablePage.searchObjects = setSearchObject(data.searchForm)
     method.refresh()
+  },
+
+  // Set Search
+  handleSetSearch: () => {
+    searchGroupRef.value.openDialog()
+  },
+
+  // 刷新查询条件
+  refreshSearchSetting: () => {
+    data.searchForm = {
+      spu_code: '',
+      spu_name: '',
+      sku_code: '',
+      sku_name: '',
+      warehouse_name: '',
+      customer_name: '',
+      delivery_date_from: '',
+      delivery_date_to: ''
+    }
+
+    // Obtain query condition settings
+    const searchSetting = getMenuSearchSetting(data.menu_name)
+    if (searchSetting.length > 0) {
+      data.searchSetting = searchSetting
+    }
   }
 })
 
@@ -216,8 +222,16 @@ onMounted(() => {
       icon: 'mdi-export-variant',
       code: 'export',
       click: method.exportTable
+    },
+    {
+      name: i18n.global.t('system.page.setSearch'),
+      icon: 'mdi-cog',
+      code: '',
+      click: method.handleSetSearch
     }
   ]
+
+  method.refreshSearchSetting()
 
   method.refresh()
 })
