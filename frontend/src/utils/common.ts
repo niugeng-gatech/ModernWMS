@@ -94,3 +94,14 @@ export const getStorage = (key: string) => {
 export const setStorage = (key: string, value: any) => {
   localStorage.setItem(key, JSON.stringify(value))
 }
+
+// 获取菜单的查询条件设置
+export const getMenuSearchSetting = (menu_name: string) => {
+  const allSetting = getStorage('menu_search_setting')
+
+  if (allSetting && allSetting[menu_name]) {
+    return allSetting[menu_name]
+  }
+
+  return []
+}

@@ -16,33 +16,15 @@
 
                   <!-- Search Input -->
                   <v-col cols="9">
-                    <v-row no-gutters @keyup.enter="method.sureSearch">
-                      <v-col cols="4"> </v-col>
-                      <v-col cols="4">
-                        <v-text-field
-                          v-model="data.searchForm.supplier_name"
-                          clearable
-                          hide-details
-                          density="comfortable"
-                          class="searchInput ml-5 mt-1"
-                          :label="$t('wms.stockAsnInfo.supplier_name')"
-                          variant="solo"
-                        >
-                        </v-text-field>
-                      </v-col>
-                      <v-col cols="4">
-                        <v-text-field
-                          v-model="data.searchForm.sku_name"
-                          clearable
-                          hide-details
-                          density="comfortable"
-                          class="searchInput ml-5 mt-1"
-                          :label="$t('wms.stockAsnInfo.sku_name')"
-                          variant="solo"
-                        >
-                        </v-text-field>
-                      </v-col>
-                    </v-row>
+                    <search-group
+                      ref="searchGroupRef"
+                      v-model="data.searchForm"
+                      :search-setting="data.searchSetting"
+                      :menu-name="data.menu_name"
+                      i18n-prefix="wms.stockAsnInfo"
+                      @refreshSetSearch="method.refreshSearchSetting"
+                      @sure-search="method.sureSearch"
+                    />
                   </v-col>
                 </v-row>
               </div>
@@ -125,7 +107,7 @@ import { VxePagerEvents } from 'vxe-table'
 import { computedCardHeight, computedTableHeight } from '@/constant/style'
 import { PAGE_SIZE, PAGE_LAYOUT, DEFAULT_PAGE_SIZE } from '@/constant/vxeTable'
 import { DEBOUNCE_TIME } from '@/constant/system'
-import { getMenuAuthorityList, setSearchObject } from '@/utils/common'
+import { getMenuAuthorityList, setSearchObject, getMenuSearchSetting } from '@/utils/common'
 import { SearchObject, btnGroupItem } from '@/types/System/Form'
 import i18n from '@/languages/i18n'
 import customPager from '@/components/custom-pager.vue'
@@ -136,16 +118,22 @@ import skuInfo from '@/view/wms/stockAsn/sku-info.vue'
 import { StockAsnVO } from '@/types/WMS/StockAsn'
 import { getStockAsnList } from '@/api/wms/stockAsn'
 import ViewDetailDialog from '@/view/wms/stockAsn/view-detail-dialog.vue'
+import SearchGroup from '@/components/system/search-group.vue'
 
 const xTableStockLocation = ref()
 const ViewDetailDialogRef = ref()
+const searchGroupRef = ref()
 
 const data = reactive({
   showDialog: false,
   showDialogShowInfo: false,
   searchForm: {
     supplier_name: '',
-    sku_name: ''
+    sku_name: '',
+    spu_code: '',
+    spu_name: '',
+    sku_code: '',
+    goods_owner_name: ''
   },
   activeTab: null,
   tableData: ref<StockAsnVO[]>([]),
@@ -174,10 +162,17 @@ const data = reactive({
   timer: ref<any>(null),
   btnList: [] as btnGroupItem[],
   // Menu operation permissions
-  authorityList: getMenuAuthorityList()
+  authorityList: getMenuAuthorityList(),
+  // Local search criteria settings
+  searchSetting: ['supplier_name', 'sku_name'],
+  menu_name: 'asnStatistic'
 })
 
 const method = reactive({
+  // Set Search
+  handleSetSearch: () => {
+    searchGroupRef.value.openDialog()
+  },
   // View Rows
   // viewRow: (row: StockAsnVO) => {
   //   ViewDetailDialogRef.value.openDialog(row.id)
@@ -224,6 +219,23 @@ const method = reactive({
   sureSearch: () => {
     data.tablePage.searchObjects = setSearchObject(data.searchForm)
     method.getStockAsnList()
+  },
+  // 刷新查询条件
+  refreshSearchSetting: () => {
+    data.searchForm = {
+      supplier_name: '',
+      sku_name: '',
+      spu_code: '',
+      spu_name: '',
+      sku_code: '',
+      goods_owner_name: ''
+    }
+
+    // Obtain query condition settings
+    const searchSetting = getMenuSearchSetting(data.menu_name)
+    if (searchSetting.length > 0) {
+      data.searchSetting = searchSetting
+    }
   }
 })
 
@@ -240,8 +252,16 @@ onMounted(() => {
       icon: 'mdi-export-variant',
       code: 'export',
       click: method.exportTable
+    },
+    {
+      name: i18n.global.t('system.page.setSearch'),
+      icon: 'mdi-cog',
+      code: '',
+      click: method.handleSetSearch
     }
   ]
+
+  method.refreshSearchSetting()
 
   method.refresh()
 })
