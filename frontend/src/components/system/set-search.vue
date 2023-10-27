@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="tsx">
-import { reactive, ref, defineEmits } from 'vue'
+import { reactive, ref } from 'vue'
 import i18n from '@/languages/i18n'
 import searchSetting from '@/constant/searchSettingSet'
 import { setStorage, getStorage } from '@/utils/common'
