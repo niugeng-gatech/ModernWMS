@@ -380,7 +380,7 @@ namespace ModernWMS.WMS.Services
                             qty_locked = (dp.qty_locked == null ? 0 : dp.qty_locked) + (pl.qty_locked == null ? 0 : pl.qty_locked) + (m.qty_locked == null ? 0 : m.qty_locked),
                             qty = sg.qty,
                             warehouse_name = gl.warehouse_name,
-                            safety_stock_qty = sss.safety_stock_qty,
+                            safety_stock_qty = sss.safety_stock_qty==null?0: sss.safety_stock_qty,
                         };
             query = query.Where(queries.AsExpression<SafetyStockManagementViewModel>());
             int totals = await query.CountAsync();
