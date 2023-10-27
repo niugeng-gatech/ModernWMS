@@ -21,39 +21,55 @@
     </v-col>
   </v-row>
 
-  <set-search
-    ref="SetSearchRef"
-    :i18n-key="props.i18nPrefix"
-    :options="props.searchSetting"
-    @success="
-      () => {
-        emit('refreshSetSearch')
-      }
-    "
-  />
+  <set-search ref="SetSearchRef" :i18n-key="props.i18nPrefix" :options="data.searchSetting" @success="method.refreshSearchSetting()" />
 </template>
 
 <script setup lang="tsx">
-import { reactive, computed, ref } from 'vue'
+import { reactive, computed, ref, onMounted } from 'vue'
+import { getMenuSearchSetting } from '@/utils/common'
 import vDatetimePicker from '../form/v-datetime-picker.vue'
 import searchSettingSet from '@/constant/searchSettingSet'
 import SetSearch from '@/components/system/set-search.vue'
 
 const SetSearchRef = ref()
 
-const emit = defineEmits(['sureSearch', 'update:modelValue', 'refreshSetSearch'])
+const emit = defineEmits(['sureSearch', 'update:modelValue'])
 
 const props = defineProps<{
   modelValue: any
-  searchSetting: any[]
+  // searchSetting: any[]
   menuName: string
   i18nPrefix: string
 }>()
 
+const data = reactive({
+  searchSetting: [] as string[],
+  initForm: null
+})
+
 const method = reactive({
   sureSearch: () => {
     emit('sureSearch')
+  },
+  // 刷新查询条件
+  refreshSearchSetting: () => {
+    // 不加ref不会触发响应式
+    searchForm.value = ref(JSON.parse(JSON.stringify(data.initForm)))
+
+    // Obtain query condition settings
+    const searchSetting = getMenuSearchSetting(props.menuName)
+    if (searchSetting.length > 0) {
+      data.searchSetting = searchSetting
+    } else {
+      data.searchSetting = searchSettingSet[props.menuName].default
+    }
   }
+})
+
+onMounted(() => {
+  data.initForm = JSON.parse(JSON.stringify(props.modelValue))
+
+  method.refreshSearchSetting()
 })
 
 const searchForm = computed({
@@ -64,7 +80,7 @@ const searchForm = computed({
 })
 
 const searchSetting = computed(() => {
-  const result = searchSettingSet[props.menuName].filter((item: any) => props.searchSetting.includes(item.name))
+  const result = searchSettingSet[props.menuName].list.filter((item: any) => data.searchSetting.includes(item.name))
   return result
 })
 

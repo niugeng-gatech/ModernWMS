@@ -19,10 +19,8 @@
                     <search-group
                       ref="searchGroupRef"
                       v-model="data.searchForm"
-                      :search-setting="data.searchSetting"
                       :menu-name="data.menu_name"
                       i18n-prefix="wms.stockAsnInfo"
-                      @refreshSetSearch="method.refreshSearchSetting"
                       @sure-search="method.sureSearch"
                     />
                   </v-col>
@@ -107,7 +105,7 @@ import { VxePagerEvents } from 'vxe-table'
 import { computedCardHeight, computedTableHeight } from '@/constant/style'
 import { PAGE_SIZE, PAGE_LAYOUT, DEFAULT_PAGE_SIZE } from '@/constant/vxeTable'
 import { DEBOUNCE_TIME } from '@/constant/system'
-import { getMenuAuthorityList, setSearchObject, getMenuSearchSetting } from '@/utils/common'
+import { getMenuAuthorityList, setSearchObject } from '@/utils/common'
 import { SearchObject, btnGroupItem } from '@/types/System/Form'
 import i18n from '@/languages/i18n'
 import customPager from '@/components/custom-pager.vue'
@@ -164,7 +162,6 @@ const data = reactive({
   // Menu operation permissions
   authorityList: getMenuAuthorityList(),
   // Local search criteria settings
-  searchSetting: ['supplier_name', 'sku_name'],
   menu_name: 'asnStatistic'
 })
 
@@ -219,23 +216,6 @@ const method = reactive({
   sureSearch: () => {
     data.tablePage.searchObjects = setSearchObject(data.searchForm)
     method.getStockAsnList()
-  },
-  // 刷新查询条件
-  refreshSearchSetting: () => {
-    data.searchForm = {
-      supplier_name: '',
-      sku_name: '',
-      spu_code: '',
-      spu_name: '',
-      sku_code: '',
-      goods_owner_name: ''
-    }
-
-    // Obtain query condition settings
-    const searchSetting = getMenuSearchSetting(data.menu_name)
-    if (searchSetting.length > 0) {
-      data.searchSetting = searchSetting
-    }
   }
 })
 
@@ -261,9 +241,7 @@ onMounted(() => {
     }
   ]
 
-  method.refreshSearchSetting()
-
-  method.refresh()
+  // method.refresh()
 })
 
 const cardHeight = computed(() => computedCardHeight({ hasTab: false }))

@@ -19,10 +19,8 @@
                     <search-group
                       ref="searchGroupRef"
                       v-model="data.searchForm"
-                      :search-setting="data.searchSetting"
                       :menu-name="data.menu_name"
                       i18n-prefix="wms.deliveryStatistic"
-                      @refreshSetSearch="method.refreshSearchSetting"
                       @sure-search="method.sureSearch"
                     />
                   </v-col>
@@ -83,7 +81,7 @@ import { VxePagerEvents } from 'vxe-table'
 import { computedCardHeight, computedTableHeight } from '@/constant/style'
 import { PAGE_SIZE, PAGE_LAYOUT, DEFAULT_PAGE_SIZE } from '@/constant/vxeTable'
 import { DEBOUNCE_TIME } from '@/constant/system'
-import { getMenuAuthorityList, getMenuSearchSetting } from '@/utils/common'
+import { getMenuAuthorityList } from '@/utils/common'
 import { SearchObject, btnGroupItem } from '@/types/System/Form'
 import i18n from '@/languages/i18n'
 import customPager from '@/components/custom-pager.vue'
@@ -122,7 +120,6 @@ const data = reactive({
   // Menu operation permissions
   authorityList: getMenuAuthorityList(),
   // Local search criteria settings
-  searchSetting: ['sku_code', 'warehouse_name', 'customer_name'],
   menu_name: 'deliveryStatistic'
 })
 
@@ -186,26 +183,6 @@ const method = reactive({
   // Set Search
   handleSetSearch: () => {
     searchGroupRef.value.openDialog()
-  },
-
-  // 刷新查询条件
-  refreshSearchSetting: () => {
-    data.searchForm = {
-      spu_code: '',
-      spu_name: '',
-      sku_code: '',
-      sku_name: '',
-      warehouse_name: '',
-      customer_name: '',
-      delivery_date_from: '',
-      delivery_date_to: ''
-    }
-
-    // Obtain query condition settings
-    const searchSetting = getMenuSearchSetting(data.menu_name)
-    if (searchSetting.length > 0) {
-      data.searchSetting = searchSetting
-    }
   }
 })
 
@@ -231,9 +208,7 @@ onMounted(() => {
     }
   ]
 
-  method.refreshSearchSetting()
-
-  method.refresh()
+  // method.refresh()
 })
 
 const cardHeight = computed(() => computedCardHeight({ hasTab: false }))

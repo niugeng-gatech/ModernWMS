@@ -61,7 +61,7 @@ const method = reactive({
     data.menu_name = menu_name
 
     // 获取当前路由的所有搜索项
-    data.searchList = searchSetting[data.menu_name].map((item: { type: string; name: string }) => ({
+    data.searchList = searchSetting[data.menu_name].list.map((item: { type: string; name: string }) => ({
       label: i18n.global.t(`${ props.i18nKey }.${ item.name }`),
       value: item.name
     }))
