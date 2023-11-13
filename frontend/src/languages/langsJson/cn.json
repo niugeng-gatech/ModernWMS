@@ -344,7 +344,8 @@
       "rowsNumber": "每行放置数量",
       "submit": "提交",
       "update": "修改",
-      "view": "查看"
+      "view": "查看",
+      "setSearch": "设置查询条件"
     },
     "pager": {
       "goTo": "前往",
@@ -367,7 +368,8 @@
       "requestTimeout": "请求超时！",
       "success": "成功!",
       "vaildEmail": "请输入正确的邮箱格式!",
-      "verifyPwd": "校验失败, 新密码与确认新密码不同!"
+      "verifyPwd": "校验失败, 新密码与确认新密码不同!",
+      "setSearchError": "设置失败! 查询条件数量应该在1-3个之间"
     },
     "viewLog": {
       "action_content": "操作内容",
@@ -461,6 +463,12 @@
       "weighing_weight": "称重重量",
       "weight": "总重量"
     },
+    "deliveryBatchAllocation": {
+      "dateFrom": "时间从",
+      "dateTo": "时间至",
+      "allocationRule": "分配规则",
+      "startAllocation": "开始分配"
+    },
     "deliveryStatistic": {
       "amount": "数量",
       "amount_money": "金额",
@@ -476,7 +484,9 @@
       "sku_name": "规格名称",
       "spu_code": "商品编码",
       "spu_name": "商品名称",
-      "warehouse_name": "仓库名称"
+      "warehouse_name": "仓库名称",
+      "delivery_date_from": "出库时间从",
+      "delivery_date_to": "出库时间至"
     },
     "saftyStock": {
       "qty": "数量",

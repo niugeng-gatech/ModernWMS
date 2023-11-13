@@ -380,7 +380,7 @@ namespace ModernWMS.WMS.Services
                             qty_locked = (dp.qty_locked == null ? 0 : dp.qty_locked) + (pl.qty_locked == null ? 0 : pl.qty_locked) + (m.qty_locked == null ? 0 : m.qty_locked),
                             qty = sg.qty,
                             warehouse_name = gl.warehouse_name,
-                            safety_stock_qty = sss.safety_stock_qty,
+                            safety_stock_qty = sss.safety_stock_qty == null ? 0 : sss.safety_stock_qty,
                         };
             query = query.Where(queries.AsExpression<SafetyStockManagementViewModel>());
             int totals = await query.CountAsync();
@@ -689,13 +689,14 @@ namespace ModernWMS.WMS.Services
             var spu_DBSet = _dBContext.GetDbSet<SpuEntity>();
             var location_DBSet = _dBContext.GetDbSet<WarehouseareaEntity>();
             var warehouse_DBSet = _dBContext.GetDbSet<WarehouseEntity>();
+            var owner_DbSet = _dBContext.GetDbSet<GoodsownerEntity>();
             if (input.delivery_date_from > UtilConvert.MinDate)
             {
                 dispatch_DBSet = dispatch_DBSet.Where(t => t.create_time >= input.delivery_date_from);
             }
             if (input.delivery_date_to > UtilConvert.MinDate)
             {
-                dispatch_DBSet = dispatch_DBSet.Where(t => t.create_time < input.delivery_date_to.AddDays(1));
+                dispatch_DBSet = dispatch_DBSet.Where(t => t.create_time <= input.delivery_date_to);
             }
             var query = from dp in dispatch_DBSet.AsNoTracking()
                         join dpp in dispatchpick_DBSet.AsNoTracking() on dp.id equals dpp.dispatchlist_id
@@ -703,9 +704,10 @@ namespace ModernWMS.WMS.Services
                         join spu in spu_DBSet.AsNoTracking() on sku.spu_id equals spu.id
                         join location in location_DBSet.AsNoTracking() on dpp.goods_location_id equals location.id
                         join wh in warehouse_DBSet.AsNoTracking() on location.warehouse_id equals wh.id
+                        join go in owner_DbSet.AsNoTracking() on dpp.goods_owner_id equals go.id
                         where dp.dispatch_status >= 6 && spu.spu_name.Contains(input.spu_name) && spu.spu_code.Contains(input.spu_code)
                         && sku.sku_name.Contains(input.sku_name) && sku.sku_code.Contains(input.sku_code) && wh.warehouse_name.Contains(input.warehouse_name)
-                        && dp.customer_name.Contains(input.customer_name)
+                        && dp.customer_name.Contains(input.customer_name) && go.goods_owner_name.Contains(input.goods_owner_name)
                         group new { dpp, dp, spu, sku } by
                         new
                         {
@@ -718,7 +720,9 @@ namespace ModernWMS.WMS.Services
                             sku.sku_code,
                             dpp.series_number,
                             dp.customer_name,
-                            dp.create_time
+                            dp.create_time,
+                            dpp.goods_owner_id,
+                            go.goods_owner_name,
                         }
                         into dg
                         select new DeliveryStatisticViewModel
@@ -733,7 +737,9 @@ namespace ModernWMS.WMS.Services
                             series_number = dg.Key.series_number,
                             customer_name = dg.Key.customer_name,
                             delivery_date = dg.Key.create_time,
-                            delivery_qty = dg.Sum(t => t.dpp.picked_qty)
+                            goods_owner_name = dg.Key.goods_owner_name,
+                            delivery_qty = dg.Sum(t => t.dpp.picked_qty),
+                            delivery_amount = dg.Sum(t => t.dpp.picked_qty * t.sku.price)
                         };
             int totals = await query.CountAsync();
             var list = await query.OrderByDescending(t => t.delivery_date)

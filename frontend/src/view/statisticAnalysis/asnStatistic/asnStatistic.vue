@@ -16,33 +16,13 @@
 
                   <!-- Search Input -->
                   <v-col cols="9">
-                    <v-row no-gutters @keyup.enter="method.sureSearch">
-                      <v-col cols="4"> </v-col>
-                      <v-col cols="4">
-                        <v-text-field
-                          v-model="data.searchForm.supplier_name"
-                          clearable
-                          hide-details
-                          density="comfortable"
-                          class="searchInput ml-5 mt-1"
-                          :label="$t('wms.stockAsnInfo.supplier_name')"
-                          variant="solo"
-                        >
-                        </v-text-field>
-                      </v-col>
-                      <v-col cols="4">
-                        <v-text-field
-                          v-model="data.searchForm.sku_name"
-                          clearable
-                          hide-details
-                          density="comfortable"
-                          class="searchInput ml-5 mt-1"
-                          :label="$t('wms.stockAsnInfo.sku_name')"
-                          variant="solo"
-                        >
-                        </v-text-field>
-                      </v-col>
-                    </v-row>
+                    <search-group
+                      ref="searchGroupRef"
+                      v-model="data.searchForm"
+                      :menu-name="data.menu_name"
+                      i18n-prefix="wms.stockAsnInfo"
+                      @sure-search="method.sureSearch"
+                    />
                   </v-col>
                 </v-row>
               </div>
@@ -136,16 +116,22 @@ import skuInfo from '@/view/wms/stockAsn/sku-info.vue'
 import { StockAsnVO } from '@/types/WMS/StockAsn'
 import { getStockAsnList } from '@/api/wms/stockAsn'
 import ViewDetailDialog from '@/view/wms/stockAsn/view-detail-dialog.vue'
+import SearchGroup from '@/components/system/search-group.vue'
 
 const xTableStockLocation = ref()
 const ViewDetailDialogRef = ref()
+const searchGroupRef = ref()
 
 const data = reactive({
   showDialog: false,
   showDialogShowInfo: false,
   searchForm: {
     supplier_name: '',
-    sku_name: ''
+    sku_name: '',
+    spu_code: '',
+    spu_name: '',
+    sku_code: '',
+    goods_owner_name: ''
   },
   activeTab: null,
   tableData: ref<StockAsnVO[]>([]),
@@ -174,10 +160,16 @@ const data = reactive({
   timer: ref<any>(null),
   btnList: [] as btnGroupItem[],
   // Menu operation permissions
-  authorityList: getMenuAuthorityList()
+  authorityList: getMenuAuthorityList(),
+  // Local search criteria settings
+  menu_name: 'asnStatistic'
 })
 
 const method = reactive({
+  // Set Search
+  handleSetSearch: () => {
+    searchGroupRef.value.openDialog()
+  },
   // View Rows
   // viewRow: (row: StockAsnVO) => {
   //   ViewDetailDialogRef.value.openDialog(row.id)
@@ -240,10 +232,16 @@ onMounted(() => {
       icon: 'mdi-export-variant',
       code: 'export',
       click: method.exportTable
+    },
+    {
+      name: i18n.global.t('system.page.setSearch'),
+      icon: 'mdi-cog',
+      code: '',
+      click: method.handleSetSearch
     }
   ]
 
-  method.refresh()
+  // method.refresh()
 })
 
 const cardHeight = computed(() => computedCardHeight({ hasTab: false }))

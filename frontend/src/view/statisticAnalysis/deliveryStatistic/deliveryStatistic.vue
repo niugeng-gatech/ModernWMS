@@ -12,67 +12,17 @@
                   <!-- Operate Btn -->
                   <v-col cols="3" class="col">
                     <BtnGroup :authority-list="data.authorityList" :btn-list="data.btnList" />
-                    <!-- chart -->
-                    <div class="text-center">
-                      <v-btn
-                        color="primary"
-                        @click="dialog = true"
-                      >
-                        Open Dialog
-                      </v-btn>
-
-                      <v-dialog
-                        v-model="dialog"
-                        width="auto"
-                      >
-                        <v-card style="height: 70vh;width: 70vw; padding: 10px; display: flex; align-items: center; justify-content: center">
-                          <chart :chart-data="data.tableData" type="delivery" />
-                        </v-card>
-                      </v-dialog>
-                    </div>
-                    <!-- chart end -->
                   </v-col>
 
                   <!-- Search Input -->
                   <v-col cols="9">
-                    <v-row no-gutters @keyup.enter="method.sureSearch">
-                      <v-col cols="4">
-                        <v-text-field
-                          v-model="data.searchForm.sku_code"
-                          clearable
-                          hide-details
-                          density="comfortable"
-                          class="searchInput ml-5 mt-1"
-                          :label="$t('wms.stockList.sku_code')"
-                          variant="solo"
-                        >
-                        </v-text-field>
-                      </v-col>
-                      <v-col cols="4">
-                        <v-text-field
-                          v-model="data.searchForm.warehouse_name"
-                          clearable
-                          hide-details
-                          density="comfortable"
-                          class="searchInput ml-5 mt-1"
-                          :label="$t('base.warehouseSetting.warehouse_name')"
-                          variant="solo"
-                        >
-                        </v-text-field>
-                      </v-col>
-                      <v-col cols="4">
-                        <v-text-field
-                          v-model="data.searchForm.customer_name"
-                          clearable
-                          hide-details
-                          density="comfortable"
-                          class="searchInput ml-5 mt-1"
-                          :label="$t('base.customer.customer_name')"
-                          variant="solo"
-                        >
-                        </v-text-field>
-                      </v-col>
-                    </v-row>
+                    <search-group
+                      ref="searchGroupRef"
+                      v-model="data.searchForm"
+                      :menu-name="data.menu_name"
+                      i18n-prefix="wms.deliveryStatistic"
+                      @sure-search="method.sureSearch"
+                    />
                   </v-col>
                 </v-row>
               </div>
@@ -140,20 +90,24 @@ import BtnGroup from '@/components/system/btnGroup.vue'
 import { list as getDeliveryStatisticList } from '@/api/wms/deliveryStatistic'
 import { hookComponent } from '@/components/system'
 import { DeliveryStatisticVo } from '@/types/WMS/DeliveryStatistic'
-import Chart from '@/view/statisticAnalysis/Chart.vue'
-
-const dialog = ref(false)
+import SearchGroup from '@/components/system/search-group.vue'
 
 const xTable = ref()
+const searchGroupRef = ref()
 
 const data = reactive({
   showDialog: false,
   timer: ref<any>(null),
   activeTab: null,
   searchForm: {
+    spu_code: '',
+    spu_name: '',
     sku_code: '',
+    sku_name: '',
     warehouse_name: '',
-    customer_name: ''
+    customer_name: '',
+    delivery_date_from: '',
+    delivery_date_to: ''
   },
   tableData: ref<DeliveryStatisticVo[]>([]),
   tablePage: reactive({
@@ -164,7 +118,9 @@ const data = reactive({
   }),
   btnList: [] as btnGroupItem[],
   // Menu operation permissions
-  authorityList: getMenuAuthorityList()
+  authorityList: getMenuAuthorityList(),
+  // Local search criteria settings
+  menu_name: 'deliveryStatistic'
 })
 
 const method = reactive({
@@ -222,6 +178,11 @@ const method = reactive({
   sureSearch: () => {
     // data.tablePage.searchObjects = setSearchObject(data.searchForm)
     method.refresh()
+  },
+
+  // Set Search
+  handleSetSearch: () => {
+    searchGroupRef.value.openDialog()
   }
 })
 
@@ -238,10 +199,16 @@ onMounted(() => {
       icon: 'mdi-export-variant',
       code: 'export',
       click: method.exportTable
+    },
+    {
+      name: i18n.global.t('system.page.setSearch'),
+      icon: 'mdi-cog',
+      code: '',
+      click: method.handleSetSearch
     }
   ]
 
-  method.refresh()
+  // method.refresh()
 })
 
 const cardHeight = computed(() => computedCardHeight({ hasTab: false }))
