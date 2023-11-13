@@ -51,7 +51,6 @@ const selectType = ref('goodsOwnerName')
 
 let chat: EChartsType
 const initCharts = () => {
-  console.log(props.chartData)
   if (chat) chat.dispose()
   chat = echarts.init(chatRef.value)
   // chat.on('legendselectchanged', (params:any) => {
@@ -134,7 +133,6 @@ const initCharts = () => {
   }
   chat.setOption(option)
 }
-watch(() => props.chartData, initCharts)
 
 const xAxisData = ref<string[]>([])
 const sumAmountData = ref<number[]>([])
@@ -166,6 +164,7 @@ const handleSelectChange = () => {
   initCharts()
 }
 watch(selectType, handleSelectChange)
+watch(() => props.chartData, handleSelectChange)
 
 </script>
 
