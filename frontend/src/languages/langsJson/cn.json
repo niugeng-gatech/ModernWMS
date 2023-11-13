@@ -345,7 +345,9 @@
       "submit": "提交",
       "update": "修改",
       "view": "查看",
-      "setSearch": "设置查询条件"
+      "setSearch": "设置查询条件",
+      "chart": "图表",
+      "table": "表格"
     },
     "pager": {
       "goTo": "前往",

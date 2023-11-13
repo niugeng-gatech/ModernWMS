@@ -51,6 +51,7 @@ const selectType = ref('goodsOwnerName')
 
 let chat: EChartsType
 const initCharts = () => {
+  console.log(props.chartData)
   if (chat) chat.dispose()
   chat = echarts.init(chatRef.value)
   // chat.on('legendselectchanged', (params:any) => {
@@ -115,7 +116,7 @@ const initCharts = () => {
       {
         show: true,
         start: 0,
-        end: 50
+        end: 100
       }
     ],
     series: [

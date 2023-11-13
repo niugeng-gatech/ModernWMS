@@ -345,7 +345,9 @@
       "submit": "Submit",
       "update": "Update",
       "view": "View",
-      "setSearch": "Set query criteria"
+      "setSearch": "Set query criteria",
+      "chart": "Chart",
+      "table": "Table"
     },
     "pager": {
       "goTo": "Go to",

@@ -11,7 +11,7 @@
                 <v-row no-gutters>
                   <!-- Operate Btn -->
                   <v-col cols="3" class="col">
-                    <BtnGroup :authority-list="data.authorityList" :btn-list="data.btnList" />
+                    <BtnGroup :authority-list="data.authorityList" :btn-list="btnList" />
                   </v-col>
 
                   <!-- Search Input -->
@@ -29,6 +29,7 @@
 
               <!-- Table -->
               <div
+                v-if="data.currentRender === 'table'"
                 class="mt-5"
                 :style="{
                   height: cardHeight
@@ -87,6 +88,15 @@
                 >
                 </custom-pager>
               </div>
+              <div
+                v-else
+                class="mt-5"
+                :style="{
+                  height: cardHeight
+                }"
+              >
+                <Chart type="asn" :chart-data="data.tableData" />
+              </div>
 
               <skuInfo :show-dialog="data.showDialogShowInfo" :form="data.dialogForm" @close="method.closeDialogShowInfo" />
             </v-window-item>
@@ -117,6 +127,7 @@ import { StockAsnVO } from '@/types/WMS/StockAsn'
 import { getStockAsnList } from '@/api/wms/stockAsn'
 import ViewDetailDialog from '@/view/wms/stockAsn/view-detail-dialog.vue'
 import SearchGroup from '@/components/system/search-group.vue'
+import Chart from '../components/Chart.vue'
 
 const xTableStockLocation = ref()
 const ViewDetailDialogRef = ref()
@@ -162,10 +173,19 @@ const data = reactive({
   // Menu operation permissions
   authorityList: getMenuAuthorityList(),
   // Local search criteria settings
-  menu_name: 'asnStatistic'
+  menu_name: 'asnStatistic',
+  currentRender: 'table'
 })
 
 const method = reactive({
+  // Switch Chart Mode
+  switchRenderMode: () => {
+    if (data.currentRender === 'chart') {
+      data.currentRender = 'table'
+    } else {
+      data.currentRender = 'chart'
+    }
+  },
   // Set Search
   handleSetSearch: () => {
     searchGroupRef.value.openDialog()
@@ -220,32 +240,63 @@ const method = reactive({
 })
 
 onMounted(() => {
-  data.btnList = [
-    {
-      name: i18n.global.t('system.page.refresh'),
-      icon: 'mdi-refresh',
-      code: '',
-      click: method.refresh
-    },
-    {
-      name: i18n.global.t('system.page.export'),
-      icon: 'mdi-export-variant',
-      code: 'export',
-      click: method.exportTable
-    },
-    {
-      name: i18n.global.t('system.page.setSearch'),
-      icon: 'mdi-cog',
-      code: '',
-      click: method.handleSetSearch
-    }
-  ]
-
+  // data.btnList = [
+  //   {
+  //     name: i18n.global.t('system.page.refresh'),
+  //     icon: 'mdi-refresh',
+  //     code: '',
+  //     click: method.refresh
+  //   },
+  //   {
+  //     name: i18n.global.t('system.page.export'),
+  //     icon: 'mdi-export-variant',
+  //     code: 'export',
+  //     click: method.exportTable
+  //   },
+  //   {
+  //     name: i18n.global.t('system.page.setSearch'),
+  //     icon: 'mdi-cog',
+  //     code: '',
+  //     click: method.handleSetSearch
+  //   },
+  //   {
+  //     name: i18n.global.t('system.page.chart'),
+  //     icon: 'mdi-chart-bar',
+  //     code: '',
+  //     click: method.switchRenderMode
+  //   }
+  // ]
   // method.refresh()
 })
 
 const cardHeight = computed(() => computedCardHeight({ hasTab: false }))
 const tableHeight = computed(() => computedTableHeight({ hasTab: false }))
+const btnList = computed(() => [
+  {
+    name: i18n.global.t('system.page.refresh'),
+    icon: 'mdi-refresh',
+    code: '',
+    click: method.refresh
+  },
+  {
+    name: i18n.global.t('system.page.export'),
+    icon: 'mdi-export-variant',
+    code: 'export',
+    click: method.exportTable
+  },
+  {
+    name: i18n.global.t('system.page.setSearch'),
+    icon: 'mdi-cog',
+    code: '',
+    click: method.handleSetSearch
+  },
+  {
+    name: data.currentRender !== 'chart' ? i18n.global.t('system.page.chart') : i18n.global.t('system.page.table'),
+    icon: data.currentRender !== 'chart' ? 'mdi-chart-bar' : 'mdi-table',
+    code: '',
+    click: method.switchRenderMode
+  }
+])
 
 watch(
   () => data.searchForm,

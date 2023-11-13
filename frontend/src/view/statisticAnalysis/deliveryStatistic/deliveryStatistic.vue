@@ -11,7 +11,7 @@
                 <v-row no-gutters>
                   <!-- Operate Btn -->
                   <v-col cols="3" class="col">
-                    <BtnGroup :authority-list="data.authorityList" :btn-list="data.btnList" />
+                    <BtnGroup :authority-list="data.authorityList" :btn-list="btnList" />
                   </v-col>
 
                   <!-- Search Input -->
@@ -29,6 +29,7 @@
 
               <!-- Table -->
               <div
+                v-if="data.currentRender === 'table'"
                 class="mt-5"
                 :style="{
                   height: cardHeight
@@ -67,6 +68,16 @@
                 >
                 </custom-pager>
               </div>
+
+              <div
+                v-else
+                class="mt-5"
+                :style="{
+                  height: cardHeight
+                }"
+              >
+                <Chart type="delivery" :chart-data="data.tableData" />
+              </div>
             </v-window-item>
           </v-window>
         </v-card-text>
@@ -91,6 +102,7 @@ import { list as getDeliveryStatisticList } from '@/api/wms/deliveryStatistic'
 import { hookComponent } from '@/components/system'
 import { DeliveryStatisticVo } from '@/types/WMS/DeliveryStatistic'
 import SearchGroup from '@/components/system/search-group.vue'
+import Chart from '../components/Chart.vue'
 
 const xTable = ref()
 const searchGroupRef = ref()
@@ -120,10 +132,19 @@ const data = reactive({
   // Menu operation permissions
   authorityList: getMenuAuthorityList(),
   // Local search criteria settings
-  menu_name: 'deliveryStatistic'
+  menu_name: 'deliveryStatistic',
+  currentRender: 'table'
 })
 
 const method = reactive({
+  // Switch Chart Mode
+  switchRenderMode: () => {
+    if (data.currentRender === 'chart') {
+      data.currentRender = 'table'
+    } else {
+      data.currentRender = 'chart'
+    }
+  },
   // get data
   list: async () => {
     const searchForm = {}
@@ -187,32 +208,57 @@ const method = reactive({
 })
 
 onMounted(() => {
-  data.btnList = [
-    {
-      name: i18n.global.t('system.page.refresh'),
-      icon: 'mdi-refresh',
-      code: '',
-      click: method.refresh
-    },
-    {
-      name: i18n.global.t('system.page.export'),
-      icon: 'mdi-export-variant',
-      code: 'export',
-      click: method.exportTable
-    },
-    {
-      name: i18n.global.t('system.page.setSearch'),
-      icon: 'mdi-cog',
-      code: '',
-      click: method.handleSetSearch
-    }
-  ]
-
+  // data.btnList = [
+  //   {
+  //     name: i18n.global.t('system.page.refresh'),
+  //     icon: 'mdi-refresh',
+  //     code: '',
+  //     click: method.refresh
+  //   },
+  //   {
+  //     name: i18n.global.t('system.page.export'),
+  //     icon: 'mdi-export-variant',
+  //     code: 'export',
+  //     click: method.exportTable
+  //   },
+  //   {
+  //     name: i18n.global.t('system.page.setSearch'),
+  //     icon: 'mdi-cog',
+  //     code: '',
+  //     click: method.handleSetSearch
+  //   }
+  // ]
   // method.refresh()
 })
 
 const cardHeight = computed(() => computedCardHeight({ hasTab: false }))
 const tableHeight = computed(() => computedTableHeight({ hasTab: false }))
+const btnList = computed(() => [
+  {
+    name: i18n.global.t('system.page.refresh'),
+    icon: 'mdi-refresh',
+    code: '',
+    click: method.refresh
+  },
+  {
+    name: i18n.global.t('system.page.export'),
+    icon: 'mdi-export-variant',
+    code: 'export',
+    click: method.exportTable
+  },
+  {
+    name: i18n.global.t('system.page.setSearch'),
+    icon: 'mdi-cog',
+    code: '',
+    click: method.handleSetSearch
+  },
+  {
+    name: data.currentRender !== 'chart' ? i18n.global.t('system.page.chart') : i18n.global.t('system.page.table'),
+    icon: data.currentRender !== 'chart' ? 'mdi-chart-bar' : 'mdi-table',
+    code: '',
+    click: method.switchRenderMode
+  }
+])
 
 watch(
   () => data.searchForm,
