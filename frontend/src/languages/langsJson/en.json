@@ -462,10 +462,14 @@
       "weight": "Total Weight"
     },
     "deliveryStatistic": {
+      "amount": "amount",
+      "amount_money": "Amount of money",
+      "category_name": "merchandise categories",
       "customer_name": "Customer Name",
       "delivery_date": "Delivery time",
       "delivery_qty": "Delivery quantity",
       "dispatch_no": "Shipment No",
+      "goods_owner_name": "Goods owner name",
       "location_name": "Location Code",
       "series_number": "Serial number",
       "sku_code": "Specification Code",

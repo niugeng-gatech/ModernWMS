@@ -462,10 +462,14 @@
       "weight": "总重量"
     },
     "deliveryStatistic": {
+      "amount": "数量",
+      "amount_money": "金额",
+      "category_name": "商品类别",
       "customer_name": "客户名称",
       "delivery_date": "出库时间",
       "delivery_qty": "出库数量",
       "dispatch_no": "发货单号",
+      "goods_owner_name": "货主名称",
       "location_name": "库位名称",
       "series_number": "序列号",
       "sku_code": "规格编码",

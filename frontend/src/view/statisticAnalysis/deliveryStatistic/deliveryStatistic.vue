@@ -12,6 +12,25 @@
                   <!-- Operate Btn -->
                   <v-col cols="3" class="col">
                     <BtnGroup :authority-list="data.authorityList" :btn-list="data.btnList" />
+                    <!-- chart -->
+                    <div class="text-center">
+                      <v-btn
+                        color="primary"
+                        @click="dialog = true"
+                      >
+                        Open Dialog
+                      </v-btn>
+
+                      <v-dialog
+                        v-model="dialog"
+                        width="auto"
+                      >
+                        <v-card style="height: 70vh;width: 70vw; padding: 10px; display: flex; align-items: center; justify-content: center">
+                          <chart :chart-data="data.tableData" type="delivery" />
+                        </v-card>
+                      </v-dialog>
+                    </div>
+                    <!-- chart end -->
                   </v-col>
 
                   <!-- Search Input -->
@@ -121,6 +140,9 @@ import BtnGroup from '@/components/system/btnGroup.vue'
 import { list as getDeliveryStatisticList } from '@/api/wms/deliveryStatistic'
 import { hookComponent } from '@/components/system'
 import { DeliveryStatisticVo } from '@/types/WMS/DeliveryStatistic'
+import Chart from '@/view/statisticAnalysis/Chart.vue'
+
+const dialog = ref(false)
 
 const xTable = ref()
 
