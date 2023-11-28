@@ -12,11 +12,11 @@
                 <tooltip-btn icon="mdi-refresh" :tooltip-text="$t('system.page.refresh')" @click="method.refresh()"></tooltip-btn>
                 <tooltip-btn icon="mdi-export-variant" :tooltip-text="$t('system.page.export')" @click="method.exportTable"></tooltip-btn>
                 <tooltip-btn icon="mdi-qrcode" :tooltip-text="$t('base.commodityManagement.printQrCode')" @click="method.printQrCode"></tooltip-btn>
-                <tooltip-btn
+                <!-- <tooltip-btn
                   icon="mdi-barcode"
                   :tooltip-text="$t('base.commodityManagement.printBarCode')"
                   @click="method.printBarCode"
-                ></tooltip-btn>
+                ></tooltip-btn> -->
               </v-col>
 
               <!-- Search Input -->
