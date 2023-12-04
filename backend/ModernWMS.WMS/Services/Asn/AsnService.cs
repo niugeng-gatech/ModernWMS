@@ -66,25 +66,29 @@ namespace ModernWMS.WMS.Services
                     queries.Add(s);
                 });
             }
+            var Asns = _dBContext.GetDbSet<AsnEntity>().AsNoTracking();
             Byte asn_status = 255;
             bool isShowAllData = false;
             if (pageSearch.sqlTitle.ToLower().Contains("asn_status:-1"))
             {
                 isShowAllData = true;
             }
+            else if (pageSearch.sqlTitle.ToLower().Contains("asn_status:alltodo"))
+            {
+                Asns = Asns.Where(t => t.asn_status <= 3);
+            }
             else if (pageSearch.sqlTitle.ToLower().Contains("asn_status"))
             {
                 asn_status = Convert.ToByte(pageSearch.sqlTitle.Trim().ToLower().Replace("asn_status","").Replace("：", "").Replace(":", "").Replace("=", ""));
                 asn_status = asn_status.Equals(4) ? (Byte)255 : asn_status;
+                Asns = Asns.Where(t => t.asn_status == asn_status);
             }
-            var Spus = _dBContext.GetDbSet<SpuEntity>();
-            var Skus = _dBContext.GetDbSet<SkuEntity>();
-            var Asns = _dBContext.GetDbSet<AsnEntity>();
-            var query = from m in Asns.AsNoTracking()
-                        join p in Spus.AsNoTracking() on m.spu_id equals p.id
-                        join k in Skus.AsNoTracking() on m.sku_id equals k.id
+            var Spus = _dBContext.GetDbSet<SpuEntity>().AsNoTracking();
+            var Skus = _dBContext.GetDbSet<SkuEntity>().AsNoTracking();
+            var query = from m in Asns
+                        join p in Spus on m.spu_id equals p.id
+                        join k in Skus on m.sku_id equals k.id
                         where m.tenant_id == currentUser.tenant_id
-                        && (isShowAllData == true || asn_status == 255 || m.asn_status == asn_status)
                         select new AsnViewModel
                         {
                             id = m.id,
