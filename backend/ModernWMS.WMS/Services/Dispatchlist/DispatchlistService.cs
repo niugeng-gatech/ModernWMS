@@ -93,7 +93,10 @@ namespace ModernWMS.WMS.Services
             {
                 DbSet = DbSet.Where(t => t.picked_qty == t.qty && (t.dispatch_status.Equals(3) || t.dispatch_status.Equals(4) || t.dispatch_status.Equals(5) || t.dispatch_status.Equals(6)));
             }
-
+            else if (pageSearch.sqlTitle.Equals("todo"))
+            {
+                DbSet = DbSet.Where(t => t.dispatch_status >= 2 && t.dispatch_status <= 5);
+            }
             var query = from d in DbSet.AsNoTracking()
                         join sku in _dBContext.GetDbSet<SkuEntity>().AsNoTracking() on d.sku_id equals sku.id
                         join spu in _dBContext.GetDbSet<SpuEntity>().AsNoTracking() on sku.spu_id equals spu.id
