@@ -58,23 +58,23 @@ namespace ModernWMS.Core.Extentions
             var database_config = configuration.GetSection("Database")["db"];
             services.AddDbContextPool<SqlDBContext>(t =>
             {
-                if (database_config == "SqlLite")
+                if (database_config.ToUpper() == "SQLITE")
                 {
                     var SqlLite_connection = configuration.GetConnectionString("SqlLiteConn");
                     t.UseSqlite(SqlLite_connection, b => b.MigrationsAssembly("ModernWMS"));
                 }
-                else if (database_config == "MySql")
+                else if (database_config.ToUpper() == "MYSQL")
                 {
                     var Mysql_connection = configuration.GetConnectionString("MySqlConn");
                     t.UseMySql(Mysql_connection, new MySqlServerVersion(new Version(8, 0, 26)));
                 }
-                else if (database_config == "SqlServer")
+                else if (database_config.ToUpper() == "SQLSERVER")
                 {
                     var SqlServer_connection = configuration.GetConnectionString("SqlServerConn");
                     t.UseSqlServer(SqlServer_connection);
                 }
 
-                else if (database_config == "PostGres")
+                else if (database_config.ToUpper() == "POSTGRES")
                 {
                     var Postgre_connection = configuration.GetConnectionString("PostGresConn");
                     t.UseNpgsql(Postgre_connection);
