@@ -58,7 +58,7 @@ namespace ModernWMS.Core.Extentions
             var database_config = configuration.GetSection("Database")["db"];
             services.AddDbContextPool<SqlDBContext>(t =>
             {
-                if (database_config.ToUpper() == "SQLITE")
+                if (database_config.ToUpper() == "SQLLITE")
                 {
                     var SqlLite_connection = configuration.GetConnectionString("SqlLiteConn");
                     t.UseSqlite(SqlLite_connection, b => b.MigrationsAssembly("ModernWMS"));
