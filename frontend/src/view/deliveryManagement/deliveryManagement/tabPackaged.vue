@@ -165,6 +165,7 @@ import { exportData } from '@/utils/exportTable'
 import { DEBOUNCE_TIME } from '@/constant/system'
 import BtnGroup from '@/components/system/btnGroup.vue'
 import PackageConfirm from './package-confirm.vue'
+import { httpCodeJudge } from '@/utils/http/httpCodeJudge'
 
 const xTable = ref()
 const PackageConfirmRef = ref()
@@ -298,6 +299,15 @@ const method = reactive({
     }))
     const { data: res } = await handlePackage(packList)
     if (!res.isSuccess) {
+      // 2023-12-06 Add automatic refresh of expired data
+      if (httpCodeJudge(res.errorMessage)) {
+        method.refresh()
+
+        PackageConfirmRef.value.closeDialog()
+
+        return
+      }
+
       hookComponent.$message({
         type: 'error',
         content: res.errorMessage

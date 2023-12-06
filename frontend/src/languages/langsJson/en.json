@@ -371,7 +371,9 @@
       "success": " success!",
       "vaildEmail": "Please enter the correct email format!",
       "verifyPwd": "Verification failed. The new password is different from the confirmed one!",
-      "setSearchError": "Setting failed! The number of query criteria should be between 1-3"
+      "setSearchError": "Setting failed! The number of query criteria should be between 1-3",
+      "dataExpirationAutoRefresh": "Operation failed! The data has expired and has been automatically refreshed for you",
+      "dataExpiration": "Operation failed! The data has expired, please refresh and try again"
     },
     "viewLog": {
       "action_content": "Operation content",

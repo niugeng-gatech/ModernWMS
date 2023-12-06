@@ -63,13 +63,7 @@
       height: cardHeight
     }"
   >
-    <vxe-table
-      ref="xTable"
-      :column-config="{ minWidth: '100px' }"
-      :data="data.tableData"
-      :height="tableHeight"
-      align="center"
-    >
+    <vxe-table ref="xTable" :column-config="{ minWidth: '100px' }" :data="data.tableData" :height="tableHeight" align="center">
       <template #empty>
         {{ i18n.global.t('system.page.noData') }}
       </template>
@@ -201,6 +195,7 @@ import { DEBOUNCE_TIME } from '@/constant/system'
 import SearchDeliveredMainDetail from './search-delivered-main-detail.vue'
 import BtnGroup from '@/components/system/btnGroup.vue'
 import QrCodeDialog from '@/components/codeDialog/qrCodeDialog.vue'
+import { httpCodeJudge } from '@/utils/http/httpCodeJudge'
 
 const xTable = ref()
 const qrCodeDialogRef = ref()
@@ -318,6 +313,13 @@ const method = reactive({
         if (row.dispatch_no) {
           const { data: res } = await confirmPicking(row.dispatch_no)
           if (!res.isSuccess) {
+            // 2023-12-06 Add automatic refresh of expired data
+            if (httpCodeJudge(res.errorMessage)) {
+              method.refresh()
+
+              return
+            }
+
             hookComponent.$message({
               type: 'error',
               content: res.errorMessage
@@ -343,6 +345,13 @@ const method = reactive({
           dispatch_status: row.dispatch_status
         })
         if (!res.isSuccess) {
+          // 2023-12-06 Add automatic refresh of expired data
+          if (httpCodeJudge(res.errorMessage)) {
+            method.refresh()
+
+            return
+          }
+
           hookComponent.$message({
             type: 'error',
             content: res.errorMessage
@@ -408,6 +417,13 @@ const method = reactive({
         if (row.dispatch_no) {
           const { data: res } = await delShipment(row.dispatch_no)
           if (!res.isSuccess) {
+            // 2023-12-06 Add automatic refresh of expired data
+            if (httpCodeJudge(res.errorMessage)) {
+              method.refresh()
+
+              return
+            }
+
             hookComponent.$message({
               type: 'error',
               content: res.errorMessage

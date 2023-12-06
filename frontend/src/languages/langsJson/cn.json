@@ -371,7 +371,9 @@
       "success": "成功!",
       "vaildEmail": "请输入正确的邮箱格式!",
       "verifyPwd": "校验失败, 新密码与确认新密码不同!",
-      "setSearchError": "设置失败! 查询条件数量应该在1-3个之间"
+      "setSearchError": "设置失败! 查询条件数量应该在1-3个之间",
+      "dataExpirationAutoRefresh": "操作失败! 数据已过期, 已为您自动刷新数据",
+      "dataExpiration": "操作失败! 数据已过期, 请刷新后重试"
     },
     "viewLog": {
       "action_content": "操作内容",
