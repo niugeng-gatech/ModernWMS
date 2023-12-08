@@ -142,10 +142,7 @@ namespace ModernWMS.WMS.Services
             {
                 query = query.Where(t => t.picked_qty == t.qty && (t.dispatch_status.Equals(3) || t.dispatch_status.Equals(4) || t.dispatch_status.Equals(5)));
             }
-            else if (pageSearch.sqlTitle.Equals("todo"))
-            {
-                query = query.Where(t => t.dispatch_status >= 2 && t.dispatch_status <= 5);
-            }
+        
             int totals = await query.CountAsync();
             var list = await query.OrderByDescending(t => t.create_time)
                        .Skip((pageSearch.pageIndex - 1) * pageSearch.pageSize)
@@ -387,6 +384,10 @@ namespace ModernWMS.WMS.Services
             {
                 var dispatch_status = Convert.ToByte(pageSearch.sqlTitle.Trim().ToLower().Replace("dispatch_status", "").Replace("：", "").Replace(":", "").Replace("=", ""));
                 query = query.Where(t => t.dispatch_status.Equals(dispatch_status));
+            }
+            else if (pageSearch.sqlTitle.Equals("todo"))
+            {
+                query = query.Where(t => t.dispatch_status >= 2 && t.dispatch_status <= 5);
             }
             int totals = await query.CountAsync();
             var list = await query.OrderByDescending(t => t.dispatch_no)
