@@ -3,10 +3,15 @@ import { hookComponent } from '@/components/system'
 
 // Obtain the code for error information
 function extractNumbers(str: string): any {
-  const regex = /^(\d{3})\s/
+  const regex = /^\[(\d+)\]/ // 匹配以 "[xxx]" 开头的字符串，并提取其中的数字部分
+
   const match = str.match(regex)
 
-  return match ? match[1] : null
+  if (match) {
+    const extractedValue = match[1] // 提取匹配到的数字部分
+    return extractedValue
+  }
+  return null
 }
 
 // Return the corresponding error information based on the error code
