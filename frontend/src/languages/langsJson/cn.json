@@ -48,7 +48,9 @@
       "requestFail": "接口请求失败，请重试",
       "vaildEmail": "请输入正确的邮箱格式!",
       "verifyPwd": "校验失败, 新密码与确认新密码不同!",
-      "beforeOperation": "您确定要进行此操作吗?"
+      "beforeOperation": "您确定要进行此操作吗?",
+      "dataExpirationAutoRefresh": "操作失败! 数据已过期, 已为您自动刷新数据",
+      "dataExpiration": "操作失败! 数据已过期, 请刷新后重试"
     },
     "checkText": {
       "checkFormFail": "操作失败, 请检查数据后重试!",

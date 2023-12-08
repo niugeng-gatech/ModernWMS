@@ -137,6 +137,7 @@ import { TablePage } from '@/types/System/Form'
 import SearchDeliveredDetail from './search-delivered-detail.vue'
 import { exportData } from '@/utils/exportTable'
 import { DEBOUNCE_TIME } from '@/constant/system'
+import { httpCodeJudge } from '@/utils/http/httpCodeJudge'
 
 const xTable = ref()
 
@@ -178,6 +179,13 @@ const method = reactive({
       handleConfirm: async () => {
         const { data: res } = await cancelOrderByDetail(row.id)
         if (!res.isSuccess) {
+          // 2023-12-06 Add automatic refresh of expired data
+          if (httpCodeJudge(res.errorMessage)) {
+            method.refresh()
+
+            return
+          }
+
           hookComponent.$message({
             type: 'error',
             content: res.errorMessage

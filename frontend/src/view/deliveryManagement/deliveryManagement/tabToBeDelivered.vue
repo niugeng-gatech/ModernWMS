@@ -137,6 +137,7 @@ import { TablePage } from '@/types/System/Form'
 import SearchDeliveredDetail from './search-delivered-detail.vue'
 import { exportData } from '@/utils/exportTable'
 import { DEBOUNCE_TIME } from '@/constant/system'
+import { httpCodeJudge } from '@/utils/http/httpCodeJudge'
 
 const xTable = ref()
 
@@ -175,16 +176,23 @@ const method = reactive({
     const checkTableList = $table.getCheckboxRecords()
     if (checkTableList.length > 0) {
       const deliveredList = checkTableList.map((row: DeliveryManagementDetailVO) => ({
-          id: row.id,
-          dispatch_no: row.dispatch_no,
-          dispatch_status: row.dispatch_status,
-          picked_qty: row.picked_qty
-        }))
+        id: row.id,
+        dispatch_no: row.dispatch_no,
+        dispatch_status: row.dispatch_status,
+        picked_qty: row.picked_qty
+      }))
       hookComponent.$dialog({
         content: `${ i18n.global.t('wms.deliveryManagement.irreversible') }, ${ i18n.global.t('wms.deliveryManagement.confirmDelivery') }?`,
         handleConfirm: async () => {
           const { data: res } = await handleDelivery(deliveredList)
           if (!res.isSuccess) {
+            // 2023-12-06 Add automatic refresh of expired data
+            if (httpCodeJudge(res.errorMessage)) {
+              method.refresh()
+
+              return
+            }
+
             hookComponent.$message({
               type: 'error',
               content: res.errorMessage

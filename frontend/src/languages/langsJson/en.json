@@ -48,7 +48,9 @@
       "requestFail": "Request fail.Please try it again",
       "vaildEmail": "Please enter the correct email format!",
       "verifyPwd": "Verification failed. The new password is different from the confirmed one!",
-      "beforeOperation": "Are you sure to proceed?"
+      "beforeOperation": "Are you sure to proceed?",
+      "dataExpirationAutoRefresh": "Operation failed! The data has expired and has been automatically refreshed for you",
+      "dataExpiration": "Operation failed! The data has expired, please refresh and try again"
     },
     "checkText": {
       "checkFormFail": "Operation failed. Please check the data and try again!",
