@@ -93,10 +93,7 @@ namespace ModernWMS.WMS.Services
             {
                 DbSet = DbSet.Where(t => t.picked_qty == t.qty && (t.dispatch_status.Equals(3) || t.dispatch_status.Equals(4) || t.dispatch_status.Equals(5) || t.dispatch_status.Equals(6)));
             }
-            else if (pageSearch.sqlTitle.Equals("todo"))
-            {
-                DbSet = DbSet.Where(t => t.dispatch_status >= 2 && t.dispatch_status <= 6);
-            }
+
             var query = from d in DbSet.AsNoTracking()
                         join sku in _dBContext.GetDbSet<SkuEntity>().AsNoTracking() on d.sku_id equals sku.id
                         join spu in _dBContext.GetDbSet<SpuEntity>().AsNoTracking() on sku.spu_id equals spu.id
@@ -393,6 +390,10 @@ namespace ModernWMS.WMS.Services
             {
                 var dispatch_status = Convert.ToByte(pageSearch.sqlTitle.Trim().ToLower().Replace("dispatch_status", "").Replace("：", "").Replace(":", "").Replace("=", ""));
                 query = query.Where(t => t.dispatch_status.Equals(dispatch_status));
+            }
+            else if (pageSearch.sqlTitle.Equals("todo"))
+            {
+                query = query.Where(t => t.dispatch_status >= 2 && t.dispatch_status <= 6);
             }
             int totals = await query.CountAsync();
             var list = await query.OrderByDescending(t => t.dispatch_no)
