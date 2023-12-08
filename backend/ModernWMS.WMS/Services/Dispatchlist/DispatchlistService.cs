@@ -393,7 +393,7 @@ namespace ModernWMS.WMS.Services
             }
             else if (pageSearch.sqlTitle.Equals("todo"))
             {
-                query = query.Where(t => t.dispatch_status >= 2 && t.dispatch_status <= 6);
+                query = query.Where(t => t.dispatch_status >= 2 && t.dispatch_status <= 5);
             }
             int totals = await query.CountAsync();
             var list = await query.OrderByDescending(t => t.dispatch_no)
