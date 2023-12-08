@@ -93,7 +93,10 @@ namespace ModernWMS.WMS.Services
             {
                 DbSet = DbSet.Where(t => t.picked_qty == t.qty && (t.dispatch_status.Equals(3) || t.dispatch_status.Equals(4) || t.dispatch_status.Equals(5) || t.dispatch_status.Equals(6)));
             }
-
+            else if (pageSearch.sqlTitle.Equals("todo"))
+            {
+                DbSet = DbSet.Where(t => t.dispatch_status >= 2 && t.dispatch_status <= 6);
+            }
             var query = from d in DbSet.AsNoTracking()
                         join sku in _dBContext.GetDbSet<SkuEntity>().AsNoTracking() on d.sku_id equals sku.id
                         join spu in _dBContext.GetDbSet<SpuEntity>().AsNoTracking() on sku.spu_id equals spu.id
@@ -232,7 +235,7 @@ namespace ModernWMS.WMS.Services
             var skus = await (_dBContext.GetDbSet<SkuEntity>().AsNoTracking().Where(t => sku_id_list.Contains(t.id))).ToListAsync();
             if (entities.Any(t => t.dispatch_status != 1 && t.dispatch_status != 0))
             {
-                return (false, _stringLocalizer["data_changed"]);
+                return (false, "[202]" + _stringLocalizer["data_changed"]);
             }
             foreach (var vm in viewModels)
             {
@@ -241,7 +244,7 @@ namespace ModernWMS.WMS.Services
                     var entity = entities.FirstOrDefault(t => t.id == -vm.id);
                     if (entity == null)
                     {
-                        return (false, _stringLocalizer["data_changed"]);
+                        return (false, "[202]" + _stringLocalizer["data_changed"]);
                     }
                     DBSet.Remove(entity);
                     delete_id_list.Add(entity.id);
@@ -251,7 +254,7 @@ namespace ModernWMS.WMS.Services
                     var entity = entities.FirstOrDefault(t => t.id == vm.id);
                     if (entity == null)
                     {
-                        return (false, _stringLocalizer["data_changed"]);
+                        return (false, "[202]" + _stringLocalizer["data_changed"]);
                     }
                     entity.sku_id = vm.sku_id;
                     entity.qty = vm.qty;
@@ -560,6 +563,7 @@ namespace ModernWMS.WMS.Services
             var location_DBSet = _dBContext.GetDbSet<GoodslocationEntity>();
             var stock_group_datas = from stock in stock_DbSet.AsNoTracking()
                                     join gl in _dBContext.GetDbSet<GoodslocationEntity>().AsNoTracking() on stock.goods_location_id equals gl.id
+                                    where stock.tenant_id == currentUser.user_id
                                     group stock by new { stock.id, stock.sku_id, stock.goods_location_id, stock.goods_owner_id, stock.series_number } into sg
                                     select new
                                     {
@@ -743,7 +747,7 @@ namespace ModernWMS.WMS.Services
                 var d = dispatchlist_datas.Where(t => t.id == vm.dispatchlist_id).FirstOrDefault();
                 if (d == null)
                 {
-                    return (false, _stringLocalizer["data_changed"]);
+                    return (false, "[202]" + _stringLocalizer["data_changed"]);
                 }
                 if (vm.confirm == true)
                 {
@@ -858,7 +862,7 @@ namespace ModernWMS.WMS.Services
                                 select tp).Any();
             if (if_not_stock)
             {
-                return (false, _stringLocalizer["data_changed"]);
+                return (false, "[202]" + _stringLocalizer["data_changed"]);
             }
             await pick_DBSet.AddRangeAsync(pick_datas);
             var dispatch_no = await GetOrderCode(currentUser);
@@ -948,7 +952,7 @@ namespace ModernWMS.WMS.Services
                             var proposedValues = entry.CurrentValues;
                             var databaseValues = entry.GetDatabaseValues();
                             if (UtilConvert.ObjToInt(databaseValues["dispatch_status"]) != viewModel.dispatch_status)
-                                return (false, _stringLocalizer["data_changed"]);
+                                return (false, "[202]" + _stringLocalizer["data_changed"]);
                             // Refresh original values to bypass next concurrency check
                             entry.OriginalValues.SetValues(databaseValues);
                         }
@@ -1083,11 +1087,11 @@ namespace ModernWMS.WMS.Services
                 var entity = entities.FirstOrDefault(t => t.id == vm.id && t.dispatch_status == vm.dispatch_status);
                 if (entity == null)
                 {
-                    return (false, _stringLocalizer["data_changed"]);
+                    return (false, "[202]" + _stringLocalizer["data_changed"]);
                 }
                 if ((entity.package_qty + vm.package_qty) > entity.picked_qty)
                 {
-                    return (false, _stringLocalizer["unpackgeqty_lessthen"]);
+                    return (false, "[202]" + _stringLocalizer["unpackgeqty_lessthen"]);
                 }
                 entity.last_update_time = time;
                 entity.package_person = currentUser.user_name;
@@ -1117,11 +1121,11 @@ namespace ModernWMS.WMS.Services
                             var t_vm = viewModels.FirstOrDefault(t => t.id == UtilConvert.ObjToInt(databaseValues["id"]));
                             if (t_vm == null)
                             {
-                                return (false, _stringLocalizer["data_changed"]);
+                                return (false, "[202]" + _stringLocalizer["data_changed"]);
                             }
                             if (UtilConvert.ObjToInt(databaseValues["package_qty"]) + t_vm.package_qty > t_vm.picked_qty)
                             {
-                                return (false, _stringLocalizer["data_changed"]);
+                                return (false, "[202]" + _stringLocalizer["data_changed"]);
                             }
                             else
                             {
@@ -1171,11 +1175,11 @@ namespace ModernWMS.WMS.Services
                 var entity = entities.FirstOrDefault(t => t.id == vm.id && t.dispatch_status == vm.dispatch_status);
                 if (entity == null)
                 {
-                    return (false, _stringLocalizer["data_changed"]);
+                    return (false, "[202]" + _stringLocalizer["data_changed"]);
                 }
                 if ((entity.weighing_qty + vm.weighing_qty) > entity.picked_qty)
                 {
-                    return (false, _stringLocalizer["unweightqty_lessthen"]);
+                    return (false, "[202]" + _stringLocalizer["unweightqty_lessthen"]);
                 }
                 entity.last_update_time = time;
                 entity.weighing_person = currentUser.user_name;
@@ -1206,11 +1210,11 @@ namespace ModernWMS.WMS.Services
                             var t_vm = viewModels.FirstOrDefault(t => t.id == UtilConvert.ObjToInt(databaseValues["id"]));
                             if (t_vm == null)
                             {
-                                return (false, _stringLocalizer["data_changed"]);
+                                return (false, "[202]" + _stringLocalizer["data_changed"]);
                             }
                             if (UtilConvert.ObjToInt(databaseValues["weighing_qty"]) + t_vm.weighing_qty > t_vm.picked_qty)
                             {
-                                return (false, _stringLocalizer["data_changed"]);
+                                return (false, "[202]" + _stringLocalizer["data_changed"]);
                             }
                             else
                             {
@@ -1261,7 +1265,7 @@ namespace ModernWMS.WMS.Services
             {
                 if (entity.dispatch_status != 3 && entity.dispatch_status != 4 && entity.dispatch_status != 5)
                 {
-                    return (false, _stringLocalizer["data_changed"]);
+                    return (false, "[202]" + _stringLocalizer["data_changed"]);
                 }
                 entity.last_update_time = time;
                 entity.dispatch_status = 6;
@@ -1281,7 +1285,7 @@ namespace ModernWMS.WMS.Services
                 var s = stocks.FirstOrDefault(t => t.goods_location_id == pick.goods_location_id && t.sku_id == pick.sku_id && t.goods_owner_id == pick.goods_owner_id && t.series_number == pick.series_number);
                 if (s == null)
                 {
-                    return (false, _stringLocalizer["data_changed"]);
+                    return (false, "[202]" + _stringLocalizer["data_changed"]);
                 }
                 s.qty -= pick.picked_qty;
                 s.last_update_time = time;
@@ -1312,7 +1316,7 @@ namespace ModernWMS.WMS.Services
                             var databaseValues = entry.GetDatabaseValues();
                             if (UtilConvert.ObjToInt(databaseValues["dispatch_status"]) != 3 && UtilConvert.ObjToInt(databaseValues["dispatch_status"]) != 4 && UtilConvert.ObjToInt(databaseValues["dispatch_status"]) != 5)
                             {
-                                return (false, _stringLocalizer["data_changed"]);
+                                return (false, "[202]" + _stringLocalizer["data_changed"]);
                             }
                             proposedValues["last_update_time"] = DateTime.Now;
                         }
@@ -1323,7 +1327,7 @@ namespace ModernWMS.WMS.Services
                             var t_p = picks.FirstOrDefault(t => t.goods_location_id == UtilConvert.ObjToInt(databaseValues["goods_location_id"]) && t.sku_id == UtilConvert.ObjToInt(databaseValues["sku_id"]) && t.goods_owner_id == UtilConvert.ObjToInt(databaseValues["goods_owner_id"]));
                             if (t_p == null)
                             {
-                                return (false, _stringLocalizer["data_changed"]);
+                                return (false, "[202]" + _stringLocalizer["data_changed"]);
                             }
                             proposedValues["qty"] = UtilConvert.ObjToInt(databaseValues["qty"]) - t_p.picked_qty;
                             proposedValues["last_update_time"] = DateTime.Now;
@@ -1408,7 +1412,7 @@ namespace ModernWMS.WMS.Services
                 var vm = viewModels.FirstOrDefault(t => t.id == t.id && t.dispatch_status == entity.dispatch_status);
                 if (vm == null)
                 {
-                    return (false, _stringLocalizer["data_changed"]);
+                    return (false, "[202]" + _stringLocalizer["data_changed"]);
                 }
                 entity.sign_qty = entity.actual_qty - vm.damage_qty;
                 entity.damage_qty = vm.damage_qty;
@@ -1469,6 +1473,94 @@ namespace ModernWMS.WMS.Services
             long timeStamp = Convert.ToInt32(DateTime.Now.Subtract(_dtStart).TotalSeconds);
             return date + timeStamp.ToString();
         }
+
+        /*public async Task<bool> AllocateInventory(DateTime TimeBegin, DateTime TimeEnd, CurrentUser currentUser)
+        {
+            var DbSet = _dBContext.GetDbSet<DispatchlistEntity>();
+            var dispatchpick_DBSet = _dBContext.GetDbSet<DispatchpicklistEntity>();
+            var to_pick_query = DbSet.Where(t => t.tenant_id == currentUser.tenant_id && t.create_time >= TimeBegin && t.create_time <= TimeEnd && t.dispatch_status == 1);
+            var to_pick_list = await dispatchpick_DBSet.Where(t => to_pick_query.Any(e => e.id == t.dispatchlist_id)).OrderBy(t => t.id).ToListAsync();
+            var to_pick = await to_pick_query.ToListAsync();
+            var pick_sku = to_pick.Select(t => t.sku_id).ToList();
+
+            var stock_DbSet = _dBContext.GetDbSet<StockEntity>();
+            var asn_DBSet = _dBContext.GetDbSet<AsnEntity>();
+            var dispatch_DBSet = _dBContext.GetDbSet<DispatchlistEntity>();
+            var sku_DBSet = _dBContext.GetDbSet<SkuEntity>().AsNoTracking();
+            var spu_DBSet = _dBContext.GetDbSet<SpuEntity>().AsNoTracking();
+            var processdetail_DBSet = _dBContext.GetDbSet<StockprocessdetailEntity>().AsNoTracking();
+            var move_DBSet = _dBContext.GetDbSet<StockmoveEntity>();
+            var owner_DBSet = _dBContext.GetDbSet<GoodsownerEntity>();
+            var location_DBSet = _dBContext.GetDbSet<GoodslocationEntity>();
+            var stock_group_datas = stock_DbSet.Where(t => t.tenant_id == currentUser.tenant_id && pick_sku.Any(s => s == t.sku_id));
+
+            var dispatch_group_datas = from dp in DbSet.AsNoTracking()
+                                       join dpp in dispatchpick_DBSet.AsNoTracking() on dp.id equals dpp.dispatchlist_id
+                                       where dp.dispatch_status > 1 && dp.dispatch_status < 6 && dp.tenant_id == currentUser.tenant_id
+                                       group dpp by new { dpp.sku_id, dpp.goods_location_id, dpp.goods_owner_id, dpp.series_number } into dg
+                                       select new
+                                       {
+                                           goods_owner_id = dg.Key.goods_owner_id,
+                                           sku_id = dg.Key.sku_id,
+                                           goods_location_id = dg.Key.goods_location_id,
+                                           series_number = dg.Key.series_number,
+                                           qty_locked = dg.Sum(t => t.pick_qty)
+                                       };
+            var process_locked_group_datas = from pd in processdetail_DBSet
+                                             where pd.is_update_stock == false && pd.tenant_id == currentUser.tenant_id
+                                             group pd by new { pd.sku_id, pd.goods_location_id, pd.goods_owner_id, pd.series_number } into pdg
+                                             select new
+                                             {
+                                                 goods_owner_id = pdg.Key.goods_owner_id,
+                                                 sku_id = pdg.Key.sku_id,
+                                                 goods_location_id = pdg.Key.goods_location_id,
+                                                 series_number = pdg.Key.series_number,
+                                                 qty_locked = pdg.Sum(t => t.qty)
+                                             };
+            var move_locked_group_datas = from m in move_DBSet.AsNoTracking()
+                                          where m.move_status == 0 && m.tenant_id == currentUser.tenant_id
+                                          group m by new { m.sku_id, m.orig_goods_location_id, m.goods_owner_id, m.series_number } into mg
+                                          select new
+                                          {
+                                              goods_owner_id = mg.Key.goods_owner_id,
+                                              sku_id = mg.Key.sku_id,
+                                              goods_location_id = mg.Key.orig_goods_location_id,
+                                              series_number = mg.Key.series_number,
+                                              qty_locked = mg.Sum(t => t.qty)
+                                          };
+            var datas = await (from sg in stock_group_datas
+                               join dp in dispatch_group_datas on new { sg.sku_id, sg.goods_location_id, sg.goods_owner_id, sg.series_number } equals new { dp.sku_id, dp.goods_location_id, dp.goods_owner_id, dp.series_number } into dp_left
+                               from dp in dp_left.DefaultIfEmpty()
+                               join pl in process_locked_group_datas on new { sg.sku_id, sg.goods_location_id, sg.goods_owner_id, sg.series_number } equals new { pl.sku_id, pl.goods_location_id, pl.goods_owner_id, pl.series_number } into pl_left
+                               from pl in pl_left.DefaultIfEmpty()
+                               join m in move_locked_group_datas on new { sg.sku_id, sg.goods_location_id, sg.goods_owner_id, sg.series_number } equals new { m.sku_id, m.goods_location_id, m.goods_owner_id, m.series_number } into m_left
+                               from m in m_left.DefaultIfEmpty()
+                               where pick_sku.Contains(sg.sku_id)
+                               select new
+                               {
+                                   stock_id = sg.stock_id,
+                                   goods_location_id = sg.goods_location_id,
+                                   goods_owner_id = sg.goods_owner_id,
+                                   qty_available = sg.qty - sg.qty_frozen - (dp.qty_locked == null ? 0 : dp.qty_locked) - (pl.qty_locked == null ? 0 : pl.qty_locked) - (m.qty_locked == null ? 0 : m.qty_locked),
+                                   sku_id = sg.sku_id,
+                                   series_number = sg.series_number
+                               }).ToListAsync();
+            foreach (var p in to_pick_list)
+            {
+                var picklist = datas.Where(t => t.sku_id == p.sku_id && t.stock_id > 0).OrderBy(o => o.qty_available).OrderByDescending(o => o.qty_available).ToList();
+                int pick_qty = 0;
+                foreach (var pick in picklist)
+                {
+                    if (pick_qty >= d.qty)
+                    {
+                        break;
+                    }
+                    pick.pick_qty = (r.qty <= (pick_qty + pick.qty_available)) ? (r.qty - pick_qty) : pick.qty_available;
+                    pick_qty += pick.pick_qty;
+                }
+                r.pick_list = picklist.Where(t => t.qty_available > 0).ToList();
+            }
+        }*/
 
         #endregion Api
     }
