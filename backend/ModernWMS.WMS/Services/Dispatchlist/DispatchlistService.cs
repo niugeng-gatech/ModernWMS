@@ -230,7 +230,7 @@ namespace ModernWMS.WMS.Services
             var skus = await (_dBContext.GetDbSet<SkuEntity>().AsNoTracking().Where(t => sku_id_list.Contains(t.id))).ToListAsync();
             if (entities.Any(t => t.dispatch_status != 1 && t.dispatch_status != 0))
             {
-                return (false,"202 "+ _stringLocalizer["data_changed"]);
+                return (false,"[202]"+ _stringLocalizer["data_changed"]);
             }
             foreach (var vm in viewModels)
             {
@@ -239,7 +239,7 @@ namespace ModernWMS.WMS.Services
                     var entity = entities.FirstOrDefault(t => t.id == -vm.id);
                     if (entity == null)
                     {
-                        return (false, "202 " + _stringLocalizer["data_changed"]);
+                        return (false, "[202]" + _stringLocalizer["data_changed"]);
                     }
                     DBSet.Remove(entity);
                     delete_id_list.Add(entity.id);
@@ -249,7 +249,7 @@ namespace ModernWMS.WMS.Services
                     var entity = entities.FirstOrDefault(t => t.id == vm.id);
                     if (entity == null)
                     {
-                        return (false, "202 " + _stringLocalizer["data_changed"]);
+                        return (false, "[202]" + _stringLocalizer["data_changed"]);
                     }
                     entity.sku_id = vm.sku_id;
                     entity.qty = vm.qty;
@@ -302,7 +302,7 @@ namespace ModernWMS.WMS.Services
             }
             else
             {
-                return (false, "202 " + _stringLocalizer["save_failed"]);
+                return (false, "[202]" + _stringLocalizer["save_failed"]);
             }
         }
 
@@ -507,7 +507,7 @@ namespace ModernWMS.WMS.Services
             }
             else
             {
-                return (false, "202 " + _stringLocalizer["save_failed"]);
+                return (false, "[202]" + _stringLocalizer["save_failed"]);
             }
         }
 
@@ -532,7 +532,7 @@ namespace ModernWMS.WMS.Services
             }
             else
             {
-                return (false, "202 " + _stringLocalizer["delete_failed"]);
+                return (false, "[202]" + _stringLocalizer["delete_failed"]);
             }
         }
 
@@ -734,7 +734,7 @@ namespace ModernWMS.WMS.Services
                 var d = dispatchlist_datas.Where(t => t.id == vm.dispatchlist_id).FirstOrDefault();
                 if (d == null)
                 {
-                    return (false, "202 " + _stringLocalizer["data_changed"]);
+                    return (false, "[202]" + _stringLocalizer["data_changed"]);
                 }
                 if (vm.confirm == true)
                 {
@@ -840,7 +840,7 @@ namespace ModernWMS.WMS.Services
                                 select tp).Any();
             if (if_not_stock)
             {
-                return (false, "202 " + _stringLocalizer["data_changed"]);
+                return (false, "[202]" + _stringLocalizer["data_changed"]);
             }
             await pick_DBSet.AddRangeAsync(pick_datas);
             var dispatch_no = await GetOrderCode(currentUser);
@@ -865,7 +865,7 @@ namespace ModernWMS.WMS.Services
             }
             else
             {
-                return (false, "202 " + _stringLocalizer["operation_failed"]);
+                return (false, "[202]" + _stringLocalizer["operation_failed"]);
             }
         }
 
@@ -882,7 +882,7 @@ namespace ModernWMS.WMS.Services
             var entities = await DBSet.Where(t => t.dispatch_no == viewModel.dispatch_no && t.tenant_id == currentUser.tenant_id && t.dispatch_status == viewModel.dispatch_status).ToListAsync();
             if (entities.Count == 0)
             {
-                return (false, "202 " + _stringLocalizer["status_changed"]);
+                return (false, "[202]" + _stringLocalizer["status_changed"]);
             }
             var time = DateTime.Now;
             var dispatch_id_list = entities.Select(t => t.id).ToList();
@@ -930,7 +930,7 @@ namespace ModernWMS.WMS.Services
                             var proposedValues = entry.CurrentValues;
                             var databaseValues = entry.GetDatabaseValues();
                             if (UtilConvert.ObjToInt(databaseValues["dispatch_status"]) != viewModel.dispatch_status)
-                                return (false, "202 " + _stringLocalizer["data_changed"]);
+                                return (false, "[202]" + _stringLocalizer["data_changed"]);
                             // Refresh original values to bypass next concurrency check
                             entry.OriginalValues.SetValues(databaseValues);
                         }
@@ -947,7 +947,7 @@ namespace ModernWMS.WMS.Services
             }
             else
             {
-                return (false, "202 " + _stringLocalizer["operation_failed"]);
+                return (false, "[202]" + _stringLocalizer["operation_failed"]);
             }
         }
 
@@ -963,7 +963,7 @@ namespace ModernWMS.WMS.Services
             var time = DateTime.Now;
             if (entity == null)
             {
-                return (false, "202 " + _stringLocalizer["not_exists_entity"]);
+                return (false, "[202]" + _stringLocalizer["not_exists_entity"]);
             }
             if (entity.dispatch_status == 4)
             {
@@ -997,7 +997,7 @@ namespace ModernWMS.WMS.Services
             }
             else
             {
-                return (false, "202 " + _stringLocalizer["status_changed"]);
+                return (false, "[202]" + _stringLocalizer["status_changed"]);
             }
             entity.last_update_time = time;
             var qty = await _dBContext.SaveChangesAsync();
@@ -1007,7 +1007,7 @@ namespace ModernWMS.WMS.Services
             }
             else
             {
-                return (false, "202 " + _stringLocalizer["operation_failed"]);
+                return (false, "[202]" + _stringLocalizer["operation_failed"]);
             }
         }
 
@@ -1042,7 +1042,7 @@ namespace ModernWMS.WMS.Services
             }
             else
             {
-                return (false, "202 " + _stringLocalizer["operation_failed"]);
+                return (false, "[202]" + _stringLocalizer["operation_failed"]);
             }
         }
 
@@ -1065,11 +1065,11 @@ namespace ModernWMS.WMS.Services
                 var entity = entities.FirstOrDefault(t => t.id == vm.id && t.dispatch_status == vm.dispatch_status);
                 if (entity == null)
                 {
-                    return (false, "202 " + _stringLocalizer["data_changed"]);
+                    return (false, "[202]" + _stringLocalizer["data_changed"]);
                 }
                 if ((entity.package_qty + vm.package_qty) > entity.picked_qty)
                 {
-                    return (false, "202 " + _stringLocalizer["unpackgeqty_lessthen"]);
+                    return (false, "[202]" + _stringLocalizer["unpackgeqty_lessthen"]);
                 }
                 entity.last_update_time = time;
                 entity.package_person = currentUser.user_name;
@@ -1099,11 +1099,11 @@ namespace ModernWMS.WMS.Services
                             var t_vm = viewModels.FirstOrDefault(t => t.id == UtilConvert.ObjToInt(databaseValues["id"]));
                             if (t_vm == null)
                             {
-                                return (false, "202 " + _stringLocalizer["data_changed"]);
+                                return (false, "[202]" + _stringLocalizer["data_changed"]);
                             }
                             if (UtilConvert.ObjToInt(databaseValues["package_qty"]) + t_vm.package_qty > t_vm.picked_qty)
                             {
-                                return (false, "202 " + _stringLocalizer["data_changed"]);
+                                return (false, "[202]" + _stringLocalizer["data_changed"]);
                             }
                             else
                             {
@@ -1130,7 +1130,7 @@ namespace ModernWMS.WMS.Services
             }
             else
             {
-                return (false,"202 "+ _stringLocalizer["operation_failed"]);
+                return (false,"[202]"+ _stringLocalizer["operation_failed"]);
             }
         }
 
@@ -1153,11 +1153,11 @@ namespace ModernWMS.WMS.Services
                 var entity = entities.FirstOrDefault(t => t.id == vm.id && t.dispatch_status == vm.dispatch_status);
                 if (entity == null)
                 {
-                    return (false, "202 " + _stringLocalizer["data_changed"]);
+                    return (false, "[202]" + _stringLocalizer["data_changed"]);
                 }
                 if ((entity.weighing_qty + vm.weighing_qty) > entity.picked_qty)
                 {
-                    return (false, "202 " + _stringLocalizer["unweightqty_lessthen"]);
+                    return (false, "[202]" + _stringLocalizer["unweightqty_lessthen"]);
                 }
                 entity.last_update_time = time;
                 entity.weighing_person = currentUser.user_name;
@@ -1188,11 +1188,11 @@ namespace ModernWMS.WMS.Services
                             var t_vm = viewModels.FirstOrDefault(t => t.id == UtilConvert.ObjToInt(databaseValues["id"]));
                             if (t_vm == null)
                             {
-                                return (false, "202 " + _stringLocalizer["data_changed"]);
+                                return (false, "[202]" + _stringLocalizer["data_changed"]);
                             }
                             if (UtilConvert.ObjToInt(databaseValues["weighing_qty"]) + t_vm.weighing_qty > t_vm.picked_qty)
                             {
-                                return (false, "202 " + _stringLocalizer["data_changed"]);
+                                return (false, "[202]" + _stringLocalizer["data_changed"]);
                             }
                             else
                             {
@@ -1220,7 +1220,7 @@ namespace ModernWMS.WMS.Services
             }
             else
             {
-                return (false, "202 " + _stringLocalizer["operation_failed"]);
+                return (false, "[202]" + _stringLocalizer["operation_failed"]);
             }
         }
 
@@ -1243,7 +1243,7 @@ namespace ModernWMS.WMS.Services
             {
                 if (entity.dispatch_status != 3 && entity.dispatch_status != 4 && entity.dispatch_status != 5)
                 {
-                    return (false, "202 " + _stringLocalizer["data_changed"]);
+                    return (false, "[202]" + _stringLocalizer["data_changed"]);
                 }
                 entity.last_update_time = time;
                 entity.dispatch_status = 6;
@@ -1263,7 +1263,7 @@ namespace ModernWMS.WMS.Services
                 var s = stocks.FirstOrDefault(t => t.goods_location_id == pick.goods_location_id && t.sku_id == pick.sku_id && t.goods_owner_id == pick.goods_owner_id);
                 if (s == null)
                 {
-                    return (false, "202 " + _stringLocalizer["data_changed"]);
+                    return (false, "[202]" + _stringLocalizer["data_changed"]);
                 }
                 s.qty -= pick.picked_qty;
                 s.last_update_time = time;
@@ -1295,7 +1295,7 @@ namespace ModernWMS.WMS.Services
                             var databaseValues = entry.GetDatabaseValues();
                             if (UtilConvert.ObjToInt(databaseValues["dispatch_status"]) != 3 && UtilConvert.ObjToInt(databaseValues["dispatch_status"]) != 4 && UtilConvert.ObjToInt(databaseValues["dispatch_status"]) != 5)
                             {
-                                return (false, "202 " + _stringLocalizer["data_changed"]);
+                                return (false, "[202]" + _stringLocalizer["data_changed"]);
                             }
                             proposedValues["last_update_time"] = DateTime.Now;
                         }
@@ -1306,7 +1306,7 @@ namespace ModernWMS.WMS.Services
                             var t_p = picks.FirstOrDefault(t => t.goods_location_id == UtilConvert.ObjToInt(databaseValues["goods_location_id"]) && t.sku_id == UtilConvert.ObjToInt(databaseValues["sku_id"]) && t.goods_owner_id == UtilConvert.ObjToInt(databaseValues["goods_owner_id"]));
                             if (t_p == null)
                             {
-                                return (false, "202 " + _stringLocalizer["data_changed"]);
+                                return (false, "[202]" + _stringLocalizer["data_changed"]);
                             }
                             proposedValues["qty"] = UtilConvert.ObjToInt(databaseValues["qty"]) - t_p.picked_qty;
                             proposedValues["last_update_time"] = DateTime.Now;
@@ -1326,7 +1326,7 @@ namespace ModernWMS.WMS.Services
             }
             else
             {
-                return (false, "202 " + _stringLocalizer["operation_failed"]);
+                return (false, "[202]" + _stringLocalizer["operation_failed"]);
             }
         }
 
@@ -1372,7 +1372,7 @@ namespace ModernWMS.WMS.Services
             }
             else
             {
-                return (false, "202 " + _stringLocalizer["operation_failed"]);
+                return (false, "[202]" + _stringLocalizer["operation_failed"]);
             }
         }
 
@@ -1391,7 +1391,7 @@ namespace ModernWMS.WMS.Services
                 var vm = viewModels.FirstOrDefault(t => t.id == t.id && t.dispatch_status == entity.dispatch_status);
                 if (vm == null)
                 {
-                    return (false, "202 " + _stringLocalizer["data_changed"]);
+                    return (false, "[202]" + _stringLocalizer["data_changed"]);
                 }
                 entity.sign_qty = entity.actual_qty - vm.damage_qty;
                 entity.damage_qty = vm.damage_qty;
@@ -1405,7 +1405,7 @@ namespace ModernWMS.WMS.Services
             }
             else
             {
-                return (false, "202 " + _stringLocalizer["operation_failed"]);
+                return (false, "[202]" + _stringLocalizer["operation_failed"]);
             }
         }
 
