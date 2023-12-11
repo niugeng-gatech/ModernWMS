@@ -28,6 +28,7 @@ import { StockAsnVO, SortingVo } from '@/types/WMS/StockAsn'
 import i18n from '@/languages/i18n'
 import { hookComponent } from '@/components/system/index'
 import { sortingAsn } from '@/api/wms/stockAsn'
+import { httpCodeJudge } from '@/utils/http/httpCodeJudge'
 
 const formRef = ref()
 const emit = defineEmits(['close', 'saveSuccess'])
@@ -38,8 +39,6 @@ const props = defineProps<{
 }>()
 
 const isShow = computed(() => props.showDialog)
-
-const dialogTitle = computed(() => 'update')
 
 const data = reactive({
   form: ref<StockAsnVO>({
@@ -90,6 +89,13 @@ const method = reactive({
       data.formSorting.sorted_qty = data.form.sorted_qty
       const { data: res } = await sortingAsn(data.formSorting)
       if (!res.isSuccess) {
+        // 2023-12-06 Add automatic refresh of expired data
+        if (httpCodeJudge(res.errorMessage)) {
+          emit('saveSuccess')
+
+          return
+        }
+
         hookComponent.$message({
           type: 'error',
           content: res.errorMessage

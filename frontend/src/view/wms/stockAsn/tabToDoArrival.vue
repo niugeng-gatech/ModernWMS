@@ -90,7 +90,7 @@
 <script lang="ts" setup>
 import { computed, ref, reactive, watch } from 'vue'
 import { VxePagerEvents } from 'vxe-table'
-import { computedCardHeight, computedTableHeight, errorColor } from '@/constant/style'
+import { computedCardHeight, computedTableHeight } from '@/constant/style'
 import { StockAsnVO } from '@/types/WMS/StockAsn'
 import { PAGE_SIZE, PAGE_LAYOUT, DEFAULT_PAGE_SIZE } from '@/constant/vxeTable'
 import { hookComponent } from '@/components/system'
@@ -103,6 +103,7 @@ import i18n from '@/languages/i18n'
 import customPager from '@/components/custom-pager.vue'
 import skuInfo from './sku-info.vue'
 import { exportData } from '@/utils/exportTable'
+import { httpCodeJudge } from '@/utils/http/httpCodeJudge'
 
 const xTableStockLocation = ref()
 
@@ -168,6 +169,13 @@ const method = reactive({
         if (row.id) {
           const { data: res } = await confirmAsn(row.id)
           if (!res.isSuccess) {
+            // 2023-12-06 Add automatic refresh of expired data
+            if (httpCodeJudge(res.errorMessage)) {
+              method.refresh()
+
+              return
+            }
+
             hookComponent.$message({
               type: 'error',
               content: res.errorMessage

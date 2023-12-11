@@ -109,7 +109,7 @@ import tooltipBtn from '@/components/tooltip-btn.vue'
 import i18n from '@/languages/i18n'
 import customPager from '@/components/custom-pager.vue'
 import skuInfo from './sku-info.vue'
-import { exportData } from '@/utils/exportTable'
+import { httpCodeJudge } from '@/utils/http/httpCodeJudge'
 
 const xTableStockLocation = ref()
 
@@ -175,6 +175,13 @@ const method = reactive({
         if (row.id) {
           const { data: res } = await unloadAsn(row.id)
           if (!res.isSuccess) {
+            // 2023-12-06 Add automatic refresh of expired data
+            if (httpCodeJudge(res.errorMessage)) {
+              method.refresh()
+
+              return
+            }
+
             hookComponent.$message({
               type: 'error',
               content: res.errorMessage
@@ -197,6 +204,13 @@ const method = reactive({
         if (row.id) {
           const { data: res } = await confirmAsnCancel(row.id)
           if (!res.isSuccess) {
+            // 2023-12-06 Add automatic refresh of expired data
+            if (httpCodeJudge(res.errorMessage)) {
+              method.refresh()
+
+              return
+            }
+
             hookComponent.$message({
               type: 'error',
               content: res.errorMessage
