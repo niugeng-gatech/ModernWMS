@@ -139,6 +139,7 @@ import skuInfo from './sku-info.vue'
 import { exportData } from '@/utils/exportTable'
 import BtnGroup from '@/components/system/btnGroup.vue'
 import updateSortingDialog from './update-sorting.vue'
+import { httpCodeJudge } from '@/utils/http/httpCodeJudge'
 
 const xTableStockLocation = ref()
 const addSortingRef = ref()
@@ -185,6 +186,14 @@ const method = reactive({
   updateSortingSure: async (tableData: UpdateSortingVo[]) => {
     const { data: res } = await modifySorting(tableData)
     if (!res.isSuccess) {
+      // 2023-12-06 Add automatic refresh of expired data
+      if (httpCodeJudge(res.errorMessage)) {
+        method.refresh()
+        updateSortingDialogRef.value.closeDialog()
+
+        return
+      }
+
       hookComponent.$message({
         type: 'error',
         content: res.errorMessage
@@ -209,6 +218,13 @@ const method = reactive({
         handleConfirm: async () => {
           const { data: res } = await revokeUnload(idList)
           if (!res.isSuccess) {
+            // 2023-12-06 Add automatic refresh of expired data
+            if (httpCodeJudge(res.errorMessage)) {
+              method.refresh()
+
+              return
+            }
+
             hookComponent.$message({
               type: 'error',
               content: res.errorMessage
@@ -233,6 +249,14 @@ const method = reactive({
   addSortingSure: async (reqData: { asn_id: number; series_number: string; sorted_qty: number }[]) => {
     const { data: res } = await editSorting(reqData)
     if (!res.isSuccess) {
+      // 2023-12-06 Add automatic refresh of expired data
+      if (httpCodeJudge(res.errorMessage)) {
+        method.refresh()
+        addSortingRef.value.closeDialog()
+
+        return
+      }
+
       hookComponent.$message({
         type: 'error',
         content: res.errorMessage
@@ -268,6 +292,13 @@ const method = reactive({
         if (row.id) {
           const { data: res } = await confirmSorted(row.id)
           if (!res.isSuccess) {
+            // 2023-12-06 Add automatic refresh of expired data
+            if (httpCodeJudge(res.errorMessage)) {
+              method.refresh()
+
+              return
+            }
+
             hookComponent.$message({
               type: 'error',
               content: res.errorMessage

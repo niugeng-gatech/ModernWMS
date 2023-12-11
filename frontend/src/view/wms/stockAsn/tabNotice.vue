@@ -51,13 +51,7 @@
       height: cardHeight
     }"
   >
-    <vxe-table
-      ref="xTable"
-      :column-config="{ minWidth: '100px' }"
-      :data="data.tableData"
-      :height="tableHeight"
-      align="center"
-    >
+    <vxe-table ref="xTable" :column-config="{ minWidth: '100px' }" :data="data.tableData" :height="tableHeight" align="center">
       <template #empty>
         {{ i18n.global.t('system.page.noData') }}
       </template>
@@ -140,6 +134,7 @@ import skuInfo from './sku-info.vue'
 import { exportData } from '@/utils/exportTable'
 import BtnGroup from '@/components/system/btnGroup.vue'
 import QrCodeDialog from '@/components/codeDialog/qrCodeDialog.vue'
+import { httpCodeJudge } from '@/utils/http/httpCodeJudge'
 
 const xTable = ref()
 const qrCodeDialogRef = ref()
@@ -245,6 +240,13 @@ const method = reactive({
         if (row.id) {
           const { data: res } = await deleteAsn(row.id)
           if (!res.isSuccess) {
+            // 2023-12-06 Add automatic refresh of expired data
+            if (httpCodeJudge(res.errorMessage)) {
+              method.refresh()
+
+              return
+            }
+
             hookComponent.$message({
               type: 'error',
               content: res.errorMessage
