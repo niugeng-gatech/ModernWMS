@@ -5,7 +5,7 @@
         <v-toolbar color="white" :title="`${$t('wms.stockAsn.tabNotice')}`"></v-toolbar>
         <v-card-text>
           <v-form ref="formRef">
-            <v-select
+            <!-- <v-select
               v-model="data.form.supplier_name"
               :items="data.combobox.supplier_name"
               item-title="label"
@@ -15,8 +15,25 @@
               variant="outlined"
               clearable
               @update:model-value="method.supplierNameChange"
-            ></v-select>
-            <v-select
+            ></v-select> -->
+            <customFilterSelect
+              v-model="data.form"
+              :items="data.combobox.supplier_name"
+              item-title="label"
+              :rules="data.rules.supplier_name"
+              :label="$t('wms.stockAsnInfo.supplier_name')"
+              :mapping="[
+                {
+                  in: 'supplier_name',
+                  out: 'label'
+                },
+                {
+                  in: 'supplier_id',
+                  out: 'value'
+                }
+              ]"
+            />
+            <!-- <v-select
               v-model="data.form.goods_owner_name"
               :items="data.combobox.goods_owner_name"
               item-title="label"
@@ -26,7 +43,24 @@
               variant="outlined"
               clearable
               @update:model-value="method.goodsOwnerNameChange"
-            ></v-select>
+            ></v-select> -->
+            <customFilterSelect
+              v-model="data.form"
+              :items="data.combobox.goods_owner_name"
+              item-title="label"
+              :rules="data.rules.goods_owner_name"
+              :label="$t('wms.stockAsnInfo.goods_owner_name')"
+              :mapping="[
+                {
+                  in: 'goods_owner_name',
+                  out: 'label'
+                },
+                {
+                  in: 'goods_owner_id',
+                  out: 'value'
+                }
+              ]"
+            />
             <v-text-field
               v-model="data.form.spu_code"
               :label="$t('wms.stockAsnInfo.spu_code')"
@@ -85,6 +119,7 @@ import { addAsn, updateAsn } from '@/api/wms/stockAsn'
 import { getSupplierAll } from '@/api/base/supplier'
 import { getOwnerOfCargoAll } from '@/api/base/ownerOfCargo'
 import skuSelect from '@/components/select/sku-select.vue'
+import customFilterSelect from '@/components/custom-filter-select.vue'
 
 const formRef = ref()
 const emit = defineEmits(['close', 'saveSuccess'])
@@ -127,9 +162,9 @@ const data = reactive({
     weight: 0,
     volume: 0,
     supplier_id: 0,
-    supplier_name: '',
+    // supplier_name: '',
     goods_owner_id: 0,
-    goods_owner_name: '',
+    // goods_owner_name: '',
     is_valid: true
   }),
   rules: {
