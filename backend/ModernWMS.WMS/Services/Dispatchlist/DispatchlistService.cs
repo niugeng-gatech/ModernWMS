@@ -1483,7 +1483,7 @@ namespace ModernWMS.WMS.Services
             var groups = viewModels.Select(t => t.import_group).Distinct().ToList();
             var groups_code = await GetOrderCodeList(currentUser, groups.Count());
             var group_code_dic = new Dictionary<int, string>();
-            for (int i = 0; i <= groups.Count(); i++)
+            for (int i = 0; i < groups.Count(); i++)
             {
                 group_code_dic.Add(groups[i], groups_code[i]);
             }
