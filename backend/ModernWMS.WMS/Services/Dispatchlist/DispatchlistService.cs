@@ -1537,7 +1537,7 @@ namespace ModernWMS.WMS.Services
             {
                 for (int i = 1; i <= cnt; i++)
                 {
-                    code.Add(date + cnt.ToString("0000"));
+                    code.Add(date +"-"+ cnt.ToString("0000"));
                 }
             }
             else
@@ -1549,14 +1549,14 @@ namespace ModernWMS.WMS.Services
                     int.TryParse(maxDateNo, out int dd);
                     for (int i = 1; i <= cnt; i++)
                     {
-                        code.Add(date + (dd + cnt).ToString("0000"));
+                        code.Add(date + "-" + (dd + cnt).ToString("0000"));
                     }
                 }
                 else
                 {
                     for (int i = 1; i <= cnt; i++)
                     {
-                        code.Add(date + cnt.ToString("0000"));
+                        code.Add(date + "-" + cnt.ToString("0000"));
                     }
                 }
             }
