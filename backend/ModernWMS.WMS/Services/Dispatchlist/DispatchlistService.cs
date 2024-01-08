@@ -1464,6 +1464,107 @@ namespace ModernWMS.WMS.Services
         }
 
         /// <summary>
+        /// Excel Import
+        /// </summary>
+        /// <param name="viewModels">viewModels</param>
+        /// <param name="currentUser">currentUser</param>
+        /// <returns></returns>
+        public async Task<(bool flag, string msg)> Import(List<DispatchlistImportViewModel> viewModels, CurrentUser currentUser)
+        {
+            var DbSet = _dBContext.GetDbSet<DispatchlistEntity>();
+            var import_sku_code = viewModels.Select(e => e.sku_code).ToList();
+            var import_customer_name = viewModels.Select(e => e.customer_name).ToList();
+            var sku_list = await (from sku in _dBContext.GetDbSet<SkuEntity>()
+                                  join spu in _dBContext.GetDbSet<SpuEntity>() on sku.spu_id equals spu.id
+                                  where spu.tenant_id == currentUser.tenant_id && import_sku_code.Contains(sku.sku_code)
+                                  select sku).ToListAsync();
+            var customer_list = await _dBContext.GetDbSet<CustomerEntity>().Where(t => t.tenant_id == currentUser.tenant_id && import_customer_name.Contains(t.customer_name)).ToListAsync();
+            var entities = new List<DispatchlistEntity>();
+            var groups = viewModels.Select(t => t.import_group).Distinct().ToList();
+            var groups_code = await GetOrderCodeList(currentUser, groups.Count());
+            var group_code_dic = new Dictionary<int, string>();
+            for (int i = 0; i <= groups.Count(); i++)
+            {
+                group_code_dic.Add(groups[i], groups_code[i]);
+            }
+            foreach (var vm in viewModels)
+            {
+                var customer = customer_list.FirstOrDefault(t => t.customer_name == vm.customer_name);
+                if (customer == null)
+                {
+                    return (false, _stringLocalizer["customer_name"] + ":" + vm.customer_name + " " + _stringLocalizer["not_exists_entity"]);
+                }
+                var sku = sku_list.FirstOrDefault(t => t.sku_code == vm.sku_code);
+                if (sku == null)
+                {
+                    return (false, _stringLocalizer["sku_name"] + ":" + vm.sku_name + "-" + _stringLocalizer["sku_code"] + ":" + vm.sku_code + " " + _stringLocalizer["not_exists_entity"]);
+                }
+                entities.Add(new DispatchlistEntity
+                {
+                    customer_id = customer.id,
+                    customer_name = vm.customer_name,
+                    sku_id = sku.id,
+                    qty = vm.qty,
+                    creator = currentUser.user_name,
+                    create_time = DateTime.Now,
+                    last_update_time = DateTime.Now,
+                    tenant_id = currentUser.tenant_id,
+                    dispatch_no = group_code_dic[vm.import_group],
+                });
+            }
+            await DbSet.AddRangeAsync(entities);
+            var qty = await _dBContext.SaveChangesAsync();
+            if (qty > 0)
+            {
+                return (true, _stringLocalizer["save_success"]);
+            }
+            else
+            {
+                return (false, _stringLocalizer["save_failed"]);
+            }
+        }
+
+        /// <summary>
+        /// get next order code number
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<string>> GetOrderCodeList(CurrentUser currentUser, int cnt)
+        {
+            List<string> code = new List<string>();
+            string date = DateTime.Now.ToString("yyyy" + "MM" + "dd");
+            string maxNo = await _dBContext.GetDbSet<DispatchlistEntity>().Where(t => t.tenant_id == currentUser.tenant_id).MaxAsync(t => t.dispatch_no);
+            if (maxNo == null)
+            {
+                for (int i = 1; i <= cnt; i++)
+                {
+                    code.Add(date + cnt.ToString("0000"));
+                }
+            }
+            else
+            {
+                string maxDate = maxNo.Substring(0, 8);
+                string maxDateNo = maxNo.Substring(9, 4);
+                if (date == maxDate)
+                {
+                    int.TryParse(maxDateNo, out int dd);
+                    for (int i = 1; i <= cnt; i++)
+                    {
+                        code.Add(date + (dd + cnt).ToString("0000"));
+                    }
+                }
+                else
+                {
+                    for (int i = 1; i <= cnt; i++)
+                    {
+                        code.Add(date + cnt.ToString("0000"));
+                    }
+                }
+            }
+
+            return code;
+        }
+
+        /// <summary>
         /// get package or weight  code
         /// </summary>
         /// <returns></returns>
@@ -1562,6 +1663,7 @@ namespace ModernWMS.WMS.Services
                 r.pick_list = picklist.Where(t => t.qty_available > 0).ToList();
             }
         }*/
+
 
         #endregion Api
     }
