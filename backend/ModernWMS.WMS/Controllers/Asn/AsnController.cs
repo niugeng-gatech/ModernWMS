@@ -334,6 +334,27 @@ namespace ModernWMS.WMS.Controllers
         }
 
         #endregion
+
+        #region excel import
+        /// <summary>
+        /// excel import
+        /// </summary>
+        /// <param name="excelData">excel data</param>
+        /// <returns></returns>
+        [HttpPost("excel-import")]
+        public async Task<ResultModel<List<AsnExcelImportViewModel>>> ImportAsync(List<AsnExcelImportViewModel> excelData)
+        {
+            var (flag, msg, errList) = await _asnService.ImportAsync(excelData, CurrentUser);
+            if (flag)
+            {
+                return ResultModel<List<AsnExcelImportViewModel>>.Success(errList);
+            }
+            else
+            {
+                return ResultModel<List<AsnExcelImportViewModel>>.Error(msg, 400, errList);
+            }
+        }
+        #endregion
     }
 }
  

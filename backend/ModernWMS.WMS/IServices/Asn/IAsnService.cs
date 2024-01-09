@@ -130,6 +130,16 @@ namespace ModernWMS.WMS.IServices
         /// <returns></returns>
         Task<(bool flag, string msg)> PutAwayAsync(AsnPutAwayInputViewModel viewModel, CurrentUser currentUser);
         #endregion
+
+        #region excel import
+        /// <summary>
+        /// excel import
+        /// </summary>
+        /// <param name="excelData">excel data</param>
+        /// <param name="currentUser">current user</param>
+        /// <returns></returns>
+        Task<(bool flag, string msg, List<AsnExcelImportViewModel> errList)> ImportAsync(List<AsnExcelImportViewModel> excelData, CurrentUser currentUser);
+        #endregion
     }
 }
  

@@ -13,6 +13,7 @@ using ModernWMS.Core.Services;
 using ModernWMS.WMS.Entities.Models;
 using ModernWMS.WMS.Entities.ViewModels;
 using ModernWMS.WMS.IServices;
+using System.Text;
 
 namespace ModernWMS.WMS.Services
 {
@@ -685,6 +686,95 @@ namespace ModernWMS.WMS.Services
                 return (false, _stringLocalizer["putaway_failed"]);
             }
         }
+        #endregion
+
+        #region excel import
+        /// <summary>
+        /// excel import
+        /// </summary>
+        /// <param name="excelData">excel data</param>
+        /// <param name="currentUser">current user</param>
+        /// <returns></returns>
+        public async Task<(bool flag, string msg, List<AsnExcelImportViewModel> errList)> ImportAsync(List<AsnExcelImportViewModel> excelData, CurrentUser currentUser)
+        {
+            var Spus = _dBContext.GetDbSet<SpuEntity>().AsNoTracking();
+            var Skus = _dBContext.GetDbSet<SkuEntity>().AsNoTracking();
+
+            var ownerList = excelData.Where(e => e.goods_owner_name != "").Select(e => e.goods_owner_name).ToList();
+            if (ownerList == null)
+            {
+                ownerList = new List<string>();
+            }
+            var goods_owner = await _dBContext.GetDbSet<GoodsownerEntity>().AsNoTracking()
+                .Where(t => ownerList.Contains(t.goods_owner_name))
+                .Select(t => new { t.id, t.goods_owner_name}).ToListAsync();
+
+            var dbSku = await (from m in Spus
+                               join d in Skus on m.id equals d.spu_id
+                               select new
+                               {
+                                   spu_id = m.id,
+                                   m.spu_code,
+                                   m.spu_name,
+                                   m.supplier_id,
+                                   m.supplier_name,
+                                   sku_id = d.id,
+                                   d.sku_code,
+                                   d.sku_name
+                               }).ToListAsync();
+            StringBuilder sb = new StringBuilder();
+            excelData.ForEach(ex =>
+            {
+                var sku = dbSku.FirstOrDefault(t => t.spu_code == ex.spu_code && t.sku_code == ex.sku_code && t.supplier_name == ex.supplier_name);
+                if (sku != null)
+                {
+                    ex.spu_id = sku.spu_id;
+                    ex.sku_id = sku.sku_id;
+                    ex.supplier_id = sku.supplier_id;
+
+                    var owner = goods_owner.FirstOrDefault(t => t.goods_owner_name ==  ex.goods_owner_name);
+                    if (owner != null)
+                    {
+                        ex.goods_owner_id = owner.id;
+                    }
+                }
+                else
+                {
+                    string err = $"[{_stringLocalizer["spu_code"]}:{ex.spu_name},{_stringLocalizer["sku_code"]}:{ex.sku_code},{_stringLocalizer["supplier_name"]}:{ex.supplier_name}{_stringLocalizer["not_exists_entity"]}]";
+                    ex.error_msg = err;
+                    sb.AppendLine(err);
+                }
+            });
+            if (excelData.Any(t => t.error_msg.Length > 0))
+            {
+                return (false, sb.ToString(), excelData.Where(t => t.error_msg.Length > 0).ToList());
+            }
+            else
+            {
+                var DbSet = _dBContext.GetDbSet<AsnEntity>();
+                var entities = excelData.Adapt<List<AsnEntity>>();
+                foreach (var entity in entities)
+                {
+                    entity.id = 0; 
+                    entity.creator = currentUser.user_name;
+                    entity.create_time = DateTime.Now;
+                    entity.last_update_time = DateTime.Now;
+                    entity.tenant_id = currentUser.tenant_id;
+                    entity.is_valid = true;
+                }
+                await DbSet.AddRangeAsync(entities);
+                int qty = await _dBContext.SaveChangesAsync();
+                if (qty > 0)
+                {
+                    return (true, _stringLocalizer["save_success"], new List<AsnExcelImportViewModel>());
+                }
+                else
+                {
+                    return (false, _stringLocalizer["save_failed"], new List<AsnExcelImportViewModel>());
+                }
+            }
+        }
+
         #endregion
     }
 }
