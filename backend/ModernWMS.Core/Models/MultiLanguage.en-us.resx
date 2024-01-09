@@ -645,4 +645,7 @@
   <data name="username_existed" xml:space="preserve">
     <value>User name already exists</value>
   </data>
+  <data name="stock_insufficiency" xml:space="preserve">
+    <value>present stock is not sufficient.</value>
+  </data>
 </root>
