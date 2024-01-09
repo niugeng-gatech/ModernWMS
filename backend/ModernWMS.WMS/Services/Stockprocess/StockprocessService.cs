@@ -494,6 +494,177 @@ namespace ModernWMS.WMS.Services
 
             return code;
         }
+        /// <summary>
+        /// get next order code number
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<string>> GetOrderCodeList(CurrentUser currentUser, int cnt)
+        {
+            List<string> code = new List<string>();
+            string date = DateTime.Now.ToString("yyyy" + "MM" + "dd");
+            string maxNo = await _dBContext.GetDbSet<DispatchlistEntity>().Where(t => t.tenant_id == currentUser.tenant_id).MaxAsync(t => t.dispatch_no);
+            if (maxNo == null)
+            {
+                for (int i = 1; i <= cnt; i++)
+                {
+                    code.Add(date + "-" + cnt.ToString("0000"));
+                }
+            }
+            else
+            {
+                string maxDate = maxNo.Substring(0, 8);
+                string maxDateNo = maxNo.Substring(9, 4);
+                if (date == maxDate)
+                {
+                    int.TryParse(maxDateNo, out int dd);
+                    for (int i = 1; i <= cnt; i++)
+                    {
+                        code.Add(date + "-" + (dd + cnt).ToString("0000"));
+                    }
+                }
+                else
+                {
+                    for (int i = 1; i <= cnt; i++)
+                    {
+                        code.Add(date + "-" + cnt.ToString("0000"));
+                    }
+                }
+            }
+
+            return code;
+        }
+
+
+        /// <summary>
+        /// Excel Import
+        /// </summary>
+        /// <returns></returns>
+        public async Task<(bool flag, string msg)> Import(List<StockprocessImportViewModel> viewModels, CurrentUser currentUser)
+        {
+
+            var sku_code_list = viewModels.Select(t => t.sku_code).Distinct().ToList();
+            var sku_list = await (from sku in _dBContext.GetDbSet<SkuEntity>().AsNoTracking()
+                                  join spu in _dBContext.GetDbSet<SpuEntity>().AsNoTracking() on sku.spu_id equals spu.id
+                                  where sku_code_list.Contains(sku.sku_code) && spu.tenant_id == currentUser.tenant_id
+                                  select sku).ToListAsync();
+            var warehouse_name_list = viewModels.Select(t => t.warehouse_name).Distinct().ToList();
+            var area_name_list = viewModels.Select(t => t.area_name).Distinct().ToList();
+            var area_list = await (from wa in _dBContext.GetDbSet<WarehouseareaEntity>().AsNoTracking()
+                                   join wh in _dBContext.GetDbSet<WarehouseEntity>().AsNoTracking() on wa.warehouse_id equals wh.id
+                                   where warehouse_name_list.Contains(wh.warehouse_name) && area_name_list.Contains(wa.area_name) && wh.tenant_id == currentUser.tenant_id
+                                   select new
+                                   {
+                                       wa.id,
+                                       wa.warehouse_id,
+                                       wh.warehouse_name,
+                                       wa.area_name
+                                   }).ToListAsync();
+            var goods_owner_name_list = viewModels.Select(t => t.goods_owner_name).Distinct().ToList();
+            var goods_owner_list = await _dBContext.GetDbSet<GoodsownerEntity>().AsNoTracking().Where(t => goods_owner_name_list.Contains(t.goods_owner_name) && t.tenant_id == currentUser.tenant_id).ToListAsync();
+
+            var entities = new List<StockprocessEntity>();
+            var vm_group = viewModels.GroupBy(t => t.import_group);
+            var groups = vm_group.Select(t => t.Key).ToList();
+            var groups_code = await GetOrderCodeList(currentUser, groups.Count());
+            var group_code_dic = new Dictionary<int, string>();
+            for (int i = 0; i < groups.Count(); i++)
+            {
+                group_code_dic.Add(groups[i], groups_code[i]);
+            }
+            var area_id_list = area_list.Select(t => t.id).ToList();
+            var sku_id_list = sku_list.Select(t => t.id).ToList();
+        
+            var check_details_all = new List<StockprocessdetailViewModel>();
+            foreach (var vg in vm_group)
+            {
+                var ent = new StockprocessEntity();
+                ent.creator = currentUser.user_name;
+                ent.create_time = DateTime.Now;
+                ent.last_update_time = DateTime.Now;
+                ent.tenant_id = currentUser.tenant_id;
+                ent.job_code = group_code_dic[vg.Key];
+                foreach (var v in vg)
+                {
+                    var sku = sku_list.FirstOrDefault(t => t.sku_code == v.sku_code);
+                    if (sku == null)
+                    {
+                        return (false, _stringLocalizer["sku_name"] + ":" + v.sku_name + "-" + _stringLocalizer["sku_code"] + ":" + v.sku_code + " " + _stringLocalizer["not_exists_entity"]);
+                    }
+                    var area = area_list.FirstOrDefault(t => t.warehouse_name == v.warehouse_name && t.area_name == v.area_name);
+                    if (area == null)
+                    {
+                        return (false, _stringLocalizer["warehouse_name"] + ":" + v.warehouse_name + "-" + _stringLocalizer["area_name"] + ":" + v.area_name + " " + _stringLocalizer["not_exists_entity"]);
+                    }
+                    var goods_owner = goods_owner_list.FirstOrDefault(t => t.goods_owner_name == v.goods_owner_name);
+                    ent.detailList.Add(new StockprocessdetailEntity
+                    {
+                        sku_id = sku.id,
+                        is_source = v.is_ori,
+                        last_update_time = DateTime.Now,
+                        goods_owner_id = goods_owner == null ? 0 : goods_owner.id,
+                        is_update_stock = false,
+                        qty = v.qty,
+                        goods_location_id = area.id,
+                        tenant_id = currentUser.tenant_id,
+                       
+                    });
+                    if (v.is_ori)
+                        check_details_all.Add(new StockprocessdetailViewModel
+                        {
+                            sku_id = sku.id,
+                            sku_code = v.sku_code,
+                            goods_location_id = area.id,
+                             qty = v.qty,
+                            goods_owner_id = goods_owner == null ? 0 : goods_owner.id,
+                            location_name = v.area_name
+
+                        });
+                }
+                entities.Add(ent);
+            }
+            
+            var check_details_sum = check_details_all.GroupBy(t => new { t.sku_id, t.goods_location_id, t.goods_owner_id, t.sku_code, t.location_name }).Select(t => new
+            {
+                t.Key.sku_id,
+                t.Key.sku_code,
+                t.Key.goods_location_id,
+                t.Key.location_name,
+                t.Key.goods_owner_id,
+                qty = t.Sum(e=>e.qty),
+            }).ToList();
+            var stocks = await _dBContext.GetDbSet<StockEntity>().Where(t => sku_id_list.Contains(t.sku_id) && area_id_list.Contains(t.goods_location_id)).ToListAsync();
+            var lockeds = await (from d in _dBContext.GetDbSet<StockprocessdetailEntity>().AsNoTracking()
+                                where d.is_update_stock == false && area_id_list.Contains(d.goods_location_id)
+                                && sku_id_list.Contains(d.sku_id)
+                                group d by new { d.goods_location_id, d.sku_id } into lg
+                                select new
+                                {
+                                    sku_id = lg.Key.sku_id,
+                                    goods_location_id = lg.Key.goods_location_id,
+                                    qty_locked = lg.Sum(e => e.qty)
+                                }).ToListAsync();
+            foreach (var c in check_details_sum)
+            {
+                var s = stocks.FirstOrDefault(t => t.sku_id == c.sku_id && t.goods_location_id == c.goods_location_id);
+                    if (s == null)
+                    {
+                        return (false, _stringLocalizer["sku_code"]+":"+c.sku_code + "-" + _stringLocalizer["area_name"] +c.location_name+" "+ _stringLocalizer["stock_insufficiency"]);
+                    }
+                    var locked = lockeds.FirstOrDefault(t => t.sku_id == c.sku_id && t.goods_location_id == c.goods_location_id  );
+                    if ((s.qty - (locked == null ? 0 : locked.qty_locked)) < c.qty)
+                    {
+                        return (false, _stringLocalizer["sku_code"] + ":" + c.sku_code + "-" + _stringLocalizer["area_name"] + c.location_name + " " + _stringLocalizer["stock_insufficiency"]);
+                    }
+                    if (s.is_freeze == true)
+                    {
+                        return (false, _stringLocalizer["stock_frozen"]);
+                    }
+                
+            }
+            await _dBContext.GetDbSet<StockprocessEntity>().AddRangeAsync(entities);
+            await _dBContext.SaveChangesAsync();
+            return (true, "");
+        }
         #endregion
     }
 }
