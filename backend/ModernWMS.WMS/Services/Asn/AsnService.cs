@@ -706,11 +706,13 @@ namespace ModernWMS.WMS.Services
                 ownerList = new List<string>();
             }
             var goods_owner = await _dBContext.GetDbSet<GoodsownerEntity>().AsNoTracking()
+                .Where(t => t.tenant_id == currentUser.tenant_id)
                 .Where(t => ownerList.Contains(t.goods_owner_name))
                 .Select(t => new { t.id, t.goods_owner_name}).ToListAsync();
 
             var dbSku = await (from m in Spus
                                join d in Skus on m.id equals d.spu_id
+                               where m.tenant_id == currentUser.tenant_id
                                select new
                                {
                                    spu_id = m.id,
