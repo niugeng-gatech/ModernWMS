@@ -150,7 +150,7 @@ namespace ModernWMS.WMS.Entities.ViewModels
         /// <summary>
         /// 
         /// </summary>
-        public string _XID { get; set; } = string.Empty;
+        public string _X_ROW_KEY { get; set; } = string.Empty;
 
         /// <summary>
         /// 
