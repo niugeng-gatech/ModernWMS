@@ -1528,7 +1528,7 @@ namespace ModernWMS.WMS.Services
             {
                 for (int i = 1; i <= cnt; i++)
                 {
-                    code.Add(date + "-" + cnt.ToString("0000"));
+                    code.Add(date + "-" + i.ToString("0000"));
                 }
             }
             else
