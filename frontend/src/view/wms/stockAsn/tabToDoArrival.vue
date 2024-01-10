@@ -114,6 +114,7 @@ import skuInfo from './sku-info.vue'
 import { exportData } from '@/utils/exportTable'
 import BtnGroup from '@/components/system/btnGroup.vue'
 import ConfirmArrivalModal from './confirm-arrival.vue'
+import { httpCodeJudge } from '@/utils/http/httpCodeJudge'
 
 const xTableStockLocation = ref()
 const ConfirmArrivalRef = ref()
@@ -175,6 +176,14 @@ const method = reactive({
 
     const { data: res } = await confirmArrival(reqBody)
     if (!res.isSuccess) {
+      // 2023-12-06 Add automatic refresh of expired data
+      if (httpCodeJudge(res.errorMessage)) {
+        method.refresh()
+        ConfirmArrivalRef.value.closeDialog()
+
+        return
+      }
+
       hookComponent.$message({
         type: 'error',
         content: res.errorMessage

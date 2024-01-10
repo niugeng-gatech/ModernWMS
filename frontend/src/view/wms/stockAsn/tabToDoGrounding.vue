@@ -129,6 +129,7 @@ import skuInfo from './sku-info.vue'
 import { exportData } from '@/utils/exportTable'
 import BtnGroup from '@/components/system/btnGroup.vue'
 import confirmGroudingDialog from './confirm-grouding.vue'
+import { httpCodeJudge } from '@/utils/http/httpCodeJudge'
 
 const xTableStockLocation = ref()
 const confirmGroudingDialogRef = ref()
@@ -175,6 +176,14 @@ const method = reactive({
   confirmGroudingSure: async (tableData: any) => {
     const { data: res } = await confirmPutaway(tableData)
     if (!res.isSuccess) {
+      // 2023-12-06 Add automatic refresh of expired data
+      if (httpCodeJudge(res.errorMessage)) {
+        method.refresh()
+        confirmGroudingDialogRef.value.closeDialog()
+
+        return
+      }
+
       hookComponent.$message({
         type: 'error',
         content: res.errorMessage
@@ -199,6 +208,13 @@ const method = reactive({
         handleConfirm: async () => {
           const { data: res } = await revokeSorting(idList)
           if (!res.isSuccess) {
+            // 2023-12-06 Add automatic refresh of expired data
+            if (httpCodeJudge(res.errorMessage)) {
+              method.refresh()
+
+              return
+            }
+
             hookComponent.$message({
               type: 'error',
               content: res.errorMessage

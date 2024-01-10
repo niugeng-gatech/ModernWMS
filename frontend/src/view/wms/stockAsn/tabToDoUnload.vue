@@ -122,6 +122,7 @@ import skuInfo from './sku-info.vue'
 // import { exportData } from '@/utils/exportTable'
 import BtnGroup from '@/components/system/btnGroup.vue'
 import ConfirmUnloadModal from './confirm-unload.vue'
+import { httpCodeJudge } from '@/utils/http/httpCodeJudge'
 
 const xTableStockLocation = ref()
 const ConfirmUnloadModalRef = ref()
@@ -174,6 +175,13 @@ const method = reactive({
         handleConfirm: async () => {
           const { data: res } = await unconfirmArrival(idList)
           if (!res.isSuccess) {
+            // 2023-12-06 Add automatic refresh of expired data
+            if (httpCodeJudge(res.errorMessage)) {
+              method.refresh()
+
+              return
+            }
+
             hookComponent.$message({
               type: 'error',
               content: res.errorMessage
@@ -213,6 +221,14 @@ const method = reactive({
 
     const { data: res } = await confirmUnload(reqBody)
     if (!res.isSuccess) {
+      // 2023-12-06 Add automatic refresh of expired data
+      if (httpCodeJudge(res.errorMessage)) {
+        method.refresh()
+        ConfirmUnloadModalRef.value.closeDialog()
+
+        return
+      }
+
       hookComponent.$message({
         type: 'error',
         content: res.errorMessage

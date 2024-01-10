@@ -7,7 +7,7 @@
           <v-form ref="formRef">
             <v-row>
               <v-col :cols="4">
-                <v-select
+                <!-- <v-select
                   v-model="data.form.goods_owner_name"
                   :items="data.combobox.goods_owner_name"
                   item-title="label"
@@ -16,8 +16,26 @@
                   :label="$t('wms.stockAsnInfo.goods_owner_name')"
                   variant="outlined"
                   clearable
+                  filterable
                   @update:model-value="method.goodsOwnerNameChange"
-                ></v-select>
+                ></v-select> -->
+                <customFilterSelect
+                  v-model="data.form"
+                  :items="data.combobox.goods_owner_name"
+                  item-title="label"
+                  :rules="data.rules.goods_owner_name"
+                  :label="$t('wms.stockAsnInfo.goods_owner_name')"
+                  :mapping="[
+                    {
+                      in: 'goods_owner_id',
+                      out: 'value'
+                    },
+                    {
+                      in: 'goods_owner_name',
+                      out: 'label'
+                    }
+                  ]"
+                />
               </v-col>
               <v-col :cols="4">
                 <v-text-field
@@ -56,7 +74,7 @@
                     <v-text-field v-model="item.sku_code" :label="$t('wms.stockAsnInfo.sku_code')" variant="outlined" readonly></v-text-field>
                   </v-col>
                   <v-col :cols="3">
-                    <v-select
+                    <!-- <v-select
                       v-model="item.supplier_name"
                       :items="data.combobox.supplier_name"
                       item-title="label"
@@ -66,7 +84,24 @@
                       variant="outlined"
                       clearable
                       @update:model-value="method.supplierNameChange(item)"
-                    ></v-select>
+                    ></v-select> -->
+                    <customFilterSelect
+                      v-model="data.form.detailList[index]"
+                      :items="data.combobox.supplier_name"
+                      item-title="label"
+                      :rules="data.rules.supplier_name"
+                      :label="$t('wms.stockAsnInfo.supplier_name')"
+                      :mapping="[
+                        {
+                          in: 'supplier_name',
+                          out: 'label'
+                        },
+                        {
+                          in: 'supplier_id',
+                          out: 'value'
+                        }
+                      ]"
+                    />
                   </v-col>
                   <v-col :cols="2">
                     <v-text-field
@@ -129,6 +164,7 @@ import { getSupplierAll } from '@/api/base/supplier'
 import { getOwnerOfCargoAll } from '@/api/base/ownerOfCargo'
 import { checkDetailRepeatGetBool } from '@/utils/dataVerification/page'
 import { formatDate } from '@/utils/format/formatSystem'
+import customFilterSelect from '@/components/custom-filter-select.vue'
 
 const formRef = ref()
 const emit = defineEmits(['close', 'saveSuccess'])
@@ -214,10 +250,20 @@ const method = reactive({
   },
   sureSelect: (selectRecords: CommodityDetailJoinMainVO[]) => {
     if (data.curSelectType === 'target') {
+      // 获取最后一条有供应商的数据, 自动带到后面的数据
+      let hasSupplierItem: any = null
+
+      for (const item of data.form.detailList.reverse()) {
+        if (item.supplier_id && item.supplier_id > 0) {
+          hasSupplierItem = item
+          break
+        }
+      }
+
       for (const item of selectRecords) {
         // const index = data.form.detailList.findIndex((fi) => fi.sku_id === item.sku_id)
         // if (index === -1) {
-        data.form.detailList.push({
+        const newItem: any = {
           spu_id: item.spu_id,
           spu_code: item.spu_code,
           spu_name: item.spu_name,
@@ -235,7 +281,14 @@ const method = reactive({
           // supplier_id: '',
           // supplier_name: ''
           // is_valid: ''
-        })
+        }
+
+        if (hasSupplierItem) {
+          newItem.supplier_id = hasSupplierItem.supplier_id
+          newItem.supplier_name = hasSupplierItem.supplier_name
+        }
+
+        data.form.detailList.push(newItem)
         // }
       }
     }
