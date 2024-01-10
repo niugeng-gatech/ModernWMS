@@ -32,14 +32,9 @@ namespace ModernWMS.WMS.Entities.ViewModels
         public string sku_code { get; set; } = string.Empty;
 
         /// <summary>
-        /// warehouse_name
+        /// location_name
         /// </summary>
-        public string warehouse_name { get; set; } = string.Empty;
-
-        /// <summary>
-        /// area_name
-        /// </summary>
-        public string area_name { get; set; } = string.Empty;
+        public string location_name { get; set; } = string.Empty;
 
         /// <summary>
         /// goods_owner_name
