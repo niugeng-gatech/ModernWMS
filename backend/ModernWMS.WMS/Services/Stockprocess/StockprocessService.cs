@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Formatters.Xml;
 using Microsoft.AspNetCore.SignalR.Protocol;
 using System.Linq;
+using Microsoft.CodeAnalysis;
 
 namespace ModernWMS.WMS.Services
 {
@@ -519,14 +520,14 @@ namespace ModernWMS.WMS.Services
                     int.TryParse(maxDateNo, out int dd);
                     for (int i = 1; i <= cnt; i++)
                     {
-                        code.Add(date + "-" + (dd + cnt).ToString("0000"));
+                        code.Add(date + "-" + (dd + 1).ToString("0000"));
                     }
                 }
                 else
                 {
                     for (int i = 1; i <= cnt; i++)
                     {
-                        code.Add(date + "-" + cnt.ToString("0000"));
+                        code.Add(date + "-" + 1.ToString("0000"));
                     }
                 }
             }
@@ -547,17 +548,13 @@ namespace ModernWMS.WMS.Services
                                   join spu in _dBContext.GetDbSet<SpuEntity>().AsNoTracking() on sku.spu_id equals spu.id
                                   where sku_code_list.Contains(sku.sku_code) && spu.tenant_id == currentUser.tenant_id
                                   select sku).ToListAsync();
-            var warehouse_name_list = viewModels.Select(t => t.warehouse_name).Distinct().ToList();
-            var area_name_list = viewModels.Select(t => t.area_name).Distinct().ToList();
-            var area_list = await (from wa in _dBContext.GetDbSet<WarehouseareaEntity>().AsNoTracking()
-                                   join wh in _dBContext.GetDbSet<WarehouseEntity>().AsNoTracking() on wa.warehouse_id equals wh.id
-                                   where warehouse_name_list.Contains(wh.warehouse_name) && area_name_list.Contains(wa.area_name) && wh.tenant_id == currentUser.tenant_id
+            var location_name_list = viewModels.Select(t => t.location_name).Distinct().ToList();
+            var location_list = await (from l in _dBContext.GetDbSet<GoodslocationEntity>().AsNoTracking()
+                                   where location_name_list.Contains(l.location_name) &&  l.tenant_id == currentUser.tenant_id
                                    select new
                                    {
-                                       wa.id,
-                                       wa.warehouse_id,
-                                       wh.warehouse_name,
-                                       wa.area_name
+                                       l.id,
+                                       l.location_name
                                    }).ToListAsync();
             var goods_owner_name_list = viewModels.Select(t => t.goods_owner_name).Distinct().ToList();
             var goods_owner_list = await _dBContext.GetDbSet<GoodsownerEntity>().AsNoTracking().Where(t => goods_owner_name_list.Contains(t.goods_owner_name) && t.tenant_id == currentUser.tenant_id).ToListAsync();
@@ -571,7 +568,7 @@ namespace ModernWMS.WMS.Services
             {
                 group_code_dic.Add(groups[i], groups_code[i]);
             }
-            var area_id_list = area_list.Select(t => t.id).ToList();
+            var location_id_list = location_list.Select(t => t.id).ToList();
             var sku_id_list = sku_list.Select(t => t.id).ToList();
         
             var check_details_all = new List<StockprocessdetailViewModel>();
@@ -590,10 +587,10 @@ namespace ModernWMS.WMS.Services
                     {
                         return (false, _stringLocalizer["sku_name"] + ":" + v.sku_name + "-" + _stringLocalizer["sku_code"] + ":" + v.sku_code + " " + _stringLocalizer["not_exists_entity"]);
                     }
-                    var area = area_list.FirstOrDefault(t => t.warehouse_name == v.warehouse_name && t.area_name == v.area_name);
+                    var area = location_list.FirstOrDefault(t =>  t.location_name == v.location_name);
                     if (area == null)
                     {
-                        return (false, _stringLocalizer["warehouse_name"] + ":" + v.warehouse_name + "-" + _stringLocalizer["area_name"] + ":" + v.area_name + " " + _stringLocalizer["not_exists_entity"]);
+                        return (false, _stringLocalizer["location_name"] + ":" + v.location_name + " " + _stringLocalizer["not_exists_entity"]);
                     }
                     var goods_owner = goods_owner_list.FirstOrDefault(t => t.goods_owner_name == v.goods_owner_name);
                     ent.detailList.Add(new StockprocessdetailEntity
@@ -616,7 +613,7 @@ namespace ModernWMS.WMS.Services
                             goods_location_id = area.id,
                              qty = v.qty,
                             goods_owner_id = goods_owner == null ? 0 : goods_owner.id,
-                            location_name = v.area_name
+                            location_name = v.location_name
 
                         });
                 }
@@ -632,9 +629,9 @@ namespace ModernWMS.WMS.Services
                 t.Key.goods_owner_id,
                 qty = t.Sum(e=>e.qty),
             }).ToList();
-            var stocks = await _dBContext.GetDbSet<StockEntity>().Where(t => sku_id_list.Contains(t.sku_id) && area_id_list.Contains(t.goods_location_id)).ToListAsync();
+            var stocks = await _dBContext.GetDbSet<StockEntity>().Where(t => sku_id_list.Contains(t.sku_id) && location_id_list.Contains(t.goods_location_id)).ToListAsync();
             var lockeds = await (from d in _dBContext.GetDbSet<StockprocessdetailEntity>().AsNoTracking()
-                                where d.is_update_stock == false && area_id_list.Contains(d.goods_location_id)
+                                where d.is_update_stock == false && location_id_list.Contains(d.goods_location_id)
                                 && sku_id_list.Contains(d.sku_id)
                                 group d by new { d.goods_location_id, d.sku_id } into lg
                                 select new
@@ -648,12 +645,12 @@ namespace ModernWMS.WMS.Services
                 var s = stocks.FirstOrDefault(t => t.sku_id == c.sku_id && t.goods_location_id == c.goods_location_id);
                     if (s == null)
                     {
-                        return (false, _stringLocalizer["sku_code"]+":"+c.sku_code + "-" + _stringLocalizer["area_name"] +c.location_name+" "+ _stringLocalizer["stock_insufficiency"]);
+                        return (false, _stringLocalizer["sku_code"]+":"+c.sku_code + "-" + _stringLocalizer["location_name"] +c.location_name+" "+ _stringLocalizer["stock_insufficiency"]);
                     }
                     var locked = lockeds.FirstOrDefault(t => t.sku_id == c.sku_id && t.goods_location_id == c.goods_location_id  );
                     if ((s.qty - (locked == null ? 0 : locked.qty_locked)) < c.qty)
                     {
-                        return (false, _stringLocalizer["sku_code"] + ":" + c.sku_code + "-" + _stringLocalizer["area_name"] + c.location_name + " " + _stringLocalizer["stock_insufficiency"]);
+                        return (false, _stringLocalizer["sku_code"] + ":" + c.sku_code + "-" + _stringLocalizer["location_name"] + c.location_name + " " + _stringLocalizer["stock_insufficiency"]);
                     }
                     if (s.is_freeze == true)
                     {
