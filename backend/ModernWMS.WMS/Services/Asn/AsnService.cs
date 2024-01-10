@@ -81,7 +81,7 @@ namespace ModernWMS.WMS.Services
             else if (pageSearch.sqlTitle.ToLower().Contains("asn_status"))
             {
                 asn_status = Convert.ToByte(pageSearch.sqlTitle.Trim().ToLower().Replace("asn_status","").Replace("：", "").Replace(":", "").Replace("=", ""));
-                asn_status = asn_status.Equals(4) ? (Byte)255 : asn_status;
+                //asn_status = asn_status.Equals(4) ? (Byte)255 : asn_status;
                 Asns = Asns.Where(t => t.asn_status == asn_status);
             }
             var Spus = _dBContext.GetDbSet<SpuEntity>().AsNoTracking();
