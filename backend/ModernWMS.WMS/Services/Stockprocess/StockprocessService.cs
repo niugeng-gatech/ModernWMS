@@ -508,7 +508,7 @@ namespace ModernWMS.WMS.Services
             {
                 for (int i = 1; i <= cnt; i++)
                 {
-                    code.Add(date + "-" + cnt.ToString("0000"));
+                    code.Add(date + "-" + i.ToString("0000"));
                 }
             }
             else
@@ -520,14 +520,14 @@ namespace ModernWMS.WMS.Services
                     int.TryParse(maxDateNo, out int dd);
                     for (int i = 1; i <= cnt; i++)
                     {
-                        code.Add(date + "-" + (dd + 1).ToString("0000"));
+                        code.Add(date + "-" + (dd + i).ToString("0000"));
                     }
                 }
                 else
                 {
                     for (int i = 1; i <= cnt; i++)
                     {
-                        code.Add(date + "-" + 1.ToString("0000"));
+                        code.Add(date + "-" + i.ToString("0000"));
                     }
                 }
             }
@@ -542,7 +542,7 @@ namespace ModernWMS.WMS.Services
         /// <returns></returns>
         public async Task<(bool flag, string msg)> Import(List<StockprocessImportViewModel> viewModels, CurrentUser currentUser)
         {
-
+            
             var sku_code_list = viewModels.Select(t => t.sku_code).Distinct().ToList();
             var sku_list = await (from sku in _dBContext.GetDbSet<SkuEntity>().AsNoTracking()
                                   join spu in _dBContext.GetDbSet<SpuEntity>().AsNoTracking() on sku.spu_id equals spu.id
@@ -561,6 +561,13 @@ namespace ModernWMS.WMS.Services
 
             var entities = new List<StockprocessEntity>();
             var vm_group = viewModels.GroupBy(t => t.import_group);
+            foreach(var vg in vm_group)
+            {
+                if (vg.All(t => t.is_ori==true) || vg.All(t=>t.is_ori == false))
+                {
+                    return (false,_stringLocalizer["job_number"]+": " +vg.Key.ToString() +" "+  _stringLocalizer["process_valid"]);
+                }
+            }
             var groups = vm_group.Select(t => t.Key).ToList();
             var groups_code = await GetOrderCodeList(currentUser, groups.Count());
             var group_code_dic = new Dictionary<int, string>();
@@ -580,6 +587,7 @@ namespace ModernWMS.WMS.Services
                 ent.last_update_time = DateTime.Now;
                 ent.tenant_id = currentUser.tenant_id;
                 ent.job_code = group_code_dic[vg.Key];
+                ent.job_type = true;
                 foreach (var v in vg)
                 {
                     var sku = sku_list.FirstOrDefault(t => t.sku_code == v.sku_code);
