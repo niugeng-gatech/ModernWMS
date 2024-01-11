@@ -58,6 +58,7 @@
   - [Usage](#usage)
   - [Contact](#contact)
   - [License](#license)
+  - [Donate](#donate)
 
 ## Introduction 
 
@@ -132,7 +133,7 @@
   + Step 1, download the source code
   ```PowerShell
   cd C:\
-  wget -Uri https://github.com/fjykTec/ModernWMS/archive/refs/heads/master.zip  -OutFile master.zip
+  wget -Uri https://gitee.com/modernwms/ModernWMS/repository/archive/master.zip  -OutFile master.zip
   Expand-Archive -Path C:\master.zip -DestinationPath C:\
   ```
   + Step 2, Install .NET SDK and NodeJS
@@ -269,7 +270,7 @@
 
 ## License
 
-Distributed under the [MIT](https://opensource.org/licenses/MIT/) License. See [LICENSE.txt](https://github.com/fjykTec/ModernWMS/master/LICENSE) for more information.This must be observed.
+Distributed under the [MIT](https://opensource.org/licenses/MIT/) License. See [LICENSE.txt](https://gitee.com/modernwms/ModernWMS/blob/master/LICENSE) for more information.This must be observed.
 
 ## Donate
 
