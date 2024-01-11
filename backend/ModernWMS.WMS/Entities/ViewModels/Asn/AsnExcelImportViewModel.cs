@@ -130,7 +130,6 @@ namespace ModernWMS.WMS.Entities.ViewModels
         /// supplier_name
         /// </summary>
         [Display(Name = "supplier_name")]
-        [Required(ErrorMessage = "Required")]
         [MaxLength(256, ErrorMessage = "MaxLength")]
         public string supplier_name { get; set; } = string.Empty;
 
