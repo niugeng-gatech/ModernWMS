@@ -772,10 +772,25 @@ namespace ModernWMS.WMS.Services
             else
             {
                 var DbSet = _dBContext.GetDbSet<AsnEntity>();
+                int noIndex = 0;
+                string date = DateTime.Now.ToString("yyyy" + "MM" + "dd");
+                string maxNo = await DbSet.AsNoTracking().Where(t => t.tenant_id.Equals(currentUser.tenant_id)).MaxAsync(t => t.asn_no);
+                if (string.IsNullOrEmpty(maxNo))
+                {
+                    maxNo = date + "-0001";
+                }
+                string maxDate = maxNo[..8];
+                string maxDateNo = maxNo[9..];
+                if (date == maxDate)
+                {
+                    int.TryParse(maxDateNo, out noIndex);
+                }
                 var entities = excelData.Adapt<List<AsnEntity>>();
                 foreach (var entity in entities)
                 {
-                    entity.id = 0; 
+                    noIndex++;
+                    entity.id = 0;
+                    entity.asn_no = $"{date}-{noIndex.ToString("0000")}";
                     entity.creator = currentUser.user_name;
                     entity.create_time = DateTime.Now;
                     entity.last_update_time = DateTime.Now;

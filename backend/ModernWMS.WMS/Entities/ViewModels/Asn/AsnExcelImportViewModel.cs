@@ -28,7 +28,6 @@ namespace ModernWMS.WMS.Entities.ViewModels
         /// asn_no
         /// </summary>
         [Display(Name = "asn_no")]
-        [Required(ErrorMessage = "Required")]
         [MaxLength(32, ErrorMessage = "MaxLength")]
         public string asn_no { get; set; } = string.Empty;
 
