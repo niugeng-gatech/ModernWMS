@@ -705,10 +705,19 @@ namespace ModernWMS.WMS.Services
             {
                 ownerList = new List<string>();
             }
+            var supplierList = excelData.Where(e => e.supplier_name != "").Select(e => e.supplier_name).ToList();
+            if (supplierList == null)
+            {
+                supplierList = new List<string>();
+            }
             var goods_owner = await _dBContext.GetDbSet<GoodsownerEntity>().AsNoTracking()
                 .Where(t => t.tenant_id == currentUser.tenant_id)
                 .Where(t => ownerList.Contains(t.goods_owner_name))
                 .Select(t => new { t.id, t.goods_owner_name}).ToListAsync();
+            var suppliers = await _dBContext.GetDbSet<SupplierEntity>().AsNoTracking()
+                .Where(t => t.tenant_id == currentUser.tenant_id)
+                .Where(t => supplierList.Contains(t.supplier_name))
+                .Select(t => new { t.id, t.supplier_name }).ToListAsync();
 
             var dbSku = await (from m in Spus
                                join d in Skus on m.id equals d.spu_id
@@ -727,22 +736,31 @@ namespace ModernWMS.WMS.Services
             StringBuilder sb = new StringBuilder();
             excelData.ForEach(ex =>
             {
-                var sku = dbSku.FirstOrDefault(t => t.spu_code == ex.spu_code && t.sku_code == ex.sku_code && t.supplier_name == ex.supplier_name);
+                var sku = dbSku.FirstOrDefault(t => t.spu_code == ex.spu_code && t.sku_code == ex.sku_code);
                 if (sku != null)
                 {
                     ex.spu_id = sku.spu_id;
                     ex.sku_id = sku.sku_id;
-                    ex.supplier_id = sku.supplier_id;
-
-                    var owner = goods_owner.FirstOrDefault(t => t.goods_owner_name ==  ex.goods_owner_name);
-                    if (owner != null)
+                    if (ex.supplier_name.Length > 0)
                     {
-                        ex.goods_owner_id = owner.id;
+                        var sup = suppliers.FirstOrDefault(t => t.supplier_name == ex.supplier_name);
+                        if (sup != null)
+                        {
+                            ex.supplier_id = sup.id;
+                        }
+                    }
+                    if (ex.goods_owner_name.Length > 0)
+                    {
+                        var owner = goods_owner.FirstOrDefault(t => t.goods_owner_name == ex.goods_owner_name);
+                        if (owner != null)
+                        {
+                            ex.goods_owner_id = owner.id;
+                        }
                     }
                 }
                 else
                 {
-                    string err = $"[{_stringLocalizer["spu_code"]}:{ex.spu_name},{_stringLocalizer["sku_code"]}:{ex.sku_code},{_stringLocalizer["supplier_name"]}:{ex.supplier_name}{_stringLocalizer["not_exists_entity"]}]";
+                    string err = $"[{_stringLocalizer["spu_code"]}:{ex.spu_name},{_stringLocalizer["sku_code"]}:{ex.sku_code}{_stringLocalizer["not_exists_entity"]}]";
                     ex.error_msg = err;
                     sb.AppendLine(err);
                 }
