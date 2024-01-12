@@ -6,7 +6,7 @@
   <p>A simple, complete and open source warehouse management system</p>
 
 <!-- Badges -->
-[![License: MIT](https://img.shields.io/badge/license-MIT-orange.svg)](https://opensource.org/licenses/MIT/)
+[![License: Apache2.0](https://img.shields.io/badge/license-Apache2.0-orange.svg)](https://opensource.org/license/apache-2-0/)
 ![Release Version (latest Version)](https://img.shields.io/github/v/release/fjykTec/ModernWMS?color=orange&include_prereleases)
 ![QR Code Support](https://img.shields.io/badge/QR--Code-Support-orange.svg)
 ![Docker Support](https://img.shields.io/badge/Docker-Support-orange.svg)
@@ -54,6 +54,7 @@
   - [Installation](#installation)
     - [Linux](#linux)
     - [Windows](#windows)
+    - [Docker(Optional)](#dockeroptional)
   - [Usage](#usage)
   - [Contact](#contact)
   - [License](#license)
@@ -166,6 +167,77 @@
   start nginx.exe
   cd C:\ModernWMS\backend\
   dotnet ModernWMS.dll --urls http://0.0.0.0:20011
+  ```
+
+### Docker(Optional)
+
++ Approach 1, download the image from docker hub
+
+  + Step 1, install docker and download the image
+
+  ```bash
+  sudo apt install docker.io
+  sudo docker pull modernwms/modernwms:1.0
+  ```  
+
+  + Step 2，deploy
+  
+  ```bash
+  sudo docker run -d -p 20011:20011 -p 80:80  modernwms/modernwms:1.0 ./run.sh
+  sudo docker ps -a | awk 'NR>1 && $2=="modernwms/modernwms:1.0" {print $1}'
+  sudo docker exec -it <CONTAINER ID> /bin/bash
+  ```
+
+  After entering the Docker container, execute the following command in the container.
+
+  ```bash
+  grep -rl "http://127.0.0.1:20011" /frontend | xargs sed -i 's#http://127.0.0.1:20011#http://IP address:20011#g'
+  exit
+  ```
+
+  restart container
+
+  ```bash
+  sudo docker restart <CONTAINER ID>
+  ```
+
++ Approach 2, Build your own image
+  + Step 1, download the source code
+
+  ```bash
+  cd /tmp/ && wget https://gitee.com/modernwms/ModernWMS/repository/archive/master.zip
+  ```  
+
+  + Step 2，Install .NET SDK and NodeJS
+
+  ```bash
+  wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+  sudo dpkg -i packages-microsoft-prod.deb
+  sudo apt-get update && sudo apt-get install -y dotnet-sdk-7.0
+  curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+  sudo apt install -y nodejs
+  sudo apt-get install gcc g++ make
+  sudo npm install -g yarn
+  ```  
+
+  + Step 3, compile frontend and backend
+  
+  ```bash
+  sudo apt install unzip
+  cd /tmp/ && unzip master.zip && cd ./ModernWMS-master
+  cd /tmp/ModernWMS-master/frontend/ && sed -i 's#http://127.0.0.1#http://IP address#g' ./.env.production
+  yarn && yarn build && cp -rf /tmp/ModernWMS-master/frontend/dist/* /tmp/ModernWMS-master/docker/frontend/
+  cd /tmp/ModernWMS-master/backend/ && sudo dotnet publish && cp -rf /tmp/ModernWMS-master/backend/ModernWMS/bin/Debug/net7.0/publish/* /tmp/ModernWMS-master/docker/backend/
+  cp -rf /tmp/ModernWMS-master/backend/ModernWMS/wms.db /tmp/ModernWMS-master/docker/backend/
+  ``` 
+
+  + Step 4, deploy
+
+  ```bash
+  sudo apt install docker.io
+  cd /tmp/ModernWMS-master/docker/
+  docker build -t modernwms:1.0 .
+  docker run -d -p 20011:20011 -p 80:80  modernwms:1.0 ./run.sh
   ```
 
 ## Usage
