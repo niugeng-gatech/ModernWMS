@@ -196,7 +196,7 @@
 </h4>
 
 ## 版权信息
-该项目使用的是 [MIT](https://opensource.org/licenses/MIT/) 协议. 详情查阅[LICENSE.txt](https://gitee.com/modernwms/ModernWMS/blob/master/LICENSE).必须遵守此协议。
+该项目使用的是 [Apache2.0](https://opensource.org/license/apache-2-0/) 协议. 详情查阅[LICENSE.txt](https://gitee.com/modernwms/ModernWMS/blob/master/LICENSE).必须遵守此协议。
 
 ## 特别声明
 
