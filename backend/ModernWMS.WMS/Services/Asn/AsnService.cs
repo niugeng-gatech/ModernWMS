@@ -5,6 +5,7 @@
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using ModernWMS.Core.DBContext;
 using ModernWMS.Core.DynamicSearch;
 using ModernWMS.Core.JWT;
@@ -32,6 +33,11 @@ namespace ModernWMS.WMS.Services
         /// Localizer Service
         /// </summary>
         private readonly IStringLocalizer<Core.MultiLanguage> _stringLocalizer;
+        /// <summary>
+        /// logger
+        /// </summary>
+        private readonly ILogger<AsnService> _logger;
+
         #endregion
 
         #region constructor
@@ -43,10 +49,12 @@ namespace ModernWMS.WMS.Services
         public AsnService(
             SqlDBContext dBContext
           , IStringLocalizer<Core.MultiLanguage> stringLocalizer
+          , ILogger<AsnService> logger
             )
         {
             this._dBContext = dBContext;
             this._stringLocalizer = stringLocalizer;
+            this._logger = logger;
         }
         #endregion
 
@@ -697,6 +705,7 @@ namespace ModernWMS.WMS.Services
         /// <returns></returns>
         public async Task<(bool flag, string msg, List<AsnExcelImportViewModel> errList)> ImportAsync(List<AsnExcelImportViewModel> excelData, CurrentUser currentUser)
         {
+            _logger.LogInformation("ImportAsync");
             var Spus = _dBContext.GetDbSet<SpuEntity>().AsNoTracking();
             var Skus = _dBContext.GetDbSet<SkuEntity>().AsNoTracking();
 
@@ -733,6 +742,8 @@ namespace ModernWMS.WMS.Services
                                    d.sku_code,
                                    d.sku_name
                                }).ToListAsync();
+            List<string> not_exists_supplier_name = new List<string>();
+            List<string> not_exists_goods_owner_name = new List<string>();
             StringBuilder sb = new StringBuilder();
             excelData.ForEach(ex =>
             {
@@ -748,6 +759,14 @@ namespace ModernWMS.WMS.Services
                         {
                             ex.supplier_id = sup.id;
                         }
+                        else
+                        {
+                            if (!not_exists_supplier_name.Contains(ex.supplier_name))
+                            {
+                                not_exists_supplier_name.Add(ex.supplier_name);
+                            }
+                            ex.error_msg = $"[{_stringLocalizer["supplier_name"]}:{ex.supplier_name}{_stringLocalizer["not_exists_entity"]}]";
+                        }
                     }
                     if (ex.goods_owner_name.Length > 0)
                     {
@@ -755,6 +774,14 @@ namespace ModernWMS.WMS.Services
                         if (owner != null)
                         {
                             ex.goods_owner_id = owner.id;
+                        }
+                        else
+                        {
+                            if (!not_exists_goods_owner_name.Contains(ex.goods_owner_name))
+                            {
+                                not_exists_goods_owner_name.Add(ex.goods_owner_name);
+                            }
+                            ex.error_msg += $"[{_stringLocalizer["goods_owner_name"]}:{ex.goods_owner_name}{_stringLocalizer["not_exists_entity"]}]";
                         }
                     }
                 }
@@ -767,6 +794,14 @@ namespace ModernWMS.WMS.Services
             });
             if (excelData.Any(t => t.error_msg.Length > 0))
             {
+                if (not_exists_supplier_name.Count > 0)
+                {
+                    sb.AppendLine($"[{_stringLocalizer["supplier_name"]}:{string.Join(',', not_exists_supplier_name)}{_stringLocalizer["not_exists_entity"]}]");
+                }
+                if (not_exists_goods_owner_name.Count > 0)
+                {
+                    sb.AppendLine($"[{_stringLocalizer["goods_owner_name"]}:{string.Join(',', not_exists_goods_owner_name)}{_stringLocalizer["not_exists_entity"]}]");
+                }
                 return (false, sb.ToString(), excelData.Where(t => t.error_msg.Length > 0).ToList());
             }
             else
