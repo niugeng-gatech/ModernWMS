@@ -109,7 +109,7 @@ namespace ModernWMS.WMS.Services
                 .Where(t => t.tenant_id.Equals(currentUser.tenant_id))
                 .Where(queries.AsExpression<StockprocessGetViewModel>());
             int totals = await query.CountAsync();
-            var list = await query.OrderByDescending(t => t.create_time)
+            var list = await query.OrderByDescending(t => t.last_update_time)
                        .Skip((pageSearch.pageIndex - 1) * pageSearch.pageSize)
                        .Take(pageSearch.pageSize)
                        .ToListAsync();
@@ -235,7 +235,7 @@ namespace ModernWMS.WMS.Services
             entity.creator = currentUser.user_name;
             entity.last_update_time = DateTime.Now;
             entity.tenant_id = currentUser.tenant_id;
-            entity.job_code = await GetOrderCode(currentUser);
+            entity.job_code = await _dBContext.GetFormNoAsync("Stockprocess");
             await DbSet.AddAsync(entity);
             foreach (var d in entity.detailList)
             {
@@ -334,6 +334,7 @@ namespace ModernWMS.WMS.Services
             var detail_DBSet = _dBContext.GetDbSet<StockprocessdetailEntity>();
             var adjust_DBset = _dBContext.GetDbSet<StockadjustEntity>();
             var entity = await DBSet.FirstOrDefaultAsync(t => t.id == id);
+            var now_time = DateTime.Now;
             if (entity == null)
             {
                 return (false, _stringLocalizer["not_exists_entity"]);
@@ -358,13 +359,13 @@ namespace ModernWMS.WMS.Services
                                job_type = 2,
                                goods_owner_id = d.goods_owner_id,
                                qty = d.is_source ? -d.qty : d.qty,
-                               create_time = DateTime.Now,
+                               create_time = now_time,
                                creator = currentUser.user_name,
-                               last_update_time = DateTime.Now,
+                               last_update_time = now_time,
                                tenant_id = currentUser.tenant_id,
                                series_number = d.series_number,
                            }).ToList();
-            entity.last_update_time = DateTime.Now;
+            entity.last_update_time = now_time;
             var stock_DBSet = _dBContext.GetDbSet<StockEntity>();
             if (entity == null)
             {
@@ -376,7 +377,7 @@ namespace ModernWMS.WMS.Services
             {
                 var stock = stocks.FirstOrDefault(t => t.goods_location_id == d.goods_location_id && t.sku_id == d.sku_id && t.goods_owner_id == d.goods_owner_id && t.series_number == d.series_number);
                 d.is_update_stock = true;
-                d.last_update_time = DateTime.Now;
+                d.last_update_time = now_time;
                 if (d.is_source)
                 {
                     if (stock == null)
@@ -384,7 +385,7 @@ namespace ModernWMS.WMS.Services
                         return (false, _stringLocalizer["data_changed"]);
                     }
                     stock.qty -= d.qty;
-                    stock.last_update_time = DateTime.Now;
+                    stock.last_update_time = now_time;
                 }
                 else
                 {
@@ -397,7 +398,7 @@ namespace ModernWMS.WMS.Services
                             goods_owner_id = d.goods_owner_id,
                             series_number = d.series_number,
                             is_freeze = false,
-                            last_update_time = DateTime.Now,
+                            last_update_time = now_time,
                             qty = d.qty,
                             tenant_id = currentUser.tenant_id
                         });
@@ -405,7 +406,7 @@ namespace ModernWMS.WMS.Services
                     else
                     {
                         stock.qty += d.qty;
-                        stock.last_update_time = DateTime.Now;
+                        stock.last_update_time = now_time;
                     }
                 }
             }

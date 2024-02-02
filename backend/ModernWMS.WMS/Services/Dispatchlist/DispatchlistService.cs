@@ -148,7 +148,7 @@ namespace ModernWMS.WMS.Services
                  .Where(queries.AsExpression<DispatchlistViewModel>());
 
             int totals = await query.CountAsync();
-            var list = await query.OrderBy(t => t.is_todo == true ? 0 : 1).ThenByDescending(t => t.create_time)
+            var list = await query.OrderBy(t => t.is_todo == true ? 0 : 1).ThenByDescending(t => t.last_update_time)
                        .Skip((pageSearch.pageIndex - 1) * pageSearch.pageSize)
                        .Take(pageSearch.pageSize)
                        .ToListAsync();
@@ -230,6 +230,7 @@ namespace ModernWMS.WMS.Services
             var delete_id_list = new List<int>();
             var sku_id_list = viewModels.Select(t => t.sku_id).ToList();
             var skus = await (_dBContext.GetDbSet<SkuEntity>().AsNoTracking().Where(t => sku_id_list.Contains(t.id))).ToListAsync();
+            var now_time = DateTime.Now;
             if (entities.Any(t => t.dispatch_status != 1 && t.dispatch_status != 0))
             {
                 return (false, "[202]" + _stringLocalizer["data_changed"]);
@@ -255,7 +256,7 @@ namespace ModernWMS.WMS.Services
                     }
                     entity.sku_id = vm.sku_id;
                     entity.qty = vm.qty;
-                    entity.last_update_time = DateTime.Now;
+                    entity.last_update_time = now_time;
                     var sku = skus.FirstOrDefault(t => t.id == entity.sku_id);
                     if (sku != null)
                     {
@@ -270,8 +271,8 @@ namespace ModernWMS.WMS.Services
                         id = 0,
                         dispatch_no = dispatch_no,
                         creator = currentUser.user_name,
-                        create_time = DateTime.Now,
-                        last_update_time = DateTime.Now,
+                        create_time = now_time,
+                        last_update_time = now_time,
                         dispatch_status = dispatch_status,
                         sku_id = vm.sku_id,
                         qty = vm.qty
@@ -739,6 +740,7 @@ namespace ModernWMS.WMS.Services
             var new_dispatchlists = new List<DispatchlistEntity>();
             var topick_viewmodels = new List<StockViewModel>();
             var sku_id_list = viewModels.Select(t => t.sku_id).ToList();
+            var now_time = DateTime.Now;
             foreach (var vm in viewModels.Where(t => t.confirm == true).ToList())
             {
                 stock_id_list.AddRange(vm.pick_list.Where(t => t.pick_qty > 0).Select(t => t.stock_id).ToList());
@@ -754,7 +756,7 @@ namespace ModernWMS.WMS.Services
                 if (vm.confirm == true)
                 {
                     d.dispatch_status = 2;
-                    d.last_update_time = DateTime.Now;
+                    d.last_update_time = now_time;
                     d.lock_qty = vm.pick_list.Sum(t => t.pick_qty);
                     foreach (var p in vm.pick_list.Where(t => t.pick_qty > 0).ToList())
                     {
@@ -765,7 +767,7 @@ namespace ModernWMS.WMS.Services
                             dispatchlist_id = p.dispatchlist_id,
                             goods_location_id = p.goods_location_id,
                             goods_owner_id = p.goods_owner_id,
-                            last_update_time = DateTime.Now,
+                            last_update_time = now_time,
                             series_number = p.series_number,
                             pick_qty = p.pick_qty,
                         });
@@ -867,7 +869,7 @@ namespace ModernWMS.WMS.Services
                 return (false, "[202]" + _stringLocalizer["data_changed"]);
             }
             await pick_DBSet.AddRangeAsync(pick_datas);
-            var dispatch_no = await GetOrderCode(currentUser);
+            var dispatch_no = await _dBContext.GetFormNoAsync("Dispatchlist");
             var sku_datas = await _dBContext.GetDbSet<SkuEntity>().Where(t => sku_id_list.Contains(t.id)).ToListAsync();
             foreach (var nd in new_dispatchlists)
             {
@@ -908,7 +910,7 @@ namespace ModernWMS.WMS.Services
             {
                 return (false, _stringLocalizer["status_changed"]);
             }
-            var time = DateTime.Now;
+            var now_time = DateTime.Now;
             var dispatch_id_list = entities.Select(t => t.id).ToList();
             var pick_entities = await pick_DBSet.Where(t => dispatch_id_list.Contains(t.dispatchlist_id)).ToListAsync();
             if (viewModel.dispatch_status == 3)
@@ -916,12 +918,12 @@ namespace ModernWMS.WMS.Services
                 foreach (var pick in pick_entities)
                 {
                     pick.picked_qty = 0;
-                    pick.last_update_time = time;
+                    pick.last_update_time = now_time;
                 }
                 foreach (var entity in entities)
                 {
                     entity.picked_qty = 0;
-                    entity.last_update_time = time;
+                    entity.last_update_time = now_time;
                     entity.dispatch_status = 2;
                 }
             }
@@ -931,7 +933,7 @@ namespace ModernWMS.WMS.Services
                 foreach (var entity in entities)
                 {
                     entity.lock_qty = 0;
-                    entity.last_update_time = time;
+                    entity.last_update_time = now_time;
                     entity.dispatch_status = 1;
                 }
             }
@@ -984,7 +986,7 @@ namespace ModernWMS.WMS.Services
         {
             var DBSet = _dBContext.GetDbSet<DispatchlistEntity>();
             var entity = await DBSet.Where(t => t.id == id).FirstOrDefaultAsync();
-            var time = DateTime.Now;
+            var now_time = DateTime.Now;
             if (entity == null)
             {
                 return (false, _stringLocalizer["not_exists_entity"]);
@@ -1023,7 +1025,7 @@ namespace ModernWMS.WMS.Services
             {
                 return (false, _stringLocalizer["status_changed"]);
             }
-            entity.last_update_time = time;
+            entity.last_update_time = now_time;
             var qty = await _dBContext.SaveChangesAsync();
             if (qty > 0)
             {
@@ -1048,16 +1050,17 @@ namespace ModernWMS.WMS.Services
             var entities = await DBSet.Where(t => t.dispatch_status == 2 && t.dispatch_no == dispatch_no && t.tenant_id == currentUser.tenant_id).ToListAsync();
             var dispatchlist_id_list = entities.Select(t => t.id).ToList();
             var pick_datas = await pick_DBSet.Where(t => dispatchlist_id_list.Contains(t.dispatchlist_id)).ToListAsync();
+            var now_time = DateTime.Now;
             entities.ForEach(t =>
             {
                 t.picked_qty = t.lock_qty;
                 t.dispatch_status = 3;
-                t.last_update_time = DateTime.Now;
+                t.last_update_time = now_time;
             });
             pick_datas.ForEach(t =>
             {
                 t.picked_qty = t.pick_qty;
-                t.last_update_time = DateTime.Now;
+                t.last_update_time = now_time;
             });
             var qty = await _dBContext.SaveChangesAsync();
             if (qty > 0)
@@ -1082,7 +1085,7 @@ namespace ModernWMS.WMS.Services
             var DBSet = _dBContext.GetDbSet<DispatchlistEntity>();
             var dispatchlist_id_list = viewModels.Select(t => t.id).ToList();
             var entities = await DBSet.Where(t => dispatchlist_id_list.Contains(t.id)).ToListAsync();
-            var time = DateTime.Now;
+            var now_time = DateTime.Now;
             var code = GetPackageOrWeightCode();
             foreach (var vm in viewModels)
             {
@@ -1095,10 +1098,10 @@ namespace ModernWMS.WMS.Services
                 {
                     return (false, "[202]" + _stringLocalizer["unpackgeqty_lessthen"]);
                 }
-                entity.last_update_time = time;
+                entity.last_update_time = now_time;
                 entity.package_person = currentUser.user_name;
                 entity.package_qty += vm.package_qty;
-                entity.package_time = time;
+                entity.package_time = now_time;
                 entity.package_no = code;
                 entity.dispatch_status = 4;
             }
@@ -1170,7 +1173,7 @@ namespace ModernWMS.WMS.Services
             var DBSet = _dBContext.GetDbSet<DispatchlistEntity>();
             var dispatchlist_id_list = viewModels.Select(t => t.id).ToList();
             var entities = await DBSet.Where(t => dispatchlist_id_list.Contains(t.id)).ToListAsync();
-            var time = DateTime.Now;
+            var now_time = DateTime.Now;
             var code = GetPackageOrWeightCode();
             foreach (var vm in viewModels)
             {
@@ -1183,7 +1186,7 @@ namespace ModernWMS.WMS.Services
                 {
                     return (false, "[202]" + _stringLocalizer["unweightqty_lessthen"]);
                 }
-                entity.last_update_time = time;
+                entity.last_update_time = now_time;
                 entity.weighing_person = currentUser.user_name;
                 entity.weighing_qty += vm.weighing_qty;
                 entity.weighing_weight += vm.weighing_weight;
@@ -1226,7 +1229,7 @@ namespace ModernWMS.WMS.Services
                                 {
                                     proposedValues["dispatch_status"] = 5;
                                 }
-                                proposedValues["last_update_time"] = DateTime.Now;
+                                proposedValues["last_update_time"] = now_time;
                             }
                             // Refresh original values to bypass next concurrency check
                             entry.OriginalValues.SetValues(databaseValues);
@@ -1262,14 +1265,14 @@ namespace ModernWMS.WMS.Services
             var pick_DBSet = _dBContext.GetDbSet<DispatchpicklistEntity>();
             var stock_DBSet = _dBContext.GetDbSet<StockEntity>();
             var entities = await DBSet.Where(t => dispatchlist_id_list.Contains(t.id)).ToListAsync();
-            var time = DateTime.Now;
+            var now_time = DateTime.Now;
             foreach (var entity in entities)
             {
                 if (entity.dispatch_status != 3 && entity.dispatch_status != 4 && entity.dispatch_status != 5)
                 {
                     return (false, "[202]" + _stringLocalizer["data_changed"]);
                 }
-                entity.last_update_time = time;
+                entity.last_update_time = now_time;
                 entity.dispatch_status = 6;
                 entity.lock_qty = 0;
                 entity.actual_qty = entity.picked_qty;
@@ -1290,13 +1293,13 @@ namespace ModernWMS.WMS.Services
                     return (false, "[202]" + _stringLocalizer["data_changed"]);
                 }
                 s.qty -= pick.picked_qty;
-                s.last_update_time = time;
+                s.last_update_time = now_time;
                 stock_DBSet.Update(s);
             }
             foreach (var pick in pick_datas)
             {
                 pick.is_update_stock = true;
-                pick.last_update_time = DateTime.Now;
+                pick.last_update_time = now_time;
             }
             var saved = false;
             int res = 0;
@@ -1320,7 +1323,7 @@ namespace ModernWMS.WMS.Services
                             {
                                 return (false, "[202]" + _stringLocalizer["data_changed"]);
                             }
-                            proposedValues["last_update_time"] = DateTime.Now;
+                            proposedValues["last_update_time"] = now_time;
                         }
                         else if (entry.Entity is StockEntity)
                         {
@@ -1332,7 +1335,7 @@ namespace ModernWMS.WMS.Services
                                 return (false, "[202]" + _stringLocalizer["data_changed"]);
                             }
                             proposedValues["qty"] = UtilConvert.ObjToInt(databaseValues["qty"]) - t_p.picked_qty;
-                            proposedValues["last_update_time"] = DateTime.Now;
+                            proposedValues["last_update_time"] = now_time;
                             // Refresh original values to bypass next concurrency check
                             entry.OriginalValues.SetValues(databaseValues);
                         }
@@ -1365,7 +1368,7 @@ namespace ModernWMS.WMS.Services
             var freightfee_id_list = viewModels.Select(t => t.freightfee_id).Distinct().ToList();
             var entities = await DBSet.Where(t => dispatchlist_id_list.Contains(t.id)).ToListAsync();
             var freightfees = await _dBContext.GetDbSet<FreightfeeEntity>().Where(t => freightfee_id_list.Contains(t.id)).ToListAsync();
-            var time = DateTime.Now;
+            var now_time = DateTime.Now;
             foreach (var entity in entities)
             {
                 var vm = viewModels.FirstOrDefault(t => t.id == entity.id);
@@ -1374,7 +1377,7 @@ namespace ModernWMS.WMS.Services
                     var freightfee = freightfees.FirstOrDefault(t => t.id == vm.freightfee_id);
                     if (freightfee != null)
                     {
-                        entity.last_update_time = time;
+                        entity.last_update_time = now_time;
                         entity.carrier = freightfee.carrier;
                         entity.waybill_no = vm.waybill_no;
                         if (entity.weighing_no != "")
@@ -1409,6 +1412,7 @@ namespace ModernWMS.WMS.Services
             var DBSet = _dBContext.GetDbSet<DispatchlistEntity>();
             var dispatchlist_id_list = viewModels.Select(t => t.id).ToList();
             var entities = await DBSet.Where(t => dispatchlist_id_list.Contains(t.id)).ToListAsync();
+            var now_time = DateTime.Now;
             foreach (var entity in entities)
             {
                 var vm = viewModels.FirstOrDefault(t => t.id == t.id && t.dispatch_status == entity.dispatch_status);
@@ -1418,7 +1422,7 @@ namespace ModernWMS.WMS.Services
                 }
                 entity.sign_qty = entity.actual_qty - vm.damage_qty;
                 entity.damage_qty = vm.damage_qty;
-                entity.last_update_time = DateTime.Now;
+                entity.last_update_time = now_time;
                 entity.dispatch_status = 7;
             }
             var res = await _dBContext.SaveChangesAsync();
