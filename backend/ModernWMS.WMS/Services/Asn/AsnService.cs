@@ -205,7 +205,7 @@ namespace ModernWMS.WMS.Services
             var DbSet = _dBContext.GetDbSet<AsnEntity>();
             var entity = viewModel.Adapt<AsnEntity>();
             entity.id = 0;
-            entity.asn_no = await GetOrderCode(currentUser);
+            entity.asn_no = await _dBContext.GetFormNoAsync("Asn");
             entity.creator = currentUser.user_name;
             entity.create_time = DateTime.Now;
             entity.last_update_time = DateTime.Now;
@@ -375,6 +375,7 @@ namespace ModernWMS.WMS.Services
             var idList = viewModels.Where(t => t.id > 0).Select(t => t.id).ToList();
             var Asns = _dBContext.GetDbSet<AsnEntity>();
             var entities = await Asns.Where(t => idList.Contains(t.id)).ToListAsync();
+            var last_update_time = DateTime.Now;
             if (!entities.Any())
             {
                 return (false, "[202]" + _stringLocalizer["not_exists_entity"]);
@@ -383,6 +384,17 @@ namespace ModernWMS.WMS.Services
             {
                 return (false, "[202]" + $"{_stringLocalizer["ASN_Status_Is_Not_Pre_Delivery"]}");
             }
+            // get asnmaster data
+            var asnmaster_id = entities.Select(t => t.asnmaster_id).FirstOrDefault();
+            var Asnmaster = _dBContext.GetDbSet<AsnmasterEntity>();
+            var asnmasterentity = await Asnmaster.FirstOrDefaultAsync(t=>t.id.Equals(asnmaster_id));
+            if (asnmasterentity == null)
+            {
+                return (false, "[202]" + _stringLocalizer["not_exists_entity"]);
+            }
+            // update asnmaster last_update_time
+            asnmasterentity.last_update_time = last_update_time;
+
             entities.ForEach(t =>
             {
                  var vm = viewModels.FirstOrDefault(t => t.id == t.id);
@@ -390,6 +402,7 @@ namespace ModernWMS.WMS.Services
                 {
                     t.asn_status = 1;
                     t.arrival_time = vm.arrival_time;
+                    t.last_update_time = last_update_time;
                 }
             });
             var qty = await _dBContext.SaveChangesAsync();
@@ -411,6 +424,7 @@ namespace ModernWMS.WMS.Services
         {
             var Asns = _dBContext.GetDbSet<AsnEntity>();
             var entities = await Asns.Where(t => idList.Contains(t.id)).ToListAsync();
+            var last_update_time = DateTime.Now;
             if (!entities.Any())
             {
                 return (false, "[202]" + _stringLocalizer["not_exists_entity"]);
@@ -419,10 +433,22 @@ namespace ModernWMS.WMS.Services
             {
                 return (false, "[202]" + $"{_stringLocalizer["ASN_Status_Is_Not_Pre_Delivery"]}");
             }
+            // get asnmaster data
+            var asnmaster_id = entities.Select(t => t.asnmaster_id).FirstOrDefault();
+            var Asnmaster = _dBContext.GetDbSet<AsnmasterEntity>();
+            var asnmasterentity = await Asnmaster.FirstOrDefaultAsync(t => t.id.Equals(asnmaster_id));
+            if (asnmasterentity == null)
+            {
+                return (false, "[202]" + _stringLocalizer["not_exists_entity"]);
+            }
+            // update asnmaster last_update_time
+            asnmasterentity.last_update_time = last_update_time;
+
             entities.ForEach(e =>
             {
                 e.asn_status = 0;
                 e.arrival_time = Core.Utility.UtilConvert.MinDate;
+                e.last_update_time = last_update_time;
             });
             var qty = await _dBContext.SaveChangesAsync();
             if (qty > 0)
@@ -1018,7 +1044,7 @@ namespace ModernWMS.WMS.Services
                         };
             query = query.Where(queries.AsExpression<AsnmasterBothViewModel>());
             int totals = await query.CountAsync();
-            var list = await query.OrderByDescending(t => t.create_time)
+            var list = await query.OrderByDescending(t => t.last_update_time)
                        .Skip((pageSearch.pageIndex - 1) * pageSearch.pageSize)
                        .Take(pageSearch.pageSize)
                        .ToListAsync();
@@ -1095,7 +1121,7 @@ namespace ModernWMS.WMS.Services
         {
             var Asns = _dBContext.GetDbSet<AsnEntity>();
             var Asnmasters = _dBContext.GetDbSet<AsnmasterEntity>();
-            string asn_no = await GetOrderCode(currentUser);
+            string asn_no = await _dBContext.GetFormNoAsync("Asnmaster");
             var entity = new AsnmasterEntity
             {
                 id = 0,
