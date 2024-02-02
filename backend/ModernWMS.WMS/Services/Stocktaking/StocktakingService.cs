@@ -111,7 +111,7 @@ namespace ModernWMS.WMS.Services
                         };
             query = query.Where(queries.AsExpression<StocktakingViewModel>());
             int totals = await query.CountAsync();
-            var list = await query.OrderByDescending(t => t.create_time)
+            var list = await query.OrderByDescending(t => t.last_update_time)
                        .Skip((pageSearch.pageIndex - 1) * pageSearch.pageSize)
                        .Take(pageSearch.pageSize)
                        .ToListAsync();
@@ -187,7 +187,7 @@ namespace ModernWMS.WMS.Services
             var DbSet = _dBContext.GetDbSet<StocktakingEntity>();
             var entity = viewModel.Adapt<StocktakingEntity>();
             entity.id = 0;
-            entity.job_code = await GetOrderCode(currentUser);
+            entity.job_code = await _dBContext.GetFormNoAsync("Stocktaking");
             entity.creator = currentUser.user_name;
             entity.create_time = DateTime.Now;
             entity.last_update_time = DateTime.Now;

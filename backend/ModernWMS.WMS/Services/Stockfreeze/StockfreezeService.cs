@@ -153,10 +153,7 @@ namespace ModernWMS.WMS.Services
                                   warehouse_name = location.warehouse_name,
                                   series_number = m.series_number,
                               }).FirstOrDefaultAsync();
-            if (data == null)
-            {
-                return null;
-            }
+
             return data;
         }
 
