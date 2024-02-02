@@ -232,7 +232,7 @@ namespace ModernWMS.Core.DBContext
         /// <returns></returns>
         public async Task<string> GetFormNoAsync(string table_name, byte tenant_id = 1, string prefix_char = "", ResetRule reset_rule = ResetRule.Day)
         {
-            var nums = await GetFormNoListAsync(table_name, tenant_id, prefix_char, 1, reset_rule);
+            var nums = await GetFormNoListAsync(table_name, 1, tenant_id, prefix_char,  reset_rule);
             if (nums == null)
             {
                 return "";
@@ -252,7 +252,7 @@ namespace ModernWMS.Core.DBContext
         /// <param name="Qty">编号数量</param>
         /// <param name="reset_rule">重置规则</param>
         /// <returns></returns>
-        public async Task<List<string>> GetFormNoListAsync(string table_name, byte tenant_id = 1, string prefix_char = "", int Qty = 1, ResetRule reset_rule = ResetRule.Day)
+        public async Task<List<string>> GetFormNoListAsync(string table_name, int Qty = 1, byte tenant_id = 1, string prefix_char = "",  ResetRule reset_rule = ResetRule.Day)
         {
             List<string> nums = new List<string>();
             string _reset_rule = "yyyyMMdd";

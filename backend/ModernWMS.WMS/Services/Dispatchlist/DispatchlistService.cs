@@ -490,14 +490,15 @@ namespace ModernWMS.WMS.Services
             var entities = viewModel.Adapt<List<DispatchlistEntity>>();
             var sku_id_list = entities.Select(t => t.sku_id).ToList();
             var skus = await _dBContext.GetDbSet<SkuEntity>().Where(t => sku_id_list.Contains(t.id)).ToListAsync();
-            var dispatch_no = await GetOrderCode(currentUser);
+            var dispatch_no = await _dBContext.GetFormNoAsync("Dispatchlist");
+            var now_time = DateTime.Now;
             foreach (var entity in entities)
             {
                 var sku = skus.FirstOrDefault(t => t.id == entity.sku_id);
                 entity.id = 0;
-                entity.create_time = DateTime.Now;
+                entity.create_time = now_time;
                 entity.creator = currentUser.user_name;
-                entity.last_update_time = DateTime.Now;
+                entity.last_update_time = now_time;
                 entity.tenant_id = currentUser.tenant_id;
                 if (sku != null)
                 {
@@ -1481,8 +1482,9 @@ namespace ModernWMS.WMS.Services
             var customer_list = await _dBContext.GetDbSet<CustomerEntity>().Where(t => t.tenant_id == currentUser.tenant_id && import_customer_name.Contains(t.customer_name)).ToListAsync();
             var entities = new List<DispatchlistEntity>();
             var groups = viewModels.Select(t => t.import_group).Distinct().ToList();
-            var groups_code = await GetOrderCodeList(currentUser, groups.Count());
+            var groups_code = await _dBContext.GetFormNoListAsync("Dispatchlist", groups.Count);
             var group_code_dic = new Dictionary<int, string>();
+            var now_time = DateTime.Now;
             for (int i = 0; i < groups.Count(); i++)
             {
                 group_code_dic.Add(groups[i], groups_code[i]);
@@ -1506,8 +1508,8 @@ namespace ModernWMS.WMS.Services
                     sku_id = sku.id,
                     qty = vm.qty,
                     creator = currentUser.user_name,
-                    create_time = DateTime.Now,
-                    last_update_time = DateTime.Now,
+                    create_time = now_time,
+                    last_update_time = now_time,
                     tenant_id = currentUser.tenant_id,
                     dispatch_no = group_code_dic[vm.import_group],
                 });
