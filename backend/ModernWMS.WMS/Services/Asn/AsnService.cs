@@ -2,10 +2,12 @@
  * date：2022-12-22
  * developer：AMo
  */
+
 using Mapster;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
+using ModernWMS.Core;
 using ModernWMS.Core.DBContext;
 using ModernWMS.Core.DynamicSearch;
 using ModernWMS.Core.JWT;
@@ -25,6 +27,7 @@ namespace ModernWMS.WMS.Services
     public class AsnService : BaseService<AsnEntity>, IAsnService
     {
         #region Args
+
         /// <summary>
         /// The DBContext
         /// </summary>
@@ -34,9 +37,16 @@ namespace ModernWMS.WMS.Services
         /// Localizer Service
         /// </summary>
         private readonly IStringLocalizer<Core.MultiLanguage> _stringLocalizer;
-        #endregion
+
+        /// <summary>
+        /// functions
+        /// </summary>
+        private readonly FunctionHelper _functionHelper;
+
+        #endregion Args
 
         #region constructor
+
         /// <summary>
         ///Asn  constructor
         /// </summary>
@@ -44,15 +54,19 @@ namespace ModernWMS.WMS.Services
         /// <param name="stringLocalizer">Localizer</param>
         public AsnService(
             SqlDBContext dBContext
-          , IStringLocalizer<Core.MultiLanguage> stringLocalizer
+            , IStringLocalizer<Core.MultiLanguage> stringLocalizer
+            , FunctionHelper functionHelper
             )
         {
             this._dBContext = dBContext;
             this._stringLocalizer = stringLocalizer;
+            this._functionHelper = functionHelper;
         }
-        #endregion
+
+        #endregion constructor
 
         #region Api
+
         /// <summary>
         /// page search, sqlTitle input asn_status:0 ~ 4
         /// </summary>
@@ -69,7 +83,7 @@ namespace ModernWMS.WMS.Services
                     queries.Add(s);
                 });
             }
-            Byte asn_status = 255; 
+            Byte asn_status = 255;
             var Asns = _dBContext.GetDbSet<AsnEntity>().AsNoTracking();
             if (pageSearch.sqlTitle.ToLower().Contains("asn_status:alltodo"))
             {
@@ -77,12 +91,12 @@ namespace ModernWMS.WMS.Services
             }
             else if (pageSearch.sqlTitle.ToLower().Contains("asn_status"))
             {
-                asn_status = Convert.ToByte(pageSearch.sqlTitle.Trim().ToLower().Replace("asn_status","").Replace("：", "").Replace(":", "").Replace("=", ""));
+                asn_status = Convert.ToByte(pageSearch.sqlTitle.Trim().ToLower().Replace("asn_status", "").Replace("：", "").Replace(":", "").Replace("=", ""));
                 //asn_status = asn_status.Equals(4) ? (Byte)255 : asn_status;
                 Asns = Asns.Where(t => t.asn_status == asn_status);
             }
             var Spus = _dBContext.GetDbSet<SpuEntity>().AsNoTracking();
-            var Skus = _dBContext.GetDbSet<SkuEntity>().AsNoTracking();           
+            var Skus = _dBContext.GetDbSet<SkuEntity>().AsNoTracking();
             var Asnmasters = _dBContext.GetDbSet<AsnmasterEntity>().AsNoTracking();
 
             var query = from m in Asns
@@ -194,6 +208,7 @@ namespace ModernWMS.WMS.Services
             var data = await query.FirstOrDefaultAsync(t => t.id.Equals(id));
             return data ?? new AsnViewModel();
         }
+
         /// <summary>
         /// add a new record
         /// </summary>
@@ -205,7 +220,7 @@ namespace ModernWMS.WMS.Services
             var DbSet = _dBContext.GetDbSet<AsnEntity>();
             var entity = viewModel.Adapt<AsnEntity>();
             entity.id = 0;
-            entity.asn_no = await _dBContext.GetFormNoAsync("Asn");
+            entity.asn_no = await _functionHelper.GetFormNoAsync("Asn");
             entity.creator = currentUser.user_name;
             entity.create_time = DateTime.Now;
             entity.last_update_time = DateTime.Now;
@@ -263,6 +278,7 @@ namespace ModernWMS.WMS.Services
 
             return code;
         }
+
         /// <summary>
         /// update a record
         /// </summary>
@@ -299,6 +315,7 @@ namespace ModernWMS.WMS.Services
                 return (false, _stringLocalizer["save_failed"]);
             }
         }
+
         /// <summary>
         /// delete a record
         /// </summary>
@@ -361,9 +378,11 @@ namespace ModernWMS.WMS.Services
                 return (false, _stringLocalizer["save_failed"]);
             }
         }
-        #endregion
+
+        #endregion Api
 
         #region Flow Api
+
         /// <summary>
         /// Confirm Delivery
         /// change the asn_status from 0 to 1
@@ -387,7 +406,7 @@ namespace ModernWMS.WMS.Services
             // get asnmaster data
             var asnmaster_id = entities.Select(t => t.asnmaster_id).FirstOrDefault();
             var Asnmaster = _dBContext.GetDbSet<AsnmasterEntity>();
-            var asnmasterentity = await Asnmaster.FirstOrDefaultAsync(t=>t.id.Equals(asnmaster_id));
+            var asnmasterentity = await Asnmaster.FirstOrDefaultAsync(t => t.id.Equals(asnmaster_id));
             if (asnmasterentity == null)
             {
                 return (false, "[202]" + _stringLocalizer["not_exists_entity"]);
@@ -397,7 +416,7 @@ namespace ModernWMS.WMS.Services
 
             entities.ForEach(t =>
             {
-                 var vm = viewModels.FirstOrDefault(t => t.id == t.id);
+                var vm = viewModels.FirstOrDefault(t => t.id == t.id);
                 if (vm != null)
                 {
                     t.asn_status = 1;
@@ -415,6 +434,7 @@ namespace ModernWMS.WMS.Services
                 return (false, _stringLocalizer["confirm_failed"]);
             }
         }
+
         /// <summary>
         /// Cancel confirm, change asn_status 1 to 0
         /// </summary>
@@ -527,7 +547,7 @@ namespace ModernWMS.WMS.Services
             {
                 e.asn_status = 1;
                 e.unload_time = Core.Utility.UtilConvert.MinDate;
-                e.unload_person_id =0;
+                e.unload_person_id = 0;
                 e.unload_person = string.Empty;
                 e.last_update_time = DateTime.Now;
             });
@@ -541,6 +561,7 @@ namespace ModernWMS.WMS.Services
                 return (false, _stringLocalizer["save_failed"]);
             }
         }
+
         /// <summary>
         /// sorting， add a new asnsort record and update asn sorted_qty
         /// </summary>
@@ -593,6 +614,7 @@ namespace ModernWMS.WMS.Services
                 return (false, _stringLocalizer["save_failed"]);
             }
         }
+
         /// <summary>
         /// get asnsorts list by asn_id
         /// </summary>
@@ -611,6 +633,7 @@ namespace ModernWMS.WMS.Services
                 return new List<AsnsortEntity>();
             }
         }
+
         /// <summary>
         /// update or delete asnsorts data
         /// </summary>
@@ -968,9 +991,11 @@ namespace ModernWMS.WMS.Services
             }
             */
         }
-        #endregion
 
-        #region Arrival list 
+        #endregion Flow Api
+
+        #region Arrival list
+
         /// <summary>
         /// Arrival list
         /// </summary>
@@ -1050,6 +1075,7 @@ namespace ModernWMS.WMS.Services
                        .ToListAsync();
             return (list, totals);
         }
+
         /// <summary>
         /// get Arrival list
         /// </summary>
@@ -1121,7 +1147,7 @@ namespace ModernWMS.WMS.Services
         {
             var Asns = _dBContext.GetDbSet<AsnEntity>();
             var Asnmasters = _dBContext.GetDbSet<AsnmasterEntity>();
-            string asn_no = await _dBContext.GetFormNoAsync("Asnmaster");
+            string asn_no = await _functionHelper.GetFormNoAsync("Asnmaster");
             var entity = new AsnmasterEntity
             {
                 id = 0,
@@ -1171,6 +1197,7 @@ namespace ModernWMS.WMS.Services
                 return (0, _stringLocalizer["save_failed"]);
             }
         }
+
         /// <summary>
         /// add a new record
         /// </summary>
@@ -1278,7 +1305,7 @@ namespace ModernWMS.WMS.Services
                 return (false, _stringLocalizer["delete_failed"]);
             }
         }
-        #endregion
+
+        #endregion Arrival list
     }
 }
- 

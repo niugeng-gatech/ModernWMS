@@ -7,6 +7,7 @@ using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
+using ModernWMS.Core;
 using ModernWMS.Core.DBContext;
 using ModernWMS.Core.DynamicSearch;
 using ModernWMS.Core.JWT;
@@ -37,6 +38,11 @@ namespace ModernWMS.WMS.Services
         /// </summary>
         private readonly IStringLocalizer<ModernWMS.Core.MultiLanguage> _stringLocalizer;
 
+        /// <summary>
+        /// functions
+        /// </summary>
+        private readonly FunctionHelper _functionHelper;
+
         #endregion Args
 
         #region constructor
@@ -49,10 +55,12 @@ namespace ModernWMS.WMS.Services
         public DispatchlistService(
             SqlDBContext dBContext
           , IStringLocalizer<ModernWMS.Core.MultiLanguage> stringLocalizer
+           , FunctionHelper functionHelper
             )
         {
             this._dBContext = dBContext;
             this._stringLocalizer = stringLocalizer;
+            this._functionHelper = functionHelper;
         }
 
         #endregion constructor
@@ -490,7 +498,7 @@ namespace ModernWMS.WMS.Services
             var entities = viewModel.Adapt<List<DispatchlistEntity>>();
             var sku_id_list = entities.Select(t => t.sku_id).ToList();
             var skus = await _dBContext.GetDbSet<SkuEntity>().Where(t => sku_id_list.Contains(t.id)).ToListAsync();
-            var dispatch_no = await _dBContext.GetFormNoAsync("Dispatchlist");
+            var dispatch_no = await _functionHelper.GetFormNoAsync("Dispatchlist");
             var now_time = DateTime.Now;
             foreach (var entity in entities)
             {
@@ -1482,7 +1490,7 @@ namespace ModernWMS.WMS.Services
             var customer_list = await _dBContext.GetDbSet<CustomerEntity>().Where(t => t.tenant_id == currentUser.tenant_id && import_customer_name.Contains(t.customer_name)).ToListAsync();
             var entities = new List<DispatchlistEntity>();
             var groups = viewModels.Select(t => t.import_group).Distinct().ToList();
-            var groups_code = await _dBContext.GetFormNoListAsync("Dispatchlist", groups.Count);
+            var groups_code = await _functionHelper.GetFormNoListAsync("Dispatchlist", groups.Count);
             var group_code_dic = new Dictionary<int, string>();
             var now_time = DateTime.Now;
             for (int i = 0; i < groups.Count(); i++)
@@ -1539,7 +1547,7 @@ namespace ModernWMS.WMS.Services
             {
                 for (int i = 1; i <= cnt; i++)
                 {
-                    code.Add(date +"-"+ cnt.ToString("0000"));
+                    code.Add(date + "-" + cnt.ToString("0000"));
                 }
             }
             else
@@ -1665,7 +1673,6 @@ namespace ModernWMS.WMS.Services
                 r.pick_list = picklist.Where(t => t.qty_available > 0).ToList();
             }
         }*/
-
 
         #endregion Api
     }

@@ -19,28 +19,28 @@ namespace ModernWMS.Core.Models
         public string table_name { get; set; } = string.Empty;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
-        public string prefix_char {  get; set; } = string.Empty;
+        public string prefix_char { get; set; } = string.Empty;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
-        public string reset_rule {  get; set; } = string.Empty;
+        public string reset_rule { get; set; } = string.Empty;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public int current_no { get; set; } = 1;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public DateTime last_update_time { get; set; } = DateTime.Now;
 
         /// <summary>
         ///  current user's tenant_id
         /// </summary>
-        public byte tenant_id { get; set; } = 1;
+        public long tenant_id { get; set; } = 1;
     }
 }
