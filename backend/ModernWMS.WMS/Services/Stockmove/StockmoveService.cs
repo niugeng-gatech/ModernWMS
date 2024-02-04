@@ -112,7 +112,7 @@ namespace ModernWMS.WMS.Services
             query = query.Where(t => t.tenant_id.Equals(currentUser.tenant_id))
                 .Where(queries.AsExpression<StockmoveViewModel>());
             int totals = await query.CountAsync();
-            var list = await query.OrderByDescending(t => t.create_time)
+            var list = await query.OrderByDescending(t => t.last_update_time)
                        .Skip((pageSearch.pageIndex - 1) * pageSearch.pageSize)
                        .Take(pageSearch.pageSize)
                        .ToListAsync();
@@ -202,10 +202,7 @@ namespace ModernWMS.WMS.Services
                                   orig_goods_warehouse = orig_location.warehouse_name,
                                   series_number = m.series_number,
                               }).FirstOrDefaultAsync();
-            if (data == null)
-            {
-                return null;
-            }
+            
             return data;
         }
 
@@ -287,7 +284,7 @@ namespace ModernWMS.WMS.Services
             entity.creator = currentUser.user_name;
             entity.last_update_time = DateTime.Now;
             entity.tenant_id = currentUser.tenant_id;
-            entity.job_code = await GetOrderCode(currentUser);
+            entity.job_code = await _dBContext.GetFormNoAsync("Stockmove");
             await DbSet.AddAsync(entity);
             await _dBContext.SaveChangesAsync();
             if (entity.id > 0)
@@ -315,10 +312,11 @@ namespace ModernWMS.WMS.Services
             {
                 return (false, _stringLocalizer["not_exists_entity"]);
             }
+            var now_time = DateTime.Now;
             entity.handler = currentUser.user_name;
-            entity.handle_time = DateTime.Now;
+            entity.handle_time = now_time;
             entity.move_status = 1;
-            entity.last_update_time = DateTime.Now;
+            entity.last_update_time = now_time;
             var orig_stock = await stock_DBSet.FirstOrDefaultAsync(t => t.goods_owner_id == entity.goods_owner_id && t.series_number == entity.series_number && t.goods_location_id == entity.orig_goods_location_id && t.sku_id == entity.sku_id);
             var dest_stock = await stock_DBSet.FirstOrDefaultAsync(t => t.goods_owner_id == entity.goods_owner_id && t.series_number == entity.series_number && t.goods_location_id == entity.dest_googs_location_id && t.sku_id != entity.sku_id);
             if (orig_stock != null)
@@ -330,7 +328,7 @@ namespace ModernWMS.WMS.Services
                 else
                 {
                     orig_stock.qty -= entity.qty;
-                    orig_stock.last_update_time = DateTime.Now;
+                    orig_stock.last_update_time = now_time;
                 }
             }
             if (dest_stock == null)
@@ -341,7 +339,7 @@ namespace ModernWMS.WMS.Services
                     sku_id = entity.sku_id,
                     goods_owner_id = entity.goods_owner_id,
                     is_freeze = false,
-                    last_update_time = DateTime.Now,
+                    last_update_time = now_time,
                     qty = entity.qty,
                     tenant_id = entity.tenant_id,
                 };
@@ -350,7 +348,7 @@ namespace ModernWMS.WMS.Services
             else
             {
                 dest_stock.qty += entity.qty;
-                dest_stock.last_update_time = DateTime.Now;
+                dest_stock.last_update_time = now_time;
             }
             var saved = false;
             int res = 0;
