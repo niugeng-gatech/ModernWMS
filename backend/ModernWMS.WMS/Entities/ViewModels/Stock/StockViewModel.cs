@@ -129,6 +129,14 @@ namespace ModernWMS.WMS.Entities.ViewModels
         [MaxLength(64, ErrorMessage = "MaxLength")]
         public string series_number { get; set; } = string.Empty;
 
+
+        /// <summary>
+        /// expiry_date
+        /// </summary>
+        [Display(Name = "expiry_date")]
+        [DataType(DataType.DateTime, ErrorMessage = "DataType_DateTime")]
+        public DateTime expiry_date { get; set; } = UtilConvert.MinDate;
+
         #endregion Property
     }
 }

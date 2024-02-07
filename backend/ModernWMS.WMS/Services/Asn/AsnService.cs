@@ -601,8 +601,10 @@ namespace ModernWMS.WMS.Services
             entities.ForEach(e =>
             {
                 int sum_sorted_qty = viewModels.Where(t => t.asn_id.Equals(e.id)).Sum(v => v.sorted_qty);
+                var expiry_date = viewModels.Where(t => t.asn_id.Equals(e.id)).FirstOrDefault(v => v.expiry_date);
                 e.sorted_qty += sum_sorted_qty;
                 e.last_update_time = DateTime.Now;
+                e.expiry_date = expiry_date;
             });
             var qty = await _dBContext.SaveChangesAsync();
             if (qty > 0)
@@ -655,8 +657,6 @@ namespace ModernWMS.WMS.Services
                 {
                     t.last_update_time = DateTime.Now;
                     t.is_valid = true;
-                    t.create_time = t.create_time.Year < 1985 ? DateTime.Now : t.create_time;
-                    t.creator = string.IsNullOrEmpty(t.creator) ? user.user_name : t.creator;
                 });
                 Asnsorts.UpdateRange(updateEntities);
             }
@@ -855,6 +855,8 @@ namespace ModernWMS.WMS.Services
                 entity.asn_status = 4;
             }
             entity.last_update_time = DateTime.Now;
+            // expiry_date
+            var expiry_date = entity.expiry_date;
 
             // 获取已上架数小于分拣数的分拣记录
             var sortEntities = await Asnsorts.Where(t => t.asn_id == viewModels[0].asn_id && t.sorted_qty > t.putaway_qty).ToListAsync();
@@ -894,6 +896,7 @@ namespace ModernWMS.WMS.Services
                                                                               && t.goods_location_id.Equals(viewModel.goods_location_id)
                                                                               && t.goods_owner_id.Equals(viewModel.goods_owner_id)
                                                                               && t.series_number.Equals(viewModel.series_number)
+                                                                              && t.expiry_date.Equals(expiry_date)
                                                                               );
                 if (stockEntity == null)
                 {
@@ -907,6 +910,7 @@ namespace ModernWMS.WMS.Services
                         is_freeze = false,
                         last_update_time = DateTime.Now,
                         tenant_id = currentUser.tenant_id,
+                        expiry_date = expiry_date,
                         id = 0
                     };
                     await Stocks.AddAsync(stockEntity);
@@ -1064,7 +1068,8 @@ namespace ModernWMS.WMS.Services
                                               volume = a.volume,
                                               supplier_id = a.supplier_id,
                                               supplier_name = a.supplier_name,
-                                              is_valid = a.is_valid
+                                              is_valid = a.is_valid,
+                                              expiry_date = a.expiry_date
                                           }).ToList()
                         };
             query = query.Where(queries.AsExpression<AsnmasterBothViewModel>());

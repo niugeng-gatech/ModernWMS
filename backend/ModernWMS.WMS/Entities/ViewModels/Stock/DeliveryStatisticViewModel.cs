@@ -99,6 +99,12 @@ namespace ModernWMS.WMS.Entities.ViewModels.Stock
         /// </summary>
         public decimal delivery_amount { get; set; } = 0;
 
+
+        /// <summary>
+        /// expiry_date
+        /// </summary>
+        public DateTime expiry_date { get; set; } = UtilConvert.MinDate;
+
         #endregion Property
     }
 }

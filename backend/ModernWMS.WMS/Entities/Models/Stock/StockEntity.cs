@@ -61,6 +61,11 @@ namespace ModernWMS.WMS.Entities.Models
         /// </summary>
         public string series_number { get; set; } = string.Empty;
 
+        /// <summary>
+        /// expiry_date
+        /// </summary>
+        public DateTime expiry_date { get; set; } = UtilConvert.MinDate;
+
         #endregion Property
     }
 }

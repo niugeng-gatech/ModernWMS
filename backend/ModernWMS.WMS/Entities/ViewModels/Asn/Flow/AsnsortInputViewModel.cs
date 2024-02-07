@@ -42,6 +42,12 @@ namespace ModernWMS.WMS.Entities.ViewModels
         [Display(Name = "sorted_qty")]
         public int sorted_qty { get; set; } = 0;
 
+
+        /// <summary>
+        /// expiry_date
+        /// </summary>
+        public DateTime expiry_date { get; set; } = Core.Utility.UtilConvert.MinDate;
+
         #endregion
     }
 }

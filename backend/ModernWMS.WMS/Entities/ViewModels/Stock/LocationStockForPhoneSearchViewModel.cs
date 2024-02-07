@@ -3,6 +3,7 @@
  * developer：NoNo
  */
 
+using ModernWMS.Core.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,5 +41,10 @@ namespace ModernWMS.WMS.Entities.ViewModels
         /// location name
         /// </summary>
         public string location_name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// expiry_date
+        /// </summary>
+        public DateTime expiry_date { get; set; } = UtilConvert.MinDate;
     }
 }
