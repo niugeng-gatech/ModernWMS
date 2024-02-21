@@ -585,6 +585,7 @@
       "sku_id": "Sku Id",
       "sku_name": "Form Name",
       "sorted_qty": "Sorted Quantity",
+      "expiry_date":"Expiration Date",
       "spu_code": "Commodity code",
       "spu_id": "Spu Id",
       "spu_name": "Trade name",

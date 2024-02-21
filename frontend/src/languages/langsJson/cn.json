@@ -585,6 +585,7 @@
       "sku_id": "商品sku标识",
       "sku_name": "规格名称",
       "sorted_qty": "分拣数量",
+      "expiry_date":"过期日期",
       "spu_code": "商品编码",
       "spu_id": "商品spu标识",
       "spu_name": "商品名称",

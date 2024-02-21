@@ -107,10 +107,22 @@ const method = reactive({
     data.printData = row
     data.showDialog = true
   },
-  formatPrintData: (val: any) => JSON.stringify({
+  formatPrintData: (val: any) => {
+    const form = {
       id: val.id,
       type: val.type
-    }),
+    } as any
+    if (val.hasOwnProperty('sku_id')) {
+      form.sku_id = val.sku_id
+    }
+    if (val.hasOwnProperty('asn_id')) {
+      form.asn_id = val.asn_id
+    }
+    if (val.hasOwnProperty('asnmaster_id')) {
+      form.asnmaster_id = val.asnmaster_id
+    }
+    return JSON.stringify(form)
+  },
   closeDialog: () => {
     data.showDialog = false
   }

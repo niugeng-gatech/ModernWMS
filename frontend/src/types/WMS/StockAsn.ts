@@ -48,6 +48,7 @@ export interface StockAsnDetailVO {
   supplier_id?: number
   supplier_name?: string
   is_valid?: boolean
+  is_check?;boolean
 }
 
 export interface PutawayVo {

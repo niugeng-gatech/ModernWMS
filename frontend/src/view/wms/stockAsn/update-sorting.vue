@@ -30,6 +30,11 @@
                 <vxe-input v-model="row.sorted_qty" type="text"></vxe-input>
               </template>
             </vxe-column>
+            <vxe-column field="expiry_date" :title="$t('wms.stockAsnInfo.expiry_date')" :edit-render="{ autofocus: '.vxe-input--inner' }">
+              <template #edit="{ row }">
+                <vxe-input v-model="row.expiry_date" type="date"></vxe-input>
+              </template>
+            </vxe-column>
             <vxe-column field="creator" :title="$t('wms.deliveryManagement.creator')"> </vxe-column>
             <vxe-column field="create_time" :formatter="['formatDate', 'yyyy-MM-dd']" :title="$t('wms.deliveryManagement.create_time')"> </vxe-column>
             <vxe-column field="operate" :title="$t('system.page.operate')" width="100" :resizable="false" show-overflow>

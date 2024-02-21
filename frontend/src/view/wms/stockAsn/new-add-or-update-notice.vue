@@ -115,20 +115,22 @@
                 </v-row>
               </v-col>
               <v-col :cols="1">
-                <div class="detailBtnContainer">
-                  <tooltip-btn
-                    :flat="true"
-                    icon="mdi-delete-outline"
-                    :tooltip-text="$t('system.page.delete')"
-                    :icon-color="errorColor"
-                    @click="method.removeItem(index, item)"
-                  ></tooltip-btn>
+                <div class="detailComtainer">
+                  <div class="detailchbContainer">
+                    <v-checkbox v-model="item.is_check"></v-checkbox>
+                  </div>
+                  <div class="detailBtnContainer">
+                    <tooltip-btn
+                      :flat="true"
+                      icon="mdi-delete-outline"
+                      :tooltip-text="$t('system.page.delete')"
+                      :icon-color="errorColor"
+                      @click="method.removeItem(index, item)"
+                    ></tooltip-btn>
+                  </div>
                 </div>
               </v-col>
             </v-row>
-            <!-- <v-btn style="font-size: 20px; margin-bottom: 15px; margin-top: 10px; float: right" color="primary" :width="40" @click="method.AddDetail">
-              +
-            </v-btn> -->
             <v-btn
               style="font-size: 20px; margin-bottom: 15px; margin-top: 10px; float: right"
               color="primary"
@@ -140,11 +142,22 @@
           </v-form>
         </v-card-text>
         <v-card-actions class="justify-end">
+          <v-btn v-show="data.form.detailList.length > 0" color="primary" variant="text" @click="method.printQrCode">
+            {{ $t('base.commodityManagement.printQrCode') }}
+          </v-btn>
           <v-btn variant="text" @click="method.closeDialog">{{ $t('system.page.close') }}</v-btn>
           <v-btn color="primary" variant="text" @click="method.submit">{{ $t('system.page.submit') }}</v-btn>
         </v-card-actions>
       </v-card>
       <skuSelect :show-dialog="data.showSkuDialogSelect" @close="method.closeDialogSelect('target')" @sureSelect="method.sureSelect" />
+      <!-- Print QR code -->
+      <qr-code-dialog ref="qrCodeDialogRef" :menu="'stockAsnInfo-notice'">
+        <template #left="{ slotData }">
+          <p>{{ $t('wms.stockAsnInfo.num') }}:{{ slotData.asn_no }}</p> 
+          <p>{{ $t('wms.stockAsnInfo.spu_name') }}:{{ slotData.spu_name }}</p> 
+          <p>{{ $t('wms.stockAsnInfo.sku_code') }}:{{ slotData.sku_code }}</p> 
+        </template>
+      </qr-code-dialog>
     </template>
   </v-dialog>
 </template>
@@ -166,8 +179,10 @@ import { checkDetailRepeatGetBool } from '@/utils/dataVerification/page'
 import { formatDate } from '@/utils/format/formatSystem'
 import customFilterSelect from '@/components/custom-filter-select.vue'
 import { removeObjectNull } from '@/utils/common'
+import QrCodeDialog from '@/components/codeDialog/qrCodeDialog.vue'
 
 const formRef = ref()
+const qrCodeDialogRef = ref()
 const emit = defineEmits(['close', 'saveSuccess'])
 
 const props = defineProps<{
@@ -227,6 +242,27 @@ const data = reactive({
 })
 
 const method = reactive({
+  // Print QR code
+  printQrCode: () => {
+    const records = data.form.detailList.filter((item: StockAsnDetailVO) => item.is_check) as any[]
+    // data.selectRowData.length === 0 ? data.selectRowData = [row] : ''
+    // const records:any[] = data.selectRowData
+    if (records.length > 0) {
+      for (const item of records) {
+        item.type = 'asn'
+        item.asn_id = item.id
+        item.asn_no = data.form.asn_no
+      }
+      console.log(records)
+      
+      qrCodeDialogRef.value.openDialog(records)
+    } else {
+      hookComponent.$message({
+        type: 'error',
+        content: i18n.global.t('base.userManagement.checkboxIsNull')
+      })
+    }
+  },
   supplierNameChange: (dItem: StockAsnDetailVO) => {
     if (dItem.supplier_name) {
       dItem.supplier_id = data.combobox.supplier_name.filter((item) => item.label === dItem.supplier_name)[0].value
@@ -357,9 +393,7 @@ const method = reactive({
     const { valid } = await formRef.value.validate()
     if (valid) {
       const form = removeObjectNull(data.form)
-      const { data: res } = form.id && form.id > 0
-          ? await updateAsnNew({ ...form, detailList: [...form.detailList, ...data.removeDetailList] })
-          : await addAsnNew(form)
+      const { data: res } = form.id && form.id > 0 ? await updateAsnNew({ ...form, detailList: [...form.detailList, ...data.removeDetailList] }) : await addAsnNew(form)
       if (!res.isSuccess) {
         hookComponent.$message({
           type: 'error',
@@ -416,13 +450,19 @@ watch(
 //     margin-bottom: 7px;
 //   }
 // }
+.detailComtainer {
+  margin-left: -10px;
+  width: 90px;
+  display: flex;
+  justify-content: space-between;
+}
+.detailchbContainer {
+  height: 40px;
+}
 .detailBtnContainer {
   height: 56px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
 }
-// .v-col {
-//   padding: 0 !important;
-// }
 </style>
