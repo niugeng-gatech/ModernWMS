@@ -329,12 +329,12 @@ onMounted(() => {
       code: 'notice-export',
       click: method.exportTable
     },
-    {
-      name: i18n.global.t('base.commodityManagement.printQrCode'),
-      icon: 'mdi-qrcode',
-      code: 'notice-printQrCode',
-      click: method.printQrCode
-    }
+    // {
+    //   name: i18n.global.t('base.commodityManagement.printQrCode'),
+    //   icon: 'mdi-qrcode',
+    //   code: 'notice-printQrCode',
+    //   click: method.printQrCode
+    // }
   ]
 })
 
