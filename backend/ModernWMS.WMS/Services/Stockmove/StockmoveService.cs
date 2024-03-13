@@ -202,7 +202,7 @@ namespace ModernWMS.WMS.Services
                                   orig_goods_warehouse = orig_location.warehouse_name,
                                   series_number = m.series_number,
                               }).FirstOrDefaultAsync();
-            
+
             return data;
         }
 
@@ -342,6 +342,7 @@ namespace ModernWMS.WMS.Services
                     last_update_time = now_time,
                     qty = entity.qty,
                     tenant_id = entity.tenant_id,
+                    series_number = entity.series_number,
                 };
                 await stock_DBSet.AddAsync(dest_stock);
             }

@@ -174,7 +174,7 @@ namespace ModernWMS.WMS.Services
             entity.tenant_id = currentUser.tenant_id;
             entity.job_code = await _dBContext.GetFormNoAsync("Stockfreeze");
             var stock_DBSet = _dBContext.GetDbSet<StockEntity>();
-            var stocks = await stock_DBSet.Where(t => t.goods_location_id == entity.goods_location_id && t.goods_owner_id == entity.goods_owner_id && t.sku_id == entity.sku_id).ToListAsync();
+            var stocks = await stock_DBSet.Where(t => t.goods_location_id == entity.goods_location_id && t.goods_owner_id == entity.goods_owner_id && t.sku_id == entity.sku_id && t.series_number == entity.series_number).ToListAsync();
             foreach (var stock in stocks)
             {
                 if (entity.job_type == true)
