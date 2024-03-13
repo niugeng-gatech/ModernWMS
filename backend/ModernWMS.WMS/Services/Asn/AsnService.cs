@@ -601,7 +601,7 @@ namespace ModernWMS.WMS.Services
             entities.ForEach(e =>
             {
                 int sum_sorted_qty = viewModels.Where(t => t.asn_id.Equals(e.id)).Sum(v => v.sorted_qty);
-                var expiry_date = viewModels.Where(t => t.asn_id.Equals(e.id)).FirstOrDefault(v => v.expiry_date);
+                var expiry_date = viewModels.Where(t => t.asn_id.Equals(e.id)).Select(v => v.expiry_date).FirstOrDefault();
                 e.sorted_qty += sum_sorted_qty;
                 e.last_update_time = DateTime.Now;
                 e.expiry_date = expiry_date;
