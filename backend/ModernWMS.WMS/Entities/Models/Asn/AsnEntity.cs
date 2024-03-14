@@ -165,6 +165,11 @@ namespace ModernWMS.WMS.Entities.Models
         /// expiry_date
         /// </summary>
         public DateTime expiry_date { get; set; } = Core.Utility.UtilConvert.MinDate;
+
+        /// <summary>
+        /// price
+        /// </summary>
+        public decimal price { get; set; } = 0;
         #endregion
 
     }
