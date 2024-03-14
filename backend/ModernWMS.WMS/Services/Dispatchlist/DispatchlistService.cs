@@ -877,7 +877,7 @@ namespace ModernWMS.WMS.Services
                 return (false, "[202]" + _stringLocalizer["data_changed"]);
             }
             await pick_DBSet.AddRangeAsync(pick_datas);
-            var dispatch_no = await _dBContext.GetFormNoAsync("Dispatchlist");
+            var dispatch_no = await _functionHelper.GetFormNoAsync("Dispatchlist");
             var sku_datas = await _dBContext.GetDbSet<SkuEntity>().Where(t => sku_id_list.Contains(t.id)).ToListAsync();
             foreach (var nd in new_dispatchlists)
             {

@@ -14,6 +14,7 @@
 using ModernWMS.Core.Models;
 using ModernWMS.Core.JWT;
 using System.Linq;
+using ModernWMS.Core;
 
 namespace ModernWMS.WMS.Services
 {
@@ -32,6 +33,12 @@ namespace ModernWMS.WMS.Services
         /// Localizer Service
         /// </summary>
         private readonly IStringLocalizer<ModernWMS.Core.MultiLanguage> _stringLocalizer;
+
+        /// <summary>
+        /// functions
+        /// </summary>
+        private readonly FunctionHelper _functionHelper;
+
         #endregion
 
         #region constructor
@@ -43,10 +50,12 @@ namespace ModernWMS.WMS.Services
         public StocktakingService(
             SqlDBContext dBContext
           , IStringLocalizer<ModernWMS.Core.MultiLanguage> stringLocalizer
+          , FunctionHelper functionHelper 
             )
         {
             this._dBContext = dBContext;
             this._stringLocalizer = stringLocalizer;
+            _functionHelper = functionHelper;
         }
         #endregion
 
@@ -187,7 +196,7 @@ namespace ModernWMS.WMS.Services
             var DbSet = _dBContext.GetDbSet<StocktakingEntity>();
             var entity = viewModel.Adapt<StocktakingEntity>();
             entity.id = 0;
-            entity.job_code = await _dBContext.GetFormNoAsync("Stocktaking");
+            entity.job_code = await _functionHelper.GetFormNoAsync("Stocktaking");
             entity.creator = currentUser.user_name;
             entity.create_time = DateTime.Now;
             entity.last_update_time = DateTime.Now;

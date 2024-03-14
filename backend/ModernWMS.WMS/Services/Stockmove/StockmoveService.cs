@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Mvc;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System;
 using ModernWMS.Core.Utility;
+using ModernWMS.Core;
 
 namespace ModernWMS.WMS.Services
 {
@@ -38,6 +39,11 @@ namespace ModernWMS.WMS.Services
         /// </summary>
         private readonly IStringLocalizer<ModernWMS.Core.MultiLanguage> _stringLocalizer;
 
+        /// <summary>
+        /// Function Helper
+        /// </summary>
+        private readonly FunctionHelper _functionHelper;
+
         #endregion Args
 
         #region constructor
@@ -50,10 +56,12 @@ namespace ModernWMS.WMS.Services
         public StockmoveService(
             SqlDBContext dBContext
           , IStringLocalizer<ModernWMS.Core.MultiLanguage> stringLocalizer
+            , FunctionHelper functionHelper
             )
         {
             this._dBContext = dBContext;
             this._stringLocalizer = stringLocalizer;
+            this._functionHelper = functionHelper;
         }
 
         #endregion constructor
@@ -202,7 +210,7 @@ namespace ModernWMS.WMS.Services
                                   orig_goods_warehouse = orig_location.warehouse_name,
                                   series_number = m.series_number,
                               }).FirstOrDefaultAsync();
-            
+
             return data;
         }
 
@@ -284,7 +292,7 @@ namespace ModernWMS.WMS.Services
             entity.creator = currentUser.user_name;
             entity.last_update_time = DateTime.Now;
             entity.tenant_id = currentUser.tenant_id;
-            entity.job_code = await _dBContext.GetFormNoAsync("Stockmove");
+            entity.job_code = await _functionHelper.GetFormNoAsync("Stockmove");
             await DbSet.AddAsync(entity);
             await _dBContext.SaveChangesAsync();
             if (entity.id > 0)
@@ -342,6 +350,7 @@ namespace ModernWMS.WMS.Services
                     last_update_time = now_time,
                     qty = entity.qty,
                     tenant_id = entity.tenant_id,
+                    series_number = entity.series_number,
                 };
                 await stock_DBSet.AddAsync(dest_stock);
             }

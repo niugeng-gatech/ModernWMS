@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Formatters.Xml;
 using Microsoft.AspNetCore.SignalR.Protocol;
 using System.Linq;
+using ModernWMS.Core;
 
 namespace ModernWMS.WMS.Services
 {
@@ -40,6 +41,11 @@ namespace ModernWMS.WMS.Services
         /// </summary>
         private readonly IStringLocalizer<ModernWMS.Core.MultiLanguage> _stringLocalizer;
 
+        /// <summary>
+        /// Function Helper
+        /// </summary>
+        private readonly FunctionHelper _functionHelper;
+
         #endregion Args
 
         #region constructor
@@ -52,10 +58,12 @@ namespace ModernWMS.WMS.Services
         public StockprocessService(
             SqlDBContext dBContext
           , IStringLocalizer<ModernWMS.Core.MultiLanguage> stringLocalizer
+            , FunctionHelper functionHelper
             )
         {
             this._dBContext = dBContext;
             this._stringLocalizer = stringLocalizer;
+            this._functionHelper = functionHelper;
         }
 
         #endregion constructor
@@ -235,7 +243,7 @@ namespace ModernWMS.WMS.Services
             entity.creator = currentUser.user_name;
             entity.last_update_time = DateTime.Now;
             entity.tenant_id = currentUser.tenant_id;
-            entity.job_code = await _dBContext.GetFormNoAsync("Stockprocess");
+            entity.job_code = await _functionHelper.GetFormNoAsync("Stockprocess");
             await DbSet.AddAsync(entity);
             foreach (var d in entity.detailList)
             {
