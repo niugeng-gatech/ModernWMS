@@ -21,7 +21,7 @@ import { useLocale } from 'vuetify'
 import { getSelectedLang } from '@/languages/method/index'
 import { getSelcectedLangForVuetify } from '@/plugins/vuetify/method/index'
 import { store } from '@/store'
-import { router } from '@/router'
+// import { router } from '@/router'
 
 const { locale } = useI18n()
 const { current } = useLocale()
