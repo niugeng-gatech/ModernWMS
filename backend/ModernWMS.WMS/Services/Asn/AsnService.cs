@@ -122,6 +122,7 @@ namespace ModernWMS.WMS.Services
                             length_unit = p.length_unit,
                             volume_unit = p.volume_unit,
                             weight_unit = p.weight_unit,
+                            price = m.price,
                             asn_qty = m.asn_qty,
                             actual_qty = m.actual_qty,
                             arrival_time = m.arrival_time,
@@ -141,7 +142,8 @@ namespace ModernWMS.WMS.Services
                             creator = m.creator,
                             create_time = m.create_time,
                             last_update_time = m.last_update_time,
-                            is_valid = m.is_valid
+                            is_valid = m.is_valid, 
+                            expiry_date = m.expiry_date
                         };
             query = query.Where(queries.AsExpression<AsnViewModel>());
             int totals = await query.CountAsync();
@@ -184,6 +186,7 @@ namespace ModernWMS.WMS.Services
                             length_unit = p.length_unit,
                             volume_unit = p.volume_unit,
                             weight_unit = p.weight_unit,
+                            price = m.price,
                             asn_qty = m.asn_qty,
                             actual_qty = m.actual_qty,
                             arrival_time = m.arrival_time,
@@ -203,7 +206,8 @@ namespace ModernWMS.WMS.Services
                             creator = m.creator,
                             create_time = m.create_time,
                             last_update_time = m.last_update_time,
-                            is_valid = m.is_valid
+                            is_valid = m.is_valid,
+                            expiry_date = m.expiry_date
                         };
             var data = await query.FirstOrDefaultAsync(t => t.id.Equals(id));
             return data ?? new AsnViewModel();
@@ -296,6 +300,7 @@ namespace ModernWMS.WMS.Services
             entity.asn_no = viewModel.asn_no;
             entity.spu_id = viewModel.spu_id;
             entity.sku_id = viewModel.sku_id;
+            entity.price = viewModel.price;
             entity.asn_qty = viewModel.asn_qty;
             entity.weight = viewModel.weight;
             entity.volume = viewModel.volume;
@@ -622,17 +627,35 @@ namespace ModernWMS.WMS.Services
         /// </summary>
         /// <param name="asn_id">asn id</param>
         /// <returns></returns>
-        public async Task<List<AsnsortEntity>> GetAsnsortsAsync(int asn_id)
+        public async Task<List<AsnsortViewModel>> GetAsnsortsAsync(int asn_id)
         {
             var Asnsorts = _dBContext.GetDbSet<AsnsortEntity>();
-            var sortsEntities = await Asnsorts.AsNoTracking().Where(t => t.asn_id == asn_id).ToListAsync();
-            if (sortsEntities.Any())
+            var asns = _dBContext.Set<AsnEntity>().AsNoTracking();
+
+            var data = await (from m in asns
+                              join d in Asnsorts on m.id equals d.asn_id
+                              where m.id == asn_id
+                              select new AsnsortViewModel
+                              {
+                                  id = d.id,
+                                  asn_id = asn_id,
+                                  sorted_qty = d.sorted_qty,
+                                  series_number = d.series_number,
+                                  putaway_qty = d.putaway_qty,
+                                  expiry_date = m.expiry_date,
+                                  creator = d.creator,
+                                  create_time = d.create_time,
+                                  last_update_time = d.last_update_time,
+                                  is_valid = d.is_valid,
+                                  tenant_id = d.tenant_id
+                              }).ToListAsync();
+            if (data != null && data.Count > 0)
             {
-                return sortsEntities;
+                return data;
             }
             else
             {
-                return new List<AsnsortEntity>();
+                return new List<AsnsortViewModel>();
             }
         }
 
@@ -892,11 +915,13 @@ namespace ModernWMS.WMS.Services
                 {
                     entity.damage_qty += viewModel.putaway_qty;
                 }
+                // 2024年3月14日 09:40:25 增加单价
                 var stockEntity = await Stocks.FirstOrDefaultAsync(t => t.sku_id.Equals(entity.sku_id)
                                                                               && t.goods_location_id.Equals(viewModel.goods_location_id)
                                                                               && t.goods_owner_id.Equals(viewModel.goods_owner_id)
                                                                               && t.series_number.Equals(viewModel.series_number)
                                                                               && t.expiry_date.Equals(expiry_date)
+                                                                              && t.price.Equals(entity.price)
                                                                               );
                 if (stockEntity == null)
                 {
@@ -911,6 +936,7 @@ namespace ModernWMS.WMS.Services
                         last_update_time = DateTime.Now,
                         tenant_id = currentUser.tenant_id,
                         expiry_date = expiry_date,
+                        price = entity.price,
                         id = 0
                     };
                     await Stocks.AddAsync(stockEntity);
