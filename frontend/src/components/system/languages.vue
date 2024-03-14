@@ -45,9 +45,9 @@ const method = reactive({
     locale.value = getSelectedLang(lang) // global
     current.value = getSelcectedLangForVuetify(lang) // vuetify
 
-    if (!['/', '/login'].includes(router.currentRoute.value.path)) {
-      store.commit('system/setRefreshFlag', true) // change language refresh page
-    }
+    // if (!['/', '/login'].includes(router.currentRoute.value.path)) {
+    store.commit('system/setRefreshFlag', true) // change language refresh page
+    // }
   }
 })
 </script>
