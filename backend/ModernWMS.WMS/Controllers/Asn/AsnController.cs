@@ -362,10 +362,10 @@ namespace ModernWMS.WMS.Controllers
         /// <param name="asn_id">asn id</param>
         /// <returns></returns>
         [HttpGet("sorting")]
-        public async Task<ResultModel<List<AsnsortEntity>>> GetAsnsortsAsync(int asn_id)
+        public async Task<ResultModel<List<AsnsortViewModel>>> GetAsnsortsAsync(int asn_id)
         {
             var data = await _asnService.GetAsnsortsAsync(asn_id);
-            return ResultModel<List<AsnsortEntity>>.Success(data);
+            return ResultModel<List<AsnsortViewModel>>.Success(data);
         }
 
         /// <summary>

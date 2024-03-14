@@ -106,7 +106,7 @@ namespace ModernWMS.WMS.IServices
         /// </summary>
         /// <param name="asn_id">asn id</param>
         /// <returns></returns>
-        Task<List<AsnsortEntity>> GetAsnsortsAsync(int asn_id);
+        Task<List<AsnsortViewModel>> GetAsnsortsAsync(int asn_id);
 
         /// <summary>
         /// update or delete asnsorts data

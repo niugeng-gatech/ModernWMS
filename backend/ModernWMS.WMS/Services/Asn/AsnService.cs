@@ -142,7 +142,8 @@ namespace ModernWMS.WMS.Services
                             creator = m.creator,
                             create_time = m.create_time,
                             last_update_time = m.last_update_time,
-                            is_valid = m.is_valid
+                            is_valid = m.is_valid, 
+                            expiry_date = m.expiry_date
                         };
             query = query.Where(queries.AsExpression<AsnViewModel>());
             int totals = await query.CountAsync();
@@ -205,7 +206,8 @@ namespace ModernWMS.WMS.Services
                             creator = m.creator,
                             create_time = m.create_time,
                             last_update_time = m.last_update_time,
-                            is_valid = m.is_valid
+                            is_valid = m.is_valid,
+                            expiry_date = m.expiry_date
                         };
             var data = await query.FirstOrDefaultAsync(t => t.id.Equals(id));
             return data ?? new AsnViewModel();
@@ -625,17 +627,35 @@ namespace ModernWMS.WMS.Services
         /// </summary>
         /// <param name="asn_id">asn id</param>
         /// <returns></returns>
-        public async Task<List<AsnsortEntity>> GetAsnsortsAsync(int asn_id)
+        public async Task<List<AsnsortViewModel>> GetAsnsortsAsync(int asn_id)
         {
             var Asnsorts = _dBContext.GetDbSet<AsnsortEntity>();
-            var sortsEntities = await Asnsorts.AsNoTracking().Where(t => t.asn_id == asn_id).ToListAsync();
-            if (sortsEntities.Any())
+            var asns = _dBContext.Set<AsnEntity>().AsNoTracking();
+
+            var data = await (from m in asns
+                              join d in Asnsorts on m.id equals d.asn_id
+                              where m.id == asn_id
+                              select new AsnsortViewModel
+                              {
+                                  id = d.id,
+                                  asn_id = asn_id,
+                                  sorted_qty = d.sorted_qty,
+                                  series_number = d.series_number,
+                                  putaway_qty = d.putaway_qty,
+                                  expiry_date = m.expiry_date,
+                                  creator = d.creator,
+                                  create_time = d.create_time,
+                                  last_update_time = d.last_update_time,
+                                  is_valid = d.is_valid,
+                                  tenant_id = d.tenant_id
+                              }).ToListAsync();
+            if (data != null && data.Count > 0)
             {
-                return sortsEntities;
+                return data;
             }
             else
             {
-                return new List<AsnsortEntity>();
+                return new List<AsnsortViewModel>();
             }
         }
 
