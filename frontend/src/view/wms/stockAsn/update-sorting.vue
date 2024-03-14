@@ -30,7 +30,12 @@
                 <vxe-input v-model="row.sorted_qty" type="text"></vxe-input>
               </template>
             </vxe-column>
-            <vxe-column field="expiry_date" :title="$t('wms.stockAsnInfo.expiry_date')" :edit-render="{ autofocus: '.vxe-input--inner' }">
+            <vxe-column
+              field="expiry_date"
+              :formatter="['formatDate', 'yyyy-MM-dd']"
+              :title="$t('wms.stockAsnInfo.expiry_date')"
+              :edit-render="{ autofocus: '.vxe-input--inner' }"
+            >
               <template #edit="{ row }">
                 <vxe-input v-model="row.expiry_date" type="date"></vxe-input>
               </template>

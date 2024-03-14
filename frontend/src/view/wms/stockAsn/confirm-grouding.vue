@@ -108,7 +108,9 @@ const data = reactive({
       { validator: validQty, trigger: 'change' }
     ],
     series_number: [],
-    location_name: [{ validator: validLocationName, trigger: 'change' }]
+    location_name: [
+    { required: true, message: `${ i18n.global.t('system.checkText.mustInput') }${ i18n.global.t('wms.stockAsnInfo.location_name') }` },
+    { validator: validLocationName, trigger: 'change' }]
   } as any
 })
 

@@ -11,6 +11,12 @@
               :rules="data.rules.sorted_qty"
               variant="outlined"
             ></v-text-field>
+            <v-text-field
+              v-model="data.form.expiry_date"
+              :label="$t('wms.stockAsnInfo.expiry_date')"
+              variant="outlined"
+              type="date"
+            ></v-text-field>
             <v-row v-for="(snNum, index) of data.SNList" :key="index" style="margin-top: 5px">
               <v-col :cols="10">
                 <v-text-field
@@ -71,6 +77,7 @@ const data = reactive({
   staticDetailQty: 1,
   form: ref<SortingVo>({
     asn_id: 0,
+    expiry_date: '',
     sorted_qty: 0
   }),
   SNList: [] as { snNum: string }[],
@@ -102,6 +109,7 @@ const method = reactive({
   openDialog: async (id: number) => {
     data.form = {
       asn_id: id,
+      expiry_date: '',
       sorted_qty: 0
     }
 
@@ -127,6 +135,7 @@ const method = reactive({
       for (const item of data.SNList) {
         reqData.push({
           asn_id: data.form.asn_id,
+          expiry_date: data.form.expiry_date,
           series_number: item.snNum,
           sorted_qty: 1
         })
@@ -137,6 +146,7 @@ const method = reactive({
         const margin = data.form.sorted_qty - data.SNList.length
         reqData.push({
           asn_id: data.form.asn_id,
+          expiry_date: data.form.expiry_date,
           series_number: '',
           sorted_qty: margin
         })
