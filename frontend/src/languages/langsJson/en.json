@@ -331,6 +331,7 @@
       "exportTemplate": "Export Template",
       "gridColumnGap": "Column spacing(px)",
       "gridRowGap": "Row spacing(px)",
+      "count":"Count",
       "import": "Import",
       "insertOneRow": "Insert One Row",
       "noData": "No data",

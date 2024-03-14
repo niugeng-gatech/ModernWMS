@@ -331,6 +331,7 @@
       "exportTemplate": "导出模板",
       "gridColumnGap": "列间距(px)",
       "gridRowGap": "行间距(px)",
+      "count":"个数",
       "import": "导入",
       "insertOneRow": "新增一行",
       "noData": "暂无数据",
