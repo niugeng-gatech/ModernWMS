@@ -165,6 +165,8 @@ namespace ModernWMS.WMS.Services
                                      unit = sku.unit,
                                      location_name = gl.location_name == null ? "" : gl.location_name,
                                      series_number = spd.series_number,
+                                     expiry_date = spd.expiry_date,
+                                     price = spd.price,
                                  }).ToListAsync();
             if (entity == null)
             {
@@ -215,6 +217,14 @@ namespace ModernWMS.WMS.Services
                 PropertyInfo t_prop_sn = typeof(StockEntity).GetProperty("series_number");
                 MemberExpression t_sn_exp = Expression.Property(parameterExpression, t_prop_sn);
                 BinaryExpression t_sn_full_exp = Expression.Equal(t_sn_exp, t_constan_sn);
+                ConstantExpression t_constan_expiry = Expression.Constant(entity.detailList[i].expiry_date);
+                PropertyInfo t_prop_expiry = typeof(StockEntity).GetProperty("expiry_date");
+                MemberExpression t_expiry_exp = Expression.Property(parameterExpression, t_prop_sn);
+                BinaryExpression t_expiry_full_exp = Expression.Equal(t_sn_exp, t_constan_sn);
+                ConstantExpression t_constan_price = Expression.Constant(entity.detailList[i].price);
+                PropertyInfo t_prop_price = typeof(StockEntity).GetProperty("price");
+                MemberExpression t_price_exp = Expression.Property(parameterExpression, t_prop_sn);
+                BinaryExpression t_price_full_exp = Expression.Equal(t_sn_exp, t_constan_sn);
                 var t_exp = Expression.And(t_location_full_exp, t_sku_full_exp);
                 t_exp = Expression.And(t_exp, t_owner_full_exp);
                 if (exp != null)
@@ -229,13 +239,15 @@ namespace ModernWMS.WMS.Services
             var lockeds = await (from d in _dBContext.GetDbSet<StockprocessdetailEntity>().AsNoTracking()
                                  where d.is_update_stock == false && goods_location_id_list.Contains(d.goods_location_id)
                                  && sku_id_list.Contains(d.sku_id)
-                                 group d by new { d.goods_location_id, d.sku_id, d.goods_owner_id, d.series_number } into lg
+                                 group d by new { d.goods_location_id, d.sku_id, d.goods_owner_id, d.series_number, d.expiry_date, d.price } into lg
                                  select new
                                  {
                                      sku_id = lg.Key.sku_id,
                                      goods_location_id = lg.Key.goods_location_id,
                                      goods_owner_id = lg.Key.goods_owner_id,
                                      series_number = lg.Key.series_number,
+                                     lg.Key.expiry_date,
+                                     lg.Key.price,
                                      qty_locked = lg.Sum(e => e.qty)
                                  }).ToListAsync();
             entity.id = 0;
@@ -250,14 +262,14 @@ namespace ModernWMS.WMS.Services
                 d.tenant_id = currentUser.tenant_id;
                 d.last_update_time = DateTime.Now;
                 d.id = 0;
-                var s = stocks.FirstOrDefault(t => t.sku_id == d.sku_id && t.goods_location_id == d.goods_location_id && t.goods_owner_id == d.goods_owner_id && t.series_number == d.series_number);
+                var s = stocks.FirstOrDefault(t => t.sku_id == d.sku_id && t.goods_location_id == d.goods_location_id && t.goods_owner_id == d.goods_owner_id && t.series_number == d.series_number && t.expiry_date == d.expiry_date && t.price == d.price);
                 if (d.is_source == true)
                 {
                     if (s == null)
                     {
                         return (0, _stringLocalizer["data_changed"]);
                     }
-                    var locked = lockeds.FirstOrDefault(t => t.sku_id == d.sku_id && t.goods_location_id == d.goods_location_id && t.goods_owner_id == d.goods_owner_id && t.series_number == d.series_number);
+                    var locked = lockeds.FirstOrDefault(t => t.sku_id == d.sku_id && t.goods_location_id == d.goods_location_id && t.goods_owner_id == d.goods_owner_id && t.series_number == d.series_number && t.expiry_date == d.expiry_date && t.price == d.price);
                     if ((s.qty - (locked == null ? 0 : locked.qty_locked)) < d.qty)
                     {
                         return (0, _stringLocalizer["data_changed"]);
@@ -372,6 +384,8 @@ namespace ModernWMS.WMS.Services
                                last_update_time = now_time,
                                tenant_id = currentUser.tenant_id,
                                series_number = d.series_number,
+                               expiry_date = d.expiry_date,
+                               price = d.price,
                            }).ToList();
             entity.last_update_time = now_time;
             var stock_DBSet = _dBContext.GetDbSet<StockEntity>();
@@ -380,10 +394,10 @@ namespace ModernWMS.WMS.Services
                 return (false, _stringLocalizer["not_exists_entity"]);
             }
 
-            var stocks = await stock_DBSet.Where(s => detail_DBSet.Where(t => t.stock_process_id == id).Any(t => t.goods_location_id == s.goods_location_id && t.sku_id == s.sku_id && t.goods_owner_id == s.goods_owner_id && t.series_number == s.series_number)).ToListAsync();
+            var stocks = await stock_DBSet.Where(s => detail_DBSet.Where(t => t.stock_process_id == id).Any(t => t.goods_location_id == s.goods_location_id && t.sku_id == s.sku_id && t.goods_owner_id == s.goods_owner_id && t.series_number == s.series_number && t.expiry_date == s.expiry_date && t.price == s.price)).ToListAsync();
             foreach (var d in details)
             {
-                var stock = stocks.FirstOrDefault(t => t.goods_location_id == d.goods_location_id && t.sku_id == d.sku_id && t.goods_owner_id == d.goods_owner_id && t.series_number == d.series_number);
+                var stock = stocks.FirstOrDefault(t => t.goods_location_id == d.goods_location_id && t.sku_id == d.sku_id && t.goods_owner_id == d.goods_owner_id && t.series_number == d.series_number && t.expiry_date == d.expiry_date && t.price == d.price);
                 d.is_update_stock = true;
                 d.last_update_time = now_time;
                 if (d.is_source)
@@ -405,6 +419,8 @@ namespace ModernWMS.WMS.Services
                             goods_location_id = d.goods_location_id,
                             goods_owner_id = d.goods_owner_id,
                             series_number = d.series_number,
+                            expiry_date = d.expiry_date,
+                            price = d.price,
                             is_freeze = false,
                             last_update_time = now_time,
                             qty = d.qty,
