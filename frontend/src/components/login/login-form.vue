@@ -161,8 +161,8 @@ onMounted(() => {
         data.userName = window.atob(obj.userName)
         data.password = window.atob(obj.password)
       } catch {
-        data.userName = ''
-        data.password = ''
+        data.userName = 'admin'
+        data.password = '1'
         localStorage.setItem('userLoginInfo', '')
       }
     }
