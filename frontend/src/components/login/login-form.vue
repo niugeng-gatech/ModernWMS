@@ -45,8 +45,8 @@ const data = reactive({
   showDialog: false,
   valid: true,
   showPassword: false,
-  userName: '',
-  password: '',
+  userName: 'admin',
+  password: '1',
   remember: false,
   dialogForm: {
     id: 0,
@@ -157,8 +157,14 @@ onMounted(() => {
       data.userName = decodeURIComponent(window.atob(obj.userName))
       data.password = decodeURIComponent(window.atob(obj.password))
     } catch {
-      data.userName = window.atob(obj.userName)
-      data.password = window.atob(obj.password)
+      try {
+        data.userName = window.atob(obj.userName)
+        data.password = window.atob(obj.password)
+      } catch {
+        data.userName = ''
+        data.password = ''
+        localStorage.setItem('userLoginInfo', '')
+      }
     }
     data.remember = true
   }
