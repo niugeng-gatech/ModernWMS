@@ -163,6 +163,12 @@ namespace ModernWMS.WMS.Entities.ViewModels
         /// </summary>
         [Display(Name = "price")]
         public decimal price { get; set; } = 0;
+
+        /// <summary>
+        /// sorted_qty
+        /// </summary>
+        public int sorted_qty { get; set; } = 0;
+
         #endregion
 
     }

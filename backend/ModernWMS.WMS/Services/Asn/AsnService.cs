@@ -1095,7 +1095,9 @@ namespace ModernWMS.WMS.Services
                                               supplier_id = a.supplier_id,
                                               supplier_name = a.supplier_name,
                                               is_valid = a.is_valid,
-                                              expiry_date = a.expiry_date
+                                              expiry_date = a.expiry_date,
+                                              price = a.price,
+                                              sorted_qty = a.sorted_qty,
                                           }).ToList()
                         };
             query = query.Where(queries.AsExpression<AsnmasterBothViewModel>());
@@ -1161,7 +1163,10 @@ namespace ModernWMS.WMS.Services
                                               volume = a.volume,
                                               supplier_id = a.supplier_id,
                                               supplier_name = a.supplier_name,
-                                              is_valid = a.is_valid
+                                              is_valid = a.is_valid,
+                                              sorted_qty = a.sorted_qty,
+                                              expiry_date = a.expiry_date,
+                                              price = a.price
                                           }).ToList()
                         };
             var data = await query.FirstOrDefaultAsync();
