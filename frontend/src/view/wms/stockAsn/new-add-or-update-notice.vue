@@ -253,7 +253,6 @@ const method = reactive({
         item.asn_id = item.id
         item.asn_no = data.form.asn_no
       }
-      console.log(records)
       
       qrCodeDialogRef.value.openDialog(records)
     } else {

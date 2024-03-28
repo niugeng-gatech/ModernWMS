@@ -48,7 +48,7 @@ export interface StockAsnDetailVO {
   supplier_id?: number
   supplier_name?: string
   is_valid?: boolean
-  is_check?;boolean
+  is_check?; boolean
 }
 
 export interface PutawayVo {
@@ -60,7 +60,8 @@ export interface PutawayVo {
 
 export interface SortingVo {
   asn_id: number
-  sorted_qty: number
+  sorted_qty: number,
+  expiry_date: string,
 }
 
 export interface SkuInfoVo {

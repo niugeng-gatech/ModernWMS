@@ -49,7 +49,6 @@
                   <vxe-column field="spu_code" :title="$t('wms.warehouseWorking.warehouseProcessing.spu_code')"></vxe-column>
                   <vxe-column field="spu_name" :title="$t('wms.warehouseWorking.warehouseProcessing.spu_name')"></vxe-column>
                   <vxe-column field="sku_code" :title="$t('wms.warehouseWorking.warehouseProcessing.sku_code')"></vxe-column>
-                  <vxe-column field="series_number" :title="$t('wms.stockLocation.series_number')"></vxe-column>
                   <vxe-column
                     field="qty"
                     :title="$t('wms.warehouseWorking.warehouseProcessing.qty')"
@@ -60,6 +59,7 @@
                     </template>
                   </vxe-column>
                   <vxe-column field="unit" :title="$t('wms.warehouseWorking.warehouseProcessing.unit')"></vxe-column>
+                  <vxe-column field="series_number" :title="$t('wms.stockLocation.series_number')"></vxe-column>
                 </vxe-table>
               </div>
             </v-col>
