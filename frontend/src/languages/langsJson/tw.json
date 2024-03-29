@@ -555,6 +555,7 @@
       "asn_batch": "批次",
       "asn_no": "到貨通知書編號",
       "asn_qty": "到貨通知書數據",
+      "price":"商品價格",
       "asn_status": "到貨通知書狀態",
       "can_putaway_qty": "可上架數量",
       "confirmArrival": "確認到貨",

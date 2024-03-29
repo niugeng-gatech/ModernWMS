@@ -555,6 +555,7 @@
       "asn_batch": "Batch",
       "asn_no": "Asn No",
       "asn_qty": "Asn Quantity",
+      "price":"Commodity Price",
       "asn_status": "Asn Status",
       "can_putaway_qty": "Quantity available for listing",
       "confirmArrival": "Confirm arrival",
