@@ -78,6 +78,21 @@ namespace ModernWMS.WMS.Entities.ViewModels
         public string location_name { get; set; } = string.Empty;
 
         /// <summary>
+        /// series_number
+        /// </summary>
+        public string series_number { get; set; } = string.Empty;
+
+        /// <summary>
+        /// expiry_date
+        /// </summary>
+        public DateTime expiry_date { get; set; } = UtilConvert.MinDate;
+
+        /// <summary>
+        /// price
+        /// </summary>
+        public decimal price { get; set; } = 0;
+
+        /// <summary>
         /// book_qty
         /// </summary>
         [Display(Name = "book_qty")]
