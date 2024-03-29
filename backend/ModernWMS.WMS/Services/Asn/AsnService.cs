@@ -1219,7 +1219,8 @@ namespace ModernWMS.WMS.Services
                     create_time = DateTime.Now,
                     last_update_time = DateTime.Now,
                     is_valid = true,
-                    tenant_id = currentUser.tenant_id
+                    tenant_id = currentUser.tenant_id,
+                    price = d.price
                 }).ToList()
             };
             await Asnmasters.AddAsync(entity);
@@ -1277,6 +1278,7 @@ namespace ModernWMS.WMS.Services
                         d.goods_owner_id = viewModel.goods_owner_id;
                         d.goods_owner_name = viewModel.goods_owner_name;
                         d.last_update_time = DateTime.Now;
+                        d.price = vm.price;
                     }
                 });
             }
@@ -1303,7 +1305,8 @@ namespace ModernWMS.WMS.Services
                         create_time = DateTime.Now,
                         last_update_time = DateTime.Now,
                         is_valid = true,
-                        tenant_id = currentUser.tenant_id
+                        tenant_id = currentUser.tenant_id,
+                        price = d.price
                     }).ToList();
                 entity.detailList.AddRange(adds);
             }
