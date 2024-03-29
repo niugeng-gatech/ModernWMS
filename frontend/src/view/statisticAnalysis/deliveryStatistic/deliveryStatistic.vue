@@ -56,6 +56,8 @@
                     width="170px"
                     :formatter="['formatDate', 'yyyy-MM-dd HH:mm']"
                   ></vxe-column>
+                  <vxe-column field="price" :title="$t('wms.stockAsnInfo.price')"></vxe-column>
+                  <vxe-column field="expiry_date" :title="$t('wms.stockAsnInfo.expiry_date')" :formatter="['formatDate', 'yyyy-MM-dd']"></vxe-column>
                 </vxe-table>
                 <custom-pager
                   :current-page="data.tablePage.pageIndex"

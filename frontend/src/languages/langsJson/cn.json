@@ -711,7 +711,9 @@
         "target": "目标",
         "target_location": "目标库位",
         "target_warehouse": "目标仓库",
-        "unit": "商品单位"
+        "unit": "商品单位",
+        "price": "商品价格",
+        "expiry_date":"过期日期"
       },
       "warehouseTaking": {
         "addFromCommodity": "选择商品",
@@ -732,7 +734,9 @@
         "job_status": "作业状态",
         "location_name": "所在库位",
         "unfinish": "待作业",
-        "warehouse": "所在仓库"
+        "warehouse": "所在仓库",
+        "price": "商品价格",
+        "expiry_date":"过期日期"
       }
     }
   }

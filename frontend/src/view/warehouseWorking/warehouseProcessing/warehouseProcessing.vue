@@ -114,7 +114,7 @@
                         :flat="true"
                         icon="mdi-delete-outline"
                         :tooltip-text="$t('system.page.delete')"
-                        :icon-color="!data.authorityList.includes('delete') || method.confirmProcessBtnDisabled(row)?'':errorColor"
+                        :icon-color="!data.authorityList.includes('delete') || method.confirmProcessBtnDisabled(row) ? '' : errorColor"
                         :disabled="!data.authorityList.includes('delete') || method.confirmProcessBtnDisabled(row)"
                         @click="method.deleteRow(row)"
                       ></tooltip-btn>
@@ -143,6 +143,13 @@
         @close="method.closeDialog"
         @saveSuccess="method.saveSuccess"
       />
+      <!-- Print QR code -->
+      <qr-code-dialog ref="qrCodeDialogRef" :menu="'stockAsnInfo-notice'">
+        <template #left="{ slotData }">
+          <p>{{ $t('wms.warehouseWorking.warehouseProcessing.job_code') }}:{{ slotData.job_code }}</p> &nbsp;
+          <p>{{ $t('wms.warehouseWorking.warehouseProcessing.job_type') }}:{{ formatProcessJobType(slotData.job_type) }}</p> &nbsp;
+        </template>
+      </qr-code-dialog>
     </div>
   </div>
 </template>
@@ -167,8 +174,10 @@ import i18n from '@/languages/i18n'
 import customPager from '@/components/custom-pager.vue'
 import { exportData } from '@/utils/exportTable'
 import BtnGroup from '@/components/system/btnGroup.vue'
+import QrCodeDialog from '@/components/codeDialog/qrCodeDialog.vue'
 
 const xTable = ref()
+const qrCodeDialogRef = ref()
 
 const data = reactive({
   showDialog: false,
@@ -204,6 +213,24 @@ const data = reactive({
 })
 
 const method = reactive({
+  // Print QR code
+  printQrCode: () => {
+    const records = xTable.value.getCheckboxRecords()
+
+    // data.selectRowData.length === 0 ? data.selectRowData = [row] : ''
+    // const records:any[] = data.selectRowData
+    if (records.length > 0) {
+      for (const item of records) {
+        item.type = 'warehouseProcessing'
+      }
+      qrCodeDialogRef.value.openDialog(records)
+    } else {
+      hookComponent.$message({
+        type: 'error',
+        content: i18n.global.t('base.userManagement.checkboxIsNull')
+      })
+    }
+  },
   // Open a dialog to add
   add: (jobType: boolean) => {
     data.processType = jobType
@@ -408,6 +435,12 @@ onMounted(() => {
       icon: 'mdi-export-variant',
       code: 'export',
       click: method.exportTable
+    },
+    {
+      name: i18n.global.t('base.commodityManagement.printQrCode'),
+      icon: 'mdi-qrcode',
+      code: '',
+      click: method.printQrCode
     }
   ]
 })
