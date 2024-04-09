@@ -118,7 +118,7 @@
                         :flat="true"
                         icon="mdi-delete-outline"
                         :tooltip-text="$t('system.page.delete')"
-                        :icon-color="!data.authorityList.includes('delete') || method.confirmMoveBtnDisabled(row)?'':errorColor"
+                        :icon-color="!data.authorityList.includes('delete') || method.confirmMoveBtnDisabled(row) ? '' : errorColor"
                         :disabled="!data.authorityList.includes('delete') || method.confirmMoveBtnDisabled(row)"
                         @click="method.deleteRow(row)"
                       ></tooltip-btn>
@@ -201,6 +201,8 @@ const data = reactive({
     spu_name: '',
     sku_code: '',
     sku_name: '',
+    price: 0,
+    expiry_date: '',
     series_number: '',
     creator: '',
     create_time: ''
@@ -238,6 +240,8 @@ const method = reactive({
       spu_name: '',
       sku_code: '',
       sku_name: '',
+      price: 0,
+      expiry_date: '',
       series_number: '',
       creator: '',
       create_time: ''
