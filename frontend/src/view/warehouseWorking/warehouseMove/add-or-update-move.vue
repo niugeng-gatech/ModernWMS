@@ -293,7 +293,6 @@ const method = reactive({
     data.form.spu_name = ''
     data.form.sku_code = ''
     data.form.sku_name = ''
-
     data.curAvailableQty = 0
   },
 
