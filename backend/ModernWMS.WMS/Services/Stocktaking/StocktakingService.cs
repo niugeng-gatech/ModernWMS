@@ -47,6 +47,7 @@ namespace ModernWMS.WMS.Services
         /// </summary>
         /// <param name="dBContext">The DBContext</param>
         /// <param name="stringLocalizer">Localizer</param>
+        /// <param name="functionHelper">functionHelper</param>
         public StocktakingService(
             SqlDBContext dBContext
           , IStringLocalizer<ModernWMS.Core.MultiLanguage> stringLocalizer
@@ -98,7 +99,7 @@ namespace ModernWMS.WMS.Services
                             id = st.id,
                             job_code = st.job_code,
                             job_status = st.job_status,
-                            adjust_status = adj.id == null  ? false : true,
+                            adjust_status = adj.id == null ? false : true,
                             sku_id = sku.id,
                             sku_code = sku.sku_code,
                             sku_name = sku.sku_name,
@@ -109,6 +110,9 @@ namespace ModernWMS.WMS.Services
                             location_name = gsl.location_name,
                             goods_owner_id = st.goods_owner_id,
                             goods_owner_name = gso.goods_owner_name == null ? string.Empty : gso.goods_owner_name,
+                            expiry_date = st.expiry_date,
+                            price = st.price,
+                            series_number = st.series_number,
                             book_qty = st.book_qty,
                             counted_qty = st.counted_qty,
                             difference_qty = st.difference_qty,
@@ -166,6 +170,9 @@ namespace ModernWMS.WMS.Services
                             location_name = gsl.location_name,
                             goods_owner_id = st.goods_owner_id,
                             goods_owner_name = gso.goods_owner_name == null ? string.Empty : gso.goods_owner_name,
+                            expiry_date = st.expiry_date,
+                            price = st.price,
+                            series_number = st.series_number,
                             book_qty = st.book_qty,
                             counted_qty = st.counted_qty,
                             difference_qty = st.difference_qty,
@@ -302,7 +309,11 @@ namespace ModernWMS.WMS.Services
             var Stocks = _dBContext.GetDbSet<StockEntity>();
             var stockEntity = await Stocks.FirstOrDefaultAsync(t => t.sku_id.Equals(entity.sku_id)
                                                                  && t.goods_owner_id.Equals(entity.goods_owner_id)
-                                                                 && t.goods_location_id.Equals(entity.goods_location_id));
+                                                                 && t.goods_location_id.Equals(entity.goods_location_id)
+                                                                 && t.series_number.Equals(entity.series_number)
+                                                                 && t.expiry_date.Equals(entity.expiry_date)
+                                                                 && t.price.Equals(entity.price)
+                                                                 );
             if (stockEntity == null)
             {
                 await Stocks.AddAsync(new StockEntity
@@ -311,6 +322,9 @@ namespace ModernWMS.WMS.Services
                     goods_location_id = entity.goods_location_id,
                     qty = entity.difference_qty,
                     goods_owner_id = entity.goods_owner_id,
+                    series_number = entity.series_number,
+                    expiry_date = entity.expiry_date,
+                    price = entity.price,
                     is_freeze = false,
                     last_update_time = DateTime.Now,
                     tenant_id = currentUser.tenant_id
@@ -329,6 +343,9 @@ namespace ModernWMS.WMS.Services
                 sku_id = entity.sku_id,
                 goods_location_id = entity.goods_location_id,
                 goods_owner_id = entity.goods_owner_id,
+                series_number = entity.series_number,
+                expiry_date = entity.expiry_date,
+                price = entity.price,
                 qty = entity.difference_qty,
                 creator = currentUser.user_name,
                 create_time = DateTime.Now,

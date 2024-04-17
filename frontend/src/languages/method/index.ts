@@ -24,15 +24,20 @@ export function getSelectedLang(lang: string) {
 
 // Obtain default language pack based on language
 export function getLangPackage(lang: string) {
+  const result = { zh_CN: {}, zh_TW: {}, en_US: {} }
   switch (lang) {
     case 'zh_CN':
-      return { zh_CN: { ...cn, ...zhCN } }
+      result.zh_CN = { ...cn, ...zhCN }
+      break
     case 'zh_TW':
-      return { zh_TW: { ...tw, ...zhTW } }
+      result.zh_TW = { ...tw, ...zhTW }
+      break
     case 'en_US':
     default:
-      return { en_US: { ...en, ...enUS } }
+      result.en_US = { ...en, ...enUS }
+      break
   }
+  return result
 }
 
 // Because it is lazy to load the language pack, the user will reload the language pack after switching languages

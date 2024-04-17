@@ -555,6 +555,7 @@
       "asn_batch": "Batch",
       "asn_no": "Asn No",
       "asn_qty": "Asn Quantity",
+      "price":"Commodity Price",
       "asn_status": "Asn Status",
       "can_putaway_qty": "Quantity available for listing",
       "confirmArrival": "Confirm arrival",
@@ -710,7 +711,9 @@
         "target": "Target",
         "target_location": "Target Location",
         "target_warehouse": "Target Warehouse",
-        "unit": "Unit"
+        "unit": "Unit",
+        "price":"Commodity Price",
+        "expiry_date":"Expiration Date"
       },
       "warehouseTaking": {
         "addFromCommodity": "Choose From Commodity",
@@ -731,7 +734,9 @@
         "job_status": "Job Status",
         "location_name": "Location Code",
         "unfinish": "Unfinish",
-        "warehouse": "Warehouse"
+        "warehouse": "Warehouse",
+        "price":"Commodity Price",
+        "expiry_date":"Expiration Date"
       }
     }
   }

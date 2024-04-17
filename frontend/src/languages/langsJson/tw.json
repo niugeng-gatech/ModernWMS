@@ -555,6 +555,7 @@
       "asn_batch": "批次",
       "asn_no": "到貨通知書編號",
       "asn_qty": "到貨通知書數據",
+      "price":"商品價格",
       "asn_status": "到貨通知書狀態",
       "can_putaway_qty": "可上架數量",
       "confirmArrival": "確認到貨",
@@ -710,7 +711,9 @@
         "target": "目標",
         "target_location": "目標儲位",
         "target_warehouse": "目標倉庫",
-        "unit": "商品單位"
+        "unit": "商品單位",
+        "price":"商品價格",
+        "expiry_date":"過期日期"
       },
       "warehouseTaking": {
         "addFromCommodity": "選擇商品",
@@ -731,7 +734,9 @@
         "job_status": "作業狀態",
         "location_name": "所在庫位",
         "unfinish": "待作業",
-        "warehouse": "所在倉庫"
+        "warehouse": "所在倉庫",
+        "price":"商品價格",
+        "expiry_date":"過期日期"
       }
     }
   }

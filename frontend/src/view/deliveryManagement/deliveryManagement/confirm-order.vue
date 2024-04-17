@@ -73,6 +73,8 @@
                     <vxe-input v-model="row.pick_qty" type="text"></vxe-input>
                   </template>
                 </vxe-column>
+                <vxe-column field="price" :title="$t('wms.stockAsnInfo.price')"></vxe-column>
+                <vxe-column field="expiry_date" :title="$t('wms.stockAsnInfo.expiry_date')" :formatter="['formatDate', 'yyyy-MM-dd']"></vxe-column>
               </vxe-table>
             </v-col>
           </v-row>

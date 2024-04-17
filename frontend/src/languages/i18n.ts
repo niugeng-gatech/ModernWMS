@@ -4,13 +4,12 @@ import { getSelectedLang, getLangPackage } from './method/index'
 
 // get language
 const defaultLang = getStorageLang()
-const messages: { zh_CN?: any; en_US?: any; zh_TW?: any } = getLangPackage(defaultLang)
 
 const i18n = createI18n({
   legacy: false,
   globalInjection: true,
-  locale: getStorageLang(),
-  messages
+  locale: defaultLang,
+  messages: getLangPackage(defaultLang)
 })
 
 // get language in storage or default

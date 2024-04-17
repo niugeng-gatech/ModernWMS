@@ -65,6 +65,8 @@ const data = reactive({
     warehouse_name: '',
     location_name: '',
     adjust_status: false,
+    price: 0,
+    expiry_date: '',
     handler: '',
     handle_time: '',
     series_number: ''

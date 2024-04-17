@@ -14,6 +14,7 @@ export interface StockAsnVO extends UniformFileNaming {
   origin?: string
   sku_id?: number
   asn_qty?: number
+  price?: number
   asn_batch?: string
   estimated_arrival_time?: string
   asn_status?: number
@@ -42,6 +43,7 @@ export interface StockAsnDetailVO {
   volume_unit?: number
   weight_unit?: number
   asn_qty?: number
+  price?: number
   actual_qty?: number
   weight?: number
   volume?: number

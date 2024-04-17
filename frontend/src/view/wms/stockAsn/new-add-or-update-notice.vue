@@ -58,7 +58,7 @@
             <v-row v-for="(item, index) of data.form.detailList" :key="index" style="margin-top: 5px">
               <v-col :cols="11">
                 <v-row>
-                  <v-col :cols="3">
+                  <v-col :cols="2">
                     <v-text-field v-model="item.spu_name" :label="$t('wms.stockAsnInfo.spu_name')" variant="outlined" readonly></v-text-field>
                   </v-col>
                   <v-col :cols="2">
@@ -73,7 +73,7 @@
                   <v-col :cols="2">
                     <v-text-field v-model="item.sku_code" :label="$t('wms.stockAsnInfo.sku_code')" variant="outlined" readonly></v-text-field>
                   </v-col>
-                  <v-col :cols="3">
+                  <v-col :cols="2">
                     <!-- <v-select
                       v-model="item.supplier_name"
                       :items="data.combobox.supplier_name"
@@ -108,6 +108,15 @@
                       v-model="item.asn_qty"
                       :rules="data.rules.asn_qty"
                       :label="$t('wms.stockAsnInfo.asn_qty')"
+                      variant="outlined"
+                      clearable
+                    ></v-text-field>
+                  </v-col>
+                  <v-col :cols="2">
+                    <v-text-field
+                      v-model="item.price"
+                      :rules="data.rules.price"
+                      :label="$t('wms.stockAsnInfo.price')"
                       variant="outlined"
                       clearable
                     ></v-text-field>
@@ -153,9 +162,9 @@
       <!-- Print QR code -->
       <qr-code-dialog ref="qrCodeDialogRef" :menu="'stockAsnInfo-notice'">
         <template #left="{ slotData }">
-          <p>{{ $t('wms.stockAsnInfo.num') }}:{{ slotData.asn_no }}</p> 
-          <p>{{ $t('wms.stockAsnInfo.spu_name') }}:{{ slotData.spu_name }}</p> 
-          <p>{{ $t('wms.stockAsnInfo.sku_code') }}:{{ slotData.sku_code }}</p> 
+          <p>{{ $t('wms.stockAsnInfo.num') }}:{{ slotData.asn_no }}</p>
+          <p>{{ $t('wms.stockAsnInfo.spu_name') }}:{{ slotData.spu_name }}</p>
+          <p>{{ $t('wms.stockAsnInfo.sku_code') }}:{{ slotData.sku_code }}</p>
         </template>
       </qr-code-dialog>
     </template>
@@ -171,7 +180,7 @@ import { addAsnNew, updateAsnNew } from '@/api/wms/stockAsn'
 import tooltipBtn from '@/components/tooltip-btn.vue'
 import skuSelect from '@/components/select/sku-select.vue'
 import { CommodityDetailJoinMainVO } from '@/types/Base/CommodityManagement'
-import { IsInteger, StringLength } from '@/utils/dataVerification/formRule'
+import { IsInteger, IsDecimal, StringLength } from '@/utils/dataVerification/formRule'
 import { StockAsnVO, StockAsnDetailVO } from '@/types/WMS/StockAsn'
 import { getSupplierAll } from '@/api/base/supplier'
 import { getOwnerOfCargoAll } from '@/api/base/ownerOfCargo'
@@ -234,6 +243,7 @@ const data = reactive({
       (val: number) => !!val || `${ i18n.global.t('system.checkText.mustInput') }${ i18n.global.t('wms.stockAsnInfo.asn_qty') }!`,
       (val: number) => IsInteger(val, 'greaterThanZero') === '' || IsInteger(val, 'greaterThanZero')
     ],
+    price: [(val: number) => IsDecimal(val, 'nonNegative', 10, 2) === '' || IsDecimal(val, 'nonNegative', 10, 2)],
     asn_batch: [
       // (val: string) => !!val || `${i18n.global.t('system.checkText.mustInput')}${i18n.global.t('wms.stockAsnInfo.asn_batch')}!`,
       (val: string) => StringLength(val, 0, 64) === '' || StringLength(val, 0, 64)
@@ -253,8 +263,7 @@ const method = reactive({
         item.asn_id = item.id
         item.asn_no = data.form.asn_no
       }
-      console.log(records)
-      
+
       qrCodeDialogRef.value.openDialog(records)
     } else {
       hookComponent.$message({
@@ -311,7 +320,8 @@ const method = reactive({
           // length_unit: '',
           // volume_unit: '',
           // weight_unit: '',
-          asn_qty: 0
+          asn_qty: 0,
+          price: 0
           // actual_qty: '',
           // weight: '',
           // volume: '',

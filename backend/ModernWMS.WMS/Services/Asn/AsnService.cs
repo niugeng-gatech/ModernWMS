@@ -1095,7 +1095,9 @@ namespace ModernWMS.WMS.Services
                                               supplier_id = a.supplier_id,
                                               supplier_name = a.supplier_name,
                                               is_valid = a.is_valid,
-                                              expiry_date = a.expiry_date
+                                              expiry_date = a.expiry_date,
+                                              price = a.price,
+                                              sorted_qty = a.sorted_qty,
                                           }).ToList()
                         };
             query = query.Where(queries.AsExpression<AsnmasterBothViewModel>());
@@ -1161,7 +1163,10 @@ namespace ModernWMS.WMS.Services
                                               volume = a.volume,
                                               supplier_id = a.supplier_id,
                                               supplier_name = a.supplier_name,
-                                              is_valid = a.is_valid
+                                              is_valid = a.is_valid,
+                                              sorted_qty = a.sorted_qty,
+                                              expiry_date = a.expiry_date,
+                                              price = a.price
                                           }).ToList()
                         };
             var data = await query.FirstOrDefaultAsync();
@@ -1214,7 +1219,8 @@ namespace ModernWMS.WMS.Services
                     create_time = DateTime.Now,
                     last_update_time = DateTime.Now,
                     is_valid = true,
-                    tenant_id = currentUser.tenant_id
+                    tenant_id = currentUser.tenant_id,
+                    price = d.price
                 }).ToList()
             };
             await Asnmasters.AddAsync(entity);
@@ -1272,6 +1278,7 @@ namespace ModernWMS.WMS.Services
                         d.goods_owner_id = viewModel.goods_owner_id;
                         d.goods_owner_name = viewModel.goods_owner_name;
                         d.last_update_time = DateTime.Now;
+                        d.price = vm.price;
                     }
                 });
             }
@@ -1298,7 +1305,8 @@ namespace ModernWMS.WMS.Services
                         create_time = DateTime.Now,
                         last_update_time = DateTime.Now,
                         is_valid = true,
-                        tenant_id = currentUser.tenant_id
+                        tenant_id = currentUser.tenant_id,
+                        price = d.price
                     }).ToList();
                 entity.detailList.AddRange(adds);
             }
