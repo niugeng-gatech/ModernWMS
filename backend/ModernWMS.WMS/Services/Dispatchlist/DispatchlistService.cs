@@ -917,14 +917,10 @@ namespace ModernWMS.WMS.Services
             };
             await DBSet.AddRangeAsync(new_dispatchlists);
             var qty = await _dBContext.SaveChangesAsync();
-            if (qty > 0)
-            {
-                return (true, _stringLocalizer["operation_success"]);
-            }
-            else
-            {
-                return (false, _stringLocalizer["operation_failed"]);
-            }
+
+            return (true, _stringLocalizer["operation_success"]);
+ 
+
         }
 
         /// <summary>
