@@ -339,10 +339,10 @@ namespace ModernWMS.WMS.Services
             entity.create_time = DateTime.Now;
             entity.last_update_time = DateTime.Now;
             entity.tenant_id = currentUser.tenant_id;
-            if (viewModel.detailList.Any())
+            if (entity.detailList.Any())
             {
                 decimal dec = ChangeLengthUnit(entity.length_unit, entity.volume_unit);
-                viewModel.detailList.ForEach(t =>
+                entity.detailList.ForEach(t =>
                 {
                     t.id = 0;
                     t.volume = Math.Round(t.lenght * dec * t.width * dec * t.height * dec, 3); 
@@ -571,7 +571,7 @@ namespace ModernWMS.WMS.Services
                 decimal dec = ChangeLengthUnit(entity.length_unit, entity.volume_unit);
                 foreach (var entityToUpdate in entitiesToUpdate)
                 {
-                    entityToUpdate.volume = Math.Round(entityToUpdate.lenght * dec * entityToUpdate.width * dec * entityToUpdate.height * dec, 5);
+                    entityToUpdate.volume = Math.Round(entityToUpdate.lenght * dec * entityToUpdate.width * dec * entityToUpdate.height * dec, 3);
                 }
 
                 // Update the entities in the database
