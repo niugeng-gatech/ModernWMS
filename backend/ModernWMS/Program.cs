@@ -40,6 +40,15 @@ namespace ModernWMS
             .UseDefaultServiceProvider(options =>
             {
                 options.ValidateScopes = false;
+            })
+            .ConfigureServices((context, services) =>
+            {
+                // Inject logger service
+                ILogger logger = LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger("Startup");
+
+                // Log the URLs
+                var urls = context.Configuration.GetValue<string>("urls");
+                logger.LogInformation("Listening on URLs: {urls}", urls);
             });
     }
 }

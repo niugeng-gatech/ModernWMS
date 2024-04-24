@@ -14,6 +14,8 @@ using ModernWMS.Core.DynamicSearch;
 using ModernWMS.Core.Models;
 using ModernWMS.Core.JWT;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 
 namespace ModernWMS.WMS.Services
 {
@@ -343,7 +345,7 @@ namespace ModernWMS.WMS.Services
                 viewModel.detailList.ForEach(t =>
                 {
                     t.id = 0;
-                    t.volume = Math.Round(t.lenght * dec * t.width * dec * t.height * dec, 3);
+                    t.volume = Math.Round(t.lenght * dec * t.width * dec * t.height * dec, 3); 
                 });
             }
             await DbSet.AddAsync(entity);
@@ -556,9 +558,25 @@ namespace ModernWMS.WMS.Services
             var qty = await _dBContext.SaveChangesAsync();
             if (qty > 0)
             {
+                //decimal dec = ChangeLengthUnit(entity.length_unit, entity.volume_unit);
+                //await _dBContext.GetDbSet<SkuEntity>().Where(t => t.spu_id.Equals(entity.id))
+                //    .ExecuteUpdateAsync(p => p.SetProperty(x => x.volume, x => System.Math.Round(x.lenght * dec * x.width * dec * x.height * dec, 5)));
+
+                // Fetch the entities from the database
+                var entitiesToUpdate = await _dBContext.GetDbSet<SkuEntity>()
+                    .Where(t => t.spu_id.Equals(entity.id))
+                    .ToListAsync();
+
+                // Perform the rounding operation on each entity in memory
                 decimal dec = ChangeLengthUnit(entity.length_unit, entity.volume_unit);
-                await _dBContext.GetDbSet<SkuEntity>().Where(t => t.spu_id.Equals(entity.id))
-                    .ExecuteUpdateAsync(p => p.SetProperty(x => x.volume, x => Math.Round(x.lenght * dec * x.width * dec * x.height * dec, 3)));
+                foreach (var entityToUpdate in entitiesToUpdate)
+                {
+                    entityToUpdate.volume = Math.Round(entityToUpdate.lenght * dec * entityToUpdate.width * dec * entityToUpdate.height * dec, 5);
+                }
+
+                // Update the entities in the database
+                await _dBContext.SaveChangesAsync();
+
                 return (true, _stringLocalizer["save_success"]);
             }
             else
