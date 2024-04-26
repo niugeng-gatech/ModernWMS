@@ -19,7 +19,7 @@
         /// <summary>
         /// token cipher
         /// </summary>
-        public const string SigningKey = "ModernWMS_SigningKey11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111";
+        public const string SigningKey = "ModernWMS_SigningKey";
 
         /// <summary>
         /// Password will expire every 30 days from last password change.
