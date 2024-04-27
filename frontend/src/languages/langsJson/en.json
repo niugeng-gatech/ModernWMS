@@ -7,14 +7,14 @@
       "parent_name": "Parent Category"
     },
     "commodityManagement": {
-      "bar_code": "Specification Code",
+      "bar_code": "Bar Code",
       "brand": "Brand",
       "category_name": "Commodity Category",
       "cost": "Commodity Cost",
       "height": "Commodity Height",
       "lenght": "Commodity Length",
       "length_unit": "Length Unit",
-      "origin": "origin",
+      "origin": "Origin",
       "price": "Commodity Price",
       "printBarCode": "Print barcode",
       "printQrCode": "Print QR code",
@@ -506,7 +506,7 @@
       "warehouse_name": "Warehouse name"
     },
     "skuInfo": {
-      "bar_code": "Specification Code",
+      "bar_code": "Bar Code",
       "brand": "Brand",
       "category_id": "Commodity Category ID",
       "category_name": "Commodity Category",
@@ -514,7 +514,7 @@
       "height": "Commodity Height",
       "lenght": "Commodity Length",
       "length_unit": "Length Unit",
-      "origin": "origin",
+      "origin": "Origin",
       "price": "Commodity Price",
       "sku_code": "Specification code",
       "sku_id": "Sku Id",

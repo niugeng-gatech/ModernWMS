@@ -7,115 +7,103 @@
           <v-row>
             <v-col cols="3">
               <div class="mainForm" :style="{ height: mainFormHeight }">
-                <v-form ref="formRef">
-                  <v-text-field
-                    v-model="data.form.spu_code"
-                    :rules="data.rules.spu_code"
-                    :label="$t('base.commodityManagement.spu_code')"
-                    variant="outlined"
-                    density="compact"
-                    clearable
-                    class="mb-4"
-                  ></v-text-field>
-                  <v-text-field
-                    v-model="data.form.spu_name"
-                    :rules="data.rules.spu_name"
-                    :label="$t('base.commodityManagement.spu_name')"
-                    variant="outlined"
-                    density="compact"
-                    clearable
-                    class="mb-4"
-                  ></v-text-field>
-                  <v-select
-                    v-model="data.form.category_name"
-                    :items="data.combobox.category_name"
-                    item-title="label"
-                    item-value="label"
-                    :rules="data.rules.category_name"
-                    :label="$t('base.commodityManagement.category_name')"
-                    variant="outlined"
-                    density="compact"
-                    class="mb-4"
-                    clearable
-                    @update:model-value="method.categoryNameChange"
-                  ></v-select>
-                  <v-text-field
-                    v-model="data.form.spu_description"
-                    :rules="data.rules.spu_description"
-                    :label="$t('base.commodityManagement.spu_description')"
-                    variant="outlined"
-                    density="compact"
-                    clearable
-                    class="mb-4"
-                  ></v-text-field>
-                  <!-- <v-text-field
-                    v-model="data.form.bar_code"
-                    :rules="data.rules.bar_code"
-                    :label="$t('base.commodityManagement.bar_code')"
-                    variant="outlined"
-                    density="compact"
-                    clearable
-                    class="mb-4"
-                  ></v-text-field> -->
-                  <v-select
-                    v-model="data.form.supplier_name"
-                    :items="data.combobox.supplier_name"
-                    :rules="data.rules.supplier_name"
-                    item-title="label"
-                    item-value="label"
-                    :label="$t('base.commodityManagement.supplier_name')"
-                    variant="outlined"
-                    density="compact"
-                    class="mb-4"
-                    clearable
-                    @update:model-value="method.supplierNameChange"
-                  ></v-select>
-                  <v-text-field
-                    v-model="data.form.brand"
-                    :rules="data.rules.brand"
-                    :label="$t('base.commodityManagement.brand')"
-                    variant="outlined"
-                    density="compact"
-                    clearable
-                    class="mb-4"
-                  ></v-text-field>
-                  <v-select
-                    v-model="data.form.length_unit"
-                    :items="data.combobox.length_unit"
-                    item-title="label"
-                    item-value="value"
-                    :rules="data.rules.length_unit"
-                    :label="$t('base.commodityManagement.length_unit')"
-                    variant="outlined"
-                    density="compact"
-                    class="mb-4"
-                    clearable
-                  ></v-select>
-                  <v-select
-                    v-model="data.form.volume_unit"
-                    :items="data.combobox.volume_unit"
-                    item-title="label"
-                    item-value="value"
-                    :rules="data.rules.volume_unit"
-                    :label="$t('base.commodityManagement.volume_unit')"
-                    variant="outlined"
-                    density="compact"
-                    class="mb-4"
-                    clearable
-                  ></v-select>
-                  <v-select
-                    v-model="data.form.weight_unit"
-                    :items="data.combobox.weight_unit"
-                    item-title="label"
-                    item-value="value"
-                    :rules="data.rules.weight_unit"
-                    :label="$t('base.commodityManagement.weight_unit')"
-                    variant="outlined"
-                    density="compact"
-                    class="mb-4"
-                    clearable
-                  ></v-select>
-                </v-form>
+                  <v-form ref="formRef">
+                      <v-text-field v-model="data.form.spu_code"
+                                    :rules="data.rules.spu_code"
+                                    :label="$t('base.commodityManagement.spu_code')"
+                                    variant="outlined"
+                                    density="compact"
+                                    clearable
+                                    class="mb-4"></v-text-field>
+                      <v-text-field v-model="data.form.spu_name"
+                                    :rules="data.rules.spu_name"
+                                    :label="$t('base.commodityManagement.spu_name')"
+                                    variant="outlined"
+                                    density="compact"
+                                    clearable
+                                    class="mb-4"></v-text-field>
+                      <v-select v-model="data.form.category_name"
+                                :items="data.combobox.category_name"
+                                item-title="label"
+                                item-value="label"
+                                :rules="data.rules.category_name"
+                                :label="$t('base.commodityManagement.category_name')"
+                                variant="outlined"
+                                density="compact"
+                                class="mb-4"
+                                clearable
+                                @update:model-value="method.categoryNameChange"></v-select>
+                      <v-text-field v-model="data.form.spu_description"
+                                :rules="data.rules.spu_description"
+                                :label="$t('base.commodityManagement.spu_description')"
+                                variant="outlined"
+                                density="compact"
+                                clearable
+                                class="mb-4"></v-text-field>
+                      <!-- <v-text-field
+                              v-model="data.form.bar_code"
+                              :rules="data.rules.bar_code"
+                              :label="$t('base.commodityManagement.bar_code')"
+                              variant="outlined"
+                              density="compact"
+                              clearable
+                              class="mb-4"></v-text-field> -->
+                      <v-select v-model="data.form.supplier_name"
+                                :items="data.combobox.supplier_name"
+                                :rules="data.rules.supplier_name"
+                                item-title="label"
+                                item-value="label"
+                                :label="$t('base.commodityManagement.supplier_name')"
+                                variant="outlined"
+                                density="compact"
+                                class="mb-4"
+                                clearable
+                                @update:model-value="method.supplierNameChange"></v-select>
+                      <v-text-field v-model="data.form.brand"
+                                    :rules="data.rules.brand"
+                                    :label="$t('base.commodityManagement.brand')"
+                                    variant="outlined"
+                                    density="compact"
+                                    clearable
+                                    class="mb-4"></v-text-field>
+                      <v-text-field v-model="data.form.origin"
+                                    :rules="data.rules.origin"
+                                    :label="$t('base.commodityManagement.origin')"
+                                    variant="outlined"
+                                    density="compact"
+                                    clearable
+                                    class="mb-4"></v-text-field>
+                      <v-select v-model="data.form.length_unit"
+                                :items="data.combobox.length_unit"
+                                item-title="label"
+                                item-value="value"
+                                :rules="data.rules.length_unit"
+                                :label="$t('base.commodityManagement.length_unit')"
+                                variant="outlined"
+                                density="compact"
+                                class="mb-4"
+                                clearable></v-select>
+                      <v-select v-model="data.form.volume_unit"
+                                :items="data.combobox.volume_unit"
+                                item-title="label"
+                                item-value="value"
+                                :rules="data.rules.volume_unit"
+                                :label="$t('base.commodityManagement.volume_unit')"
+                                variant="outlined"
+                                density="compact"
+                                class="mb-4"
+                                clearable></v-select>
+                      <v-select v-model="data.form.weight_unit"
+                                :items="data.combobox.weight_unit"
+                                item-title="label"
+                                item-value="value"
+                                :rules="data.rules.weight_unit"
+                                :label="$t('base.commodityManagement.weight_unit')"
+                                variant="outlined"
+                                density="compact"
+                                class="mb-4"
+                                clearable></v-select>
+                  </v-form>
               </div>
             </v-col>
             <v-col cols="9">
@@ -296,6 +284,7 @@ const data = reactive({
     spu_description: [(val: string) => StringLength(val, 0, 1000) === '' || StringLength(val, 0, 1000)],
     // bar_code: [(val: string) => StringLength(val, 0, 64) === '' || StringLength(val, 0, 64)],
     brand: [(val: string) => StringLength(val, 0, 128) === '' || StringLength(val, 0, 128)],
+    origin: [(val: string) => StringLength(val, 0, 128) === '' || StringLength(val, 0, 128)],
     category_name: [
       (val: string) => !!val || `${ i18n.global.t('system.checkText.mustInput') }${ i18n.global.t('base.commodityManagement.category_name') }!`
     ],
