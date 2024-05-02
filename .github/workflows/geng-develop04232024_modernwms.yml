@@ -12,6 +12,9 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: ./backend/ModernWMS
 
     steps:
       - uses: actions/checkout@v4
@@ -21,9 +24,6 @@ jobs:
         with:
           dotnet-version: '8.x'
           include-prerelease: true
-          
-      - name: Change working directory to backend/ModernWMS
-        run: cd backend/ModernWMS
 
       - name: Build with dotnet
         run: dotnet build --configuration Release
