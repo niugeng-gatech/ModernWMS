@@ -66,4 +66,3 @@ jobs:
           app-name: 'modernwms'
           slot-name: 'Production'
           package: .
-          arguments: '--urls http://0.0.0.0:20011'
