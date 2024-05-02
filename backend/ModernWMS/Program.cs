@@ -1,5 +1,6 @@
 
 using Microsoft.AspNetCore.Hosting;
+using NLog;
 using NLog.Web;
 
 namespace ModernWMS
@@ -8,7 +9,8 @@ namespace ModernWMS
     {
         public static void Main(string[] args)
         {
-            var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+            var logger = NLog.LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
+
             try
             {
                 logger.Debug("--- run");
@@ -35,7 +37,7 @@ namespace ModernWMS
                 }).ConfigureLogging(logging =>
                 {
                     logging.ClearProviders();
-                    logging.SetMinimumLevel(LogLevel.Trace);
+                    logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
                 }).UseNLog()
             .UseDefaultServiceProvider(options =>
             {
@@ -44,7 +46,7 @@ namespace ModernWMS
             .ConfigureServices((context, services) =>
             {
                 // Inject logger service
-                ILogger logger = LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger("Startup");
+                Microsoft.Extensions.Logging.ILogger logger = LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger("Startup");
 
                 // Log the URLs
                 var urls = context.Configuration.GetValue<string>("urls");
