@@ -34,7 +34,8 @@ namespace ModernWMS
                     webBuilder
                     .UseUrls("http://*:5555")
                     .UseStartup<Startup>()
-                    .UseKestrel(opt => opt.Limits.MaxRequestBodySize = null);
+                    .UseIISIntegration();
+                    //.UseKestrel(opt => opt.Limits.MaxRequestBodySize = null);
                 }).ConfigureLogging(logging =>
                 {
                     logging.ClearProviders();
