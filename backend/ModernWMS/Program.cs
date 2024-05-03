@@ -32,7 +32,7 @@ namespace ModernWMS
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder
-                    .UseUrls("http://*:5555")
+                    //.UseUrls("http://*:5555")
                     .UseStartup<Startup>()
                     .UseIISIntegration();
                     //.UseKestrel(opt => opt.Limits.MaxRequestBodySize = null);
