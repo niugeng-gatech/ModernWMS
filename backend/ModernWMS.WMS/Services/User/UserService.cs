@@ -563,6 +563,15 @@ namespace ModernWMS.WMS.Services
                         vue_directory = "deliveryManagement/deliveryManagement",
                         sort = 5,
                         tenant_id = tenant_id
+                    },new MenuEntity
+                    {
+                        menu_name = "dropShipping",
+                        module = "",
+                        vue_path = "dropShipping",
+                        vue_path_detail = "",
+                        vue_directory = "deliveryManagement/dropShipping",
+                        sort = 5,
+                        tenant_id = tenant_id
                     }
                 };
 
