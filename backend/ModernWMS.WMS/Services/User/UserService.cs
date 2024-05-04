@@ -570,7 +570,7 @@ namespace ModernWMS.WMS.Services
                         vue_path = "dropShipping",
                         vue_path_detail = "",
                         vue_directory = "deliveryManagement/dropShipping",
-                        sort = 5,
+                        sort = 6,
                         tenant_id = tenant_id
                     }
                 };

@@ -141,6 +141,7 @@ function GetModuleAndIcon(name: string) {
     case 'warehouseWorkingModule':
       return 'account-hard-hat-outline '
     case 'deliveryManagement':
+    case 'dropShipping':
     case 'deliveryStatistic':
       return 'cube-send'
     case 'companySetting':
