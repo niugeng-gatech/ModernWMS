@@ -113,6 +113,8 @@ function GetMenuNameAndModule(path: string): string {
       return i18n.global.t('router.sideBar.warehouseTaking')
     case 'deliveryManagement':
       return i18n.global.t('router.sideBar.deliveryManagement')
+    case 'dropShipping':
+      return i18n.global.t('router.sideBar.dropShipping')
     case 'stockAsn':
       return i18n.global.t('router.sideBar.stockAsn')
     case 'saftyStock':
