@@ -70,7 +70,7 @@ namespace ModernWMS.Core.Controller
         /// <param name="loginAccount">user's account infomation</param>
         /// <returns></returns>
         [AllowAnonymous]
-        [HttpPost("/api/login")]
+        [HttpPost("/login")]
         public async Task<ResultModel<LoginOutputViewModel>> LoginAsync(LoginInputViewModel loginAccount)
         {
 

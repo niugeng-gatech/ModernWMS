@@ -128,7 +128,6 @@ namespace ModernWMS.Core.Extentions
             app.UseSwaggerConfigure(configuration);
             app.UsePathBase("/api");
             app.UseRouting();
-
             app.UseMiddleware<ModernWMS.Core.Middleware.CorsMiddleware>();
             app.UseTokenGeneratorConfigure(configuration);
             app.UseAuthorization();
