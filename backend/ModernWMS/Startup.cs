@@ -37,15 +37,6 @@ namespace ModernWMS
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider service_provider)
         {
             app.UseExtensionsConfigure(env, service_provider, Configuration);
-
-            app.UseRouting();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllerRoute(
-                    name: "api",
-                    pattern: "api/{controller=Home}/{action=Index}/{id?}");
-            });
         }
     }
 }

@@ -127,6 +127,12 @@ namespace ModernWMS.Core.Extentions
             app.UseStaticFiles();
             app.UseSwaggerConfigure(configuration);
             app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(
+                    name: "api",
+                    pattern: "api/{controller=Home}/{action=Index}/{id?}");
+            });
             app.UseMiddleware<ModernWMS.Core.Middleware.CorsMiddleware>();
             app.UseTokenGeneratorConfigure(configuration);
             app.UseAuthorization();
