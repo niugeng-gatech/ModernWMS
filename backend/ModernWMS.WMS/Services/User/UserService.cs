@@ -557,7 +557,7 @@ namespace ModernWMS.WMS.Services
                     },new MenuEntity
                     {
                         menu_name = "deliveryManagement",
-                        module = "",
+                        module = "deliveryModule",
                         vue_path = "deliveryManagement",
                         vue_path_detail = "",
                         vue_directory = "deliveryManagement/deliveryManagement",
@@ -566,7 +566,7 @@ namespace ModernWMS.WMS.Services
                     },new MenuEntity
                     {
                         menu_name = "dropShipping",
-                        module = "",
+                        module = "deliveryModule",
                         vue_path = "dropShipping",
                         vue_path_detail = "",
                         vue_directory = "deliveryManagement/dropShipping",

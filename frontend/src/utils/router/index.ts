@@ -140,6 +140,7 @@ function GetModuleAndIcon(name: string) {
       return 'home-silo'
     case 'warehouseWorkingModule':
       return 'account-hard-hat-outline '
+    case 'deliveryModule':
     case 'deliveryManagement':
     case 'dropShipping':
     case 'deliveryStatistic':
