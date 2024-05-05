@@ -6,7 +6,13 @@ import { hookComponent } from '@/components/system'
 import i18n from '@/languages/i18n'
 
 // Basis of axios
-const SERVER_URL = `${ import.meta.env.VITE_BASE_PATH }`
+let SERVER_URL: string;
+
+if (import.meta.env.MODE === 'production') {
+    SERVER_URL = import.meta.env.VITE_BASE_PATH;
+} else {
+    SERVER_URL = `${import.meta.env.VITE_BASE_PATH}:${import.meta.env.VITE_SERVER_PORT}`;
+}
 axios.defaults.baseURL = SERVER_URL
 const http = axios.create({
   baseURL: SERVER_URL,
