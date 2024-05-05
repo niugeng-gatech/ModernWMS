@@ -175,7 +175,7 @@ function GetModuleAndIcon(name: string) {
       return 'ballot-recount-outline'
     case 'customer':
       return 'account-box-outline'
-      case 'print':
+    case 'print':
       return 'printer-outline'
     case 'supplier':
       return 'account-badge'

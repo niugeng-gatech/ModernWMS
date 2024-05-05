@@ -81,27 +81,27 @@ export const actionDict: any = {
     'signedIn-export'
     ],
 
-    dropShipping: [
-        'invoice-save',
-        'invoice-confirm',
-        'invoice-revoke',
-        'invoice-delete',
-        'invoice-export',
-        'invoice-printQrCode',
-        'picked-confirm',
-        'picked-revoke',
-        'picked-export',
-        'packaged-package',
-        'packaged-export',
-        'packaged-revoke',
-        'weighed-weigh',
-        'weighed-export',
-        'weighed-revoke',
-        'delivered-delivery',
-        'delivered-setCarrier',
-        'delivered-signIn',
-        'delivered-export',
-        'signedIn-export'
+  dropShipping: [
+    'invoice-save',
+    'invoice-confirm',
+    'invoice-revoke',
+    'invoice-delete',
+    'invoice-export',
+    'invoice-printQrCode',
+    'picked-confirm',
+    'picked-revoke',
+    'picked-export',
+    'packaged-package',
+    'packaged-export',
+    'packaged-revoke',
+    'weighed-weigh',
+    'weighed-export',
+    'weighed-revoke',
+    'delivered-delivery',
+    'delivered-setCarrier',
+    'delivered-signIn',
+    'delivered-export',
+    'signedIn-export'
   ]
 }
 
