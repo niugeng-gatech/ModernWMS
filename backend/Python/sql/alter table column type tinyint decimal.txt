@@ -1,0 +1,49 @@
+ALTER TABLE [dbo].[rolemenu] ALTER COLUMN authority tinyint
+
+ALTER TABLE [dbo].[asn] ALTER COLUMN asn_status tinyint
+
+ALTER TABLE [dbo].[asnmaster] ALTER COLUMN asn_status tinyint
+
+ALTER TABLE [dbo].[dispatchlist] ALTER COLUMN dispatch_status tinyint
+
+ALTER TABLE [dbo].[goodslocation] ALTER COLUMN warehouse_area_property tinyint
+
+ALTER TABLE [dbo].[spu] ALTER COLUMN length_unit tinyint
+ALTER TABLE [dbo].[spu] ALTER COLUMN volume_unit tinyint
+ALTER TABLE [dbo].[spu] ALTER COLUMN weight_unit tinyint
+
+ALTER TABLE [dbo].[stockadjust] ALTER COLUMN job_type tinyint
+
+ALTER TABLE [dbo].[stockmove] ALTER COLUMN move_status tinyint
+
+ALTER TABLE [dbo].[stockmove] ALTER COLUMN move_status tinyint
+ALTER TABLE [dbo].[warehousearea] ALTER COLUMN area_property tinyint
+
+
+ALTER TABLE [dbo].[asn] ALTER COLUMN weight decimal
+ALTER TABLE [dbo].[asn] ALTER COLUMN volume decimal
+ALTER TABLE [dbo].[asnmaster] ALTER COLUMN weight decimal
+ALTER TABLE [dbo].[asnmaster] ALTER COLUMN volume decimal
+
+ALTER TABLE [dbo].[dispatchlist] ALTER COLUMN weight decimal
+ALTER TABLE [dbo].[dispatchlist] ALTER COLUMN volume decimal
+ALTER TABLE [dbo].[dispatchlist] ALTER COLUMN weighing_weight decimal
+ALTER TABLE [dbo].[dispatchlist] ALTER COLUMN freightfee decimal
+
+ALTER TABLE [dbo].[freightfee] ALTER COLUMN price_per_weight decimal
+ALTER TABLE [dbo].[freightfee] ALTER COLUMN price_per_volume decimal
+ALTER TABLE [dbo].[freightfee] ALTER COLUMN min_payment decimal
+
+ALTER TABLE [dbo].[goodslocation] ALTER COLUMN location_length decimal
+ALTER TABLE [dbo].[goodslocation] ALTER COLUMN location_width decimal
+ALTER TABLE [dbo].[goodslocation] ALTER COLUMN location_heigth decimal
+ALTER TABLE [dbo].[goodslocation] ALTER COLUMN location_volume decimal
+ALTER TABLE [dbo].[goodslocation] ALTER COLUMN location_load decimal
+
+ALTER TABLE [dbo].[sku] ALTER COLUMN weight decimal
+ALTER TABLE [dbo].[sku] ALTER COLUMN lenght decimal
+ALTER TABLE [dbo].[sku] ALTER COLUMN width decimal
+ALTER TABLE [dbo].[sku] ALTER COLUMN height decimal
+ALTER TABLE [dbo].[sku] ALTER COLUMN volume decimal
+ALTER TABLE [dbo].[sku] ALTER COLUMN cost decimal
+ALTER TABLE [dbo].[sku] ALTER COLUMN price decimal

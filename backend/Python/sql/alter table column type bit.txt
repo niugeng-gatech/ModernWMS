@@ -1,0 +1,25 @@
+
+ALTER TABLE [dbo].[dispatchpicklist] ALTER COLUMN is_update_stock BIT
+
+
+ALTER TABLE [dbo].[stock] ALTER COLUMN is_freeze BIT
+ALTER TABLE [dbo].[stockadjust] ALTER COLUMN is_update_stock BIT
+ALTER TABLE [dbo].[stockfreeze] ALTER COLUMN job_type BIT
+ALTER TABLE [dbo].[stockprocessdetail] ALTER COLUMN is_source BIT
+ALTER TABLE [dbo].[stockprocessdetail] ALTER COLUMN is_update_stock BIT
+ALTER TABLE [dbo].[stockprocess] ALTER COLUMN job_type BIT
+ALTER TABLE [dbo].[stockprocess] ALTER COLUMN process_status BIT
+ALTER TABLE [dbo].[stocktaking] ALTER COLUMN job_status BIT
+
+ALTER TABLE [dbo].[stockmove] ALTER COLUMN is_valid BIT
+
+ALTER TABLE [dbo].[supplier] ALTER COLUMN is_valid BIT
+ALTER TABLE [dbo].[user] ALTER COLUMN is_valid BIT
+ALTER TABLE [dbo].[userrole] ALTER COLUMN is_valid BIT
+ALTER TABLE [dbo].[warehouse] ALTER COLUMN is_valid BIT
+ALTER TABLE [dbo].[warehousearea] ALTER COLUMN is_valid BIT
+ALTER TABLE [dbo].[sku] ALTER COLUMN is_valid BIT
+
+ALTER TABLE [dbo].[action_log] ALTER COLUMN is_valid BIT
+ALTER TABLE [dbo].[sku_safety_stock] ALTER COLUMN is_valid BIT
+ALTER TABLE [dbo].[spu] ALTER COLUMN is_valid BIT
