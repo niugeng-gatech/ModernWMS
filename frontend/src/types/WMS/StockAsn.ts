@@ -81,7 +81,7 @@ export interface SkuInfoVo {
   sku_code: string
   sku_name: string
   weight: number
-  lenght: number
+  length: number
   width: number
   height: number
   volume: number

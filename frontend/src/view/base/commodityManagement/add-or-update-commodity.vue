@@ -165,9 +165,9 @@
                       <vxe-input v-model="row.weight" type="text"></vxe-input>
                     </template>
                   </vxe-column>
-                  <vxe-column field="lenght" :title="$t('base.commodityManagement.lenght')" :edit-render="{ autofocus: '.vxe-input--inner' }">
+                  <vxe-column field="length" :title="$t('base.commodityManagement.length')" :edit-render="{ autofocus: '.vxe-input--inner' }">
                     <template #edit="{ row }">
-                      <vxe-input v-model="row.lenght" type="text"></vxe-input>
+                      <vxe-input v-model="row.length" type="text"></vxe-input>
                     </template>
                   </vxe-column>
                   <vxe-column field="width" :title="$t('base.commodityManagement.width')" :edit-render="{ autofocus: '.vxe-input--inner' }">
@@ -350,7 +350,7 @@ const data = reactive({
         trigger: 'change'
       }
     ],
-    lenght: [
+    length: [
       {
         validator: isDecimal,
         validNumerical: 'nonNegative',

@@ -26,7 +26,7 @@ export interface CommodityDetailVO {
   cost?: number
   price?: number
   weight?: number
-  lenght?: number
+  length?: number
   width?: number
   height?: number
   volume?: number

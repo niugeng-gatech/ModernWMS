@@ -148,10 +148,10 @@ namespace ModernWMS.WMS.Entities.ViewModels
         public decimal weight { get; set; } = 0;
 
         /// <summary>
-        /// lenght
+        /// length
         /// </summary>
-        [Display(Name = "lenght")]
-        public decimal lenght { get; set; } = 0;
+        [Display(Name = "length")]
+        public decimal length { get; set; } = 0;
 
         /// <summary>
         /// width

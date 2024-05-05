@@ -105,7 +105,7 @@ namespace ModernWMS.WMS.Services
                                              sku_name = t.sku_name,
                                              bar_code = t.bar_code,
                                              weight = t.weight,
-                                             lenght = t.lenght,
+                                             length = t.length,
                                              width = t.width,
                                              height = t.height,
                                              volume = t.volume,
@@ -179,7 +179,7 @@ namespace ModernWMS.WMS.Services
                                              sku_name = t.sku_name,
                                              bar_code = t.bar_code,
                                              weight = t.weight,
-                                             lenght = t.lenght,
+                                             length = t.length,
                                              width = t.width,
                                              height = t.height,
                                              volume = t.volume,
@@ -246,7 +246,7 @@ namespace ModernWMS.WMS.Services
                             sku_name = d.sku_name,
                             bar_code = d.bar_code,
                             weight = d.weight,
-                            lenght = d.lenght,
+                            length = d.length,
                             width = d.width,
                             height = d.height,
                             volume = d.volume,
@@ -300,7 +300,7 @@ namespace ModernWMS.WMS.Services
                             sku_name = d.sku_name,
                             bar_code = d.bar_code,
                             weight = d.weight,
-                            lenght = d.lenght,
+                            length = d.length,
                             width = d.width,
                             height = d.height,
                             volume = d.volume,
@@ -345,7 +345,7 @@ namespace ModernWMS.WMS.Services
                 entity.detailList.ForEach(t =>
                 {
                     t.id = 0;
-                    t.volume = Math.Round(t.lenght * dec * t.width * dec * t.height * dec, 3); 
+                    t.volume = Math.Round(t.length * dec * t.width * dec * t.height * dec, 3); 
                 });
             }
             await DbSet.AddAsync(entity);
@@ -467,7 +467,7 @@ namespace ModernWMS.WMS.Services
                                       sku_name = t.sku_name,
                                       bar_code = t.bar_code,
                                       weight = t.weight,
-                                      lenght = t.lenght,
+                                      length = t.length,
                                       width = t.width,
                                       height = t.height,
                                       volume = t.volume,
@@ -535,7 +535,7 @@ namespace ModernWMS.WMS.Services
                         d.sku_name = vm.sku_name;
                         d.bar_code = vm.bar_code;
                         d.weight = vm.weight;
-                        d.lenght = vm.lenght;
+                        d.length = vm.length;
                         d.width = vm.width;
                         d.height = vm.height;
                         d.volume = vm.volume;
@@ -560,7 +560,7 @@ namespace ModernWMS.WMS.Services
             {
                 //decimal dec = ChangeLengthUnit(entity.length_unit, entity.volume_unit);
                 //await _dBContext.GetDbSet<SkuEntity>().Where(t => t.spu_id.Equals(entity.id))
-                //    .ExecuteUpdateAsync(p => p.SetProperty(x => x.volume, x => System.Math.Round(x.lenght * dec * x.width * dec * x.height * dec, 5)));
+                //    .ExecuteUpdateAsync(p => p.SetProperty(x => x.volume, x => System.Math.Round(x.length * dec * x.width * dec * x.height * dec, 5)));
 
                 // Fetch the entities from the database
                 var entitiesToUpdate = await _dBContext.GetDbSet<SkuEntity>()
@@ -571,7 +571,7 @@ namespace ModernWMS.WMS.Services
                 decimal dec = ChangeLengthUnit(entity.length_unit, entity.volume_unit);
                 foreach (var entityToUpdate in entitiesToUpdate)
                 {
-                    entityToUpdate.volume = Math.Round(entityToUpdate.lenght * dec * entityToUpdate.width * dec * entityToUpdate.height * dec, 3);
+                    entityToUpdate.volume = Math.Round(entityToUpdate.length * dec * entityToUpdate.width * dec * entityToUpdate.height * dec, 3);
                 }
 
                 // Update the entities in the database

@@ -1,0 +1,29 @@
+CREATE TABLE [dbo].[new_sku] (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    spu_id INT NOT NULL,
+    sku_code NVARCHAR(MAX) NOT NULL,
+    sku_name NVARCHAR(MAX) NOT NULL,
+    weight NVARCHAR(MAX) NOT NULL,
+    length NVARCHAR(MAX) NOT NULL,
+    width NVARCHAR(MAX) NOT NULL,
+    height NVARCHAR(MAX) NOT NULL,
+    volume NVARCHAR(MAX) NOT NULL,
+    unit NVARCHAR(MAX) NOT NULL,
+    cost NVARCHAR(MAX) NOT NULL,
+    price NVARCHAR(MAX) NOT NULL,
+    create_time DATETIME DEFAULT GETDATE(),
+    last_update_time DATETIME DEFAULT GETDATE(),
+    bar_code NVARCHAR(MAX) NOT NULL,
+    CONSTRAINT FK_sku_spu FOREIGN KEY (spu_id) REFERENCES spu (id) ON DELETE CASCADE
+);
+
+-- Step 2: Copy data from the old table to the new table
+INSERT INTO [dbo].[new_sku] (spu_id, sku_code, sku_name, weight, length, width, height, volume, unit, cost, price, create_time, last_update_time, bar_code)
+SELECT spu_id, sku_code, sku_name, weight, length, width, height, volume, unit, cost, price, create_time, last_update_time, bar_code
+FROM [dbo].[sku];
+
+-- Step 3: Drop the old table
+DROP TABLE [dbo].[sku];
+
+-- Step 4: Rename the new table to match the old table's name
+EXEC sp_rename '[dbo].[new_sku]', 'sku';

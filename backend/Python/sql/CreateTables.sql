@@ -354,7 +354,7 @@ CREATE TABLE "sku" (
     "sku_code" TEXT NOT NULL,
     "sku_name" TEXT NOT NULL,
     "weight" TEXT NOT NULL,
-    "lenght" TEXT NOT NULL,
+    "length" TEXT NOT NULL,
     "width" TEXT NOT NULL,
     "height" TEXT NOT NULL,
     "volume" TEXT NOT NULL,

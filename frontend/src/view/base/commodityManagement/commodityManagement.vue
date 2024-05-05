@@ -128,9 +128,9 @@
                   <span v-if="row.parent_id > 0">{{ `${row.weight} ${GetUnit('weight', row.weight_unit)}` }}</span>
                 </template>
               </vxe-column>
-              <vxe-column field="lenght" :title="$t('base.commodityManagement.lenght')">
+              <vxe-column field="length" :title="$t('base.commodityManagement.length')">
                 <template #default="{ row }">
-                  <span v-if="row.parent_id > 0">{{ `${row.lenght} ${GetUnit('length', row.length_unit)}` }}</span>
+                  <span v-if="row.parent_id > 0">{{ `${row.length} ${GetUnit('length', row.length_unit)}` }}</span>
                 </template>
               </vxe-column>
               <vxe-column field="width" :title="$t('base.commodityManagement.width')">

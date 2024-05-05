@@ -65,7 +65,7 @@ const data = reactive({
     sku_code: '',
     sku_name: '',
     weight: 0,
-    lenght: 0,
+    length: 0,
     width: 0,
     height: 0,
     volume: 0,

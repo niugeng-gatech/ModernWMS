@@ -312,7 +312,7 @@
   <data name="weight" xml:space="preserve">
     <value>Commodity Weight</value>
   </data>
-  <data name="lenght" xml:space="preserve">
+  <data name="length" xml:space="preserve">
     <value>Commodity Length</value>
   </data>
   <data name="width" xml:space="preserve">

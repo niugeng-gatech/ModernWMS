@@ -54,9 +54,9 @@ namespace ModernWMS.WMS.Entities.Models
         public decimal weight { get; set; } = 0;
 
         /// <summary>
-        /// lenght
+        /// length
         /// </summary>
-        public decimal lenght { get; set; } = 0;
+        public decimal length { get; set; } = 0;
 
         /// <summary>
         /// width

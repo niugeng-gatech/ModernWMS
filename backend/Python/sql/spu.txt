@@ -1,0 +1,48 @@
+CREATE TABLE [dbo].[new_spu] (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    spu_code NVARCHAR(MAX) NOT NULL,
+    spu_name NVARCHAR(MAX) NOT NULL,
+ category_id INT NOT NULL,
+    spu_description NVARCHAR(MAX) NOT NULL,
+    supplier_id INT NOT NULL,
+    supplier_name NVARCHAR(MAX) NOT NULL,
+    brand NVARCHAR(MAX) NOT NULL,
+    origin NVARCHAR(MAX) NOT NULL,
+    length_unit tinyint NOT NULL,
+ volume_unit tinyint NOT NULL,
+ weight_unit tinyint NOT NULL,
+    creator NVARCHAR(MAX) NOT NULL,
+    create_time DATETIME DEFAULT GETDATE(),
+    last_update_time DATETIME DEFAULT GETDATE(),
+    is_valid bit NOT NULL,
+ tenant_id bigint NOT NULL, 
+);
+
+-- Step 2: Copy data from the old table to the new table
+INSERT INTO [dbo].[new_spu] (spu_code, spu_name, category_id, spu_description, supplier_id, supplier_name, brand, origin, length_unit, volume_unit, weight_unit, creator, create_time, last_update_time, is_valid, tenant_id)
+SELECT spu_code, spu_name, category_id, spu_description, supplier_id, supplier_name, brand, origin, length_unit, volume_unit, weight_unit, creator, create_time, last_update_time, is_valid, tenant_id,
+FROM [dbo].[spu];
+
+-- Step 3: Drop the old table
+DROP TABLE [dbo].[spu];
+
+-- Step 4: Rename the new table to match the old table's name
+EXEC sp_rename '[dbo].[new_spu]', 'spu';
+
+        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+        spu_code TEXT,
+        spu_name TEXT,
+        category_id INTEGER,
+        spu_description TEXT,
+        supplier_id INTEGER,
+        supplier_name TEXT,
+        brand TEXT,
+        origin TEXT,
+        length_unit BLOB NOT NULL,
+        volume_unit BLOB NOT NULL,
+        weight_unit BLOB NOT NULL,
+        creator TEXT,
+        create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+        last_update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+        is_valid INTEGER,
+        tenant_id INTEGER

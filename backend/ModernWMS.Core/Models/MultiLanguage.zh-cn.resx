@@ -312,7 +312,7 @@
   <data name="weight" xml:space="preserve">
     <value>商品重量</value>
   </data>
-  <data name="lenght" xml:space="preserve">
+  <data name="length" xml:space="preserve">
     <value>商品长度</value>
   </data>
   <data name="width" xml:space="preserve">
