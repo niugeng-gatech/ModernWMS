@@ -1,29 +1,41 @@
 CREATE TABLE [dbo].[new_asn] (
     id INT IDENTITY(1,1) PRIMARY KEY,
+    asn_no NVARCHAR(MAX) NOT NULL,
+    asn_status INTEGER NOT NULL,
     spu_id INT NOT NULL,
-    sku_code NVARCHAR(MAX) NOT NULL,
-    sku_name NVARCHAR(MAX) NOT NULL,
-    weight NVARCHAR(MAX) NOT NULL,
-    length NVARCHAR(MAX) NOT NULL,
-    width NVARCHAR(MAX) NOT NULL,
-    height NVARCHAR(MAX) NOT NULL,
-    volume NVARCHAR(MAX) NOT NULL,
-    unit NVARCHAR(MAX) NOT NULL,
-    cost NVARCHAR(MAX) NOT NULL,
-    price NVARCHAR(MAX) NOT NULL,
-    create_time DATETIME DEFAULT GETDATE(),
-    last_update_time DATETIME DEFAULT GETDATE(),
-    bar_code NVARCHAR(MAX) NOT NULL,
-    CONSTRAINT FK_sku_spu FOREIGN KEY (spu_id) REFERENCES spu (id) ON DELETE CASCADE
+    sku_id INT NOT NULL,
+    asn_qty INT NOT NULL,
+    actual_qty INT NOT NULL,
+    sorted_qty INT NOT NULL,
+    shortage_qty INT NOT NULL,
+    more_qty INT NOT NULL,
+    damage_qty INT NOT NULL,
+    weight decimal NOT NULL,
+    volume decimal NOT NULL,
+    supplier_id INT NOT NULL,
+    supplier_name NVARCHAR(MAX) NOT NULL,
+    goods_owner_id INT NOT NULL,
+    goods_owner_name NVARCHAR(MAX) NOT NULL,
+    creator NVARCHAR(MAX) NOT NULL,
+    create_time datetime2 DEFAULT GETDATE(),
+    last_update_time datetime2 DEFAULT GETDATE(),
+    is_valid bit NOT NULL,
+    tenant_id bigint NOT NULL,
+    asnmaster_id INT NOT NULL, 
+    arrival_time datetime2 DEFAULT GETDATE(), 
+    unload_time datetime2 DEFAULT GETDATE(), 
+    unload_person_id INT NOT NULL, 
+    unload_person NVARCHAR(MAX) NOT NULL,
+    CONSTRAINT FK_asn_asnmaster FOREIGN KEY (asnmaster_id) REFERENCES asnmaster(id) ON DELETE CASCADE
 );
 
 -- Step 2: Copy data from the old table to the new table
-INSERT INTO [dbo].[new_asn] (spu_id, sku_code, sku_name, weight, length, width, height, volume, unit, cost, price, create_time, last_update_time, bar_code)
-SELECT spu_id, sku_code, sku_name, weight, length, width, height, volume, unit, cost, price, create_time, last_update_time, bar_code
+INSERT INTO [dbo].[new_asn] (asn_no, asn_status, spu_id, sku_id, asn_qty, actual_qty, sorted_qty, shortage_qty, more_qty, damage_qty, weight, volume, supplier_id, supplier_name, goods_owner_id, goods_owner_name, creator, create_time, last_update_time, is_valid, tenant_id, asnmaster_id, arrival_time, unload_time, unload_person_id, unload_person)
+SELECT asn_no, asn_status, spu_id, sku_id, asn_qty, actual_qty, sorted_qty, shortage_qty, more_qty, damage_qty, weight, volume, supplier_id, supplier_name, goods_owner_id, goods_owner_name, creator, create_time, last_update_time, is_valid, tenant_id, asnmaster_id, arrival_time, unload_time, unload_person_id, unload_person
 FROM [dbo].[asn];
 
 -- Step 3: Drop the old table
 DROP TABLE [dbo].[asn];
 
 -- Step 4: Rename the new table to match the old table's name
-EXEC sp_rename '[dbo].[new_asn]', 'sku';
+EXEC sp_rename '[dbo].[new_asn]', 'asn';

@@ -12,8 +12,8 @@ CREATE TABLE [dbo].[new_spu] (
  volume_unit tinyint NOT NULL,
  weight_unit tinyint NOT NULL,
     creator NVARCHAR(MAX) NOT NULL,
-    create_time DATETIME DEFAULT GETDATE(),
-    last_update_time DATETIME DEFAULT GETDATE(),
+    create_time datetime2 DEFAULT GETDATE(),
+    last_update_time datetime2 DEFAULT GETDATE(),
     is_valid bit NOT NULL,
  tenant_id bigint NOT NULL, 
 );

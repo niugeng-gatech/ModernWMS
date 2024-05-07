@@ -1,0 +1,39 @@
+CREATE TABLE [dbo].[new_dispatchpicklist] (
+	id INT IDENTITY(1,1) PRIMARY KEY,
+	dispatchlist_id INT NOT NULL,
+    goods_owner_id INT NOT NULL,
+    goods_location_id INT NOT NULL,
+    sku_id INT NOT NULL,
+    pick_qty INT NOT NULL,
+    picked_qty INT NOT NULL,
+    is_update_stock bit NOT NULL,
+    last_update_time datetime2 DEFAULT GETDATE(), 
+	CONSTRAINT FK_dispatchpicklist_dispatchlist FOREIGN KEY (dispatchlist_id) REFERENCES dispatchlist(id) ON DELETE CASCADE
+);
+
+-- Step 2: Copy data from the old table to the new table
+INSERT INTO [dbo].[new_dispatchpicklist] (dispatchlist_id, goods_owner_id, goods_location_id, sku_id, pick_qty, picked_qty, is_update_stock, last_update_time)
+SELECT dispatchlist_id, goods_owner_id, goods_location_id, sku_id, pick_qty, picked_qty, is_update_stock, last_update_time
+FROM [dbo].[dispatchpicklist];
+
+-- Step 3: Drop the old table
+DROP TABLE [dbo].[dispatchpicklist];
+
+-- Step 4: Rename the new table to match the old table's name
+EXEC sp_rename '[dbo].[new_dispatchpicklist]', 'dispatchpicklist';
+
+
+
+    dispatchlist_id INTEGER NOT NULL,
+    goods_owner_id INTEGER NOT NULL,
+    goods_location_id INTEGER NOT NULL,
+    sku_id INTEGER NOT NULL,
+    pick_qty INTEGER NOT NULL,
+    picked_qty INTEGER NOT NULL,
+    is_update_stock INTEGER NOT NULL,
+    last_update_time TEXT NOT NULL, series_number TEXT,
+    CONSTRAINT FK_dispatchpicklist_dispatchlist_dispatchlist_id FOREIGN KEY (dispatchlist_id) REFERENCES dispatchlist (id) ON DELETE CASCADE
+	
+UPDATE [dbo].[dispatchpicklist]
+SET series_number = ''
+WHERE id = 3;

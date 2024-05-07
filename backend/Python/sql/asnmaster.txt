@@ -1,0 +1,41 @@
+CREATE TABLE [dbo].[new_asnmaster] (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+ asn_no NVARCHAR(MAX) NOT NULL,
+    asn_batch NVARCHAR(MAX) NOT NULL,
+    estimated_arrival_time datetime2 DEFAULT GETDATE(),
+    asn_status INT NOT NULL,
+    weight decimal NOT NULL,
+    volume decimal NOT NULL,
+    goods_owner_id INT NOT NULL,
+    goods_owner_name NVARCHAR(MAX) NOT NULL,
+    creator NVARCHAR(MAX) NOT NULL,
+    create_time datetime2 DEFAULT GETDATE(),
+    last_update_time datetime2 DEFAULT GETDATE(),
+    tenant_id bigint NOT NULL
+);
+
+-- Step 2: Copy data from the old table to the new table
+INSERT INTO [dbo].[new_asnmaster] (asn_no, asn_batch, estimated_arrival_time, asn_status, weight, volume, goods_owner_id, goods_owner_name, creator, create_time, last_update_time, tenant_id)
+SELECT asn_no, asn_batch, estimated_arrival_time, asn_status, weight, volume, goods_owner_id, goods_owner_name, creator, create_time, last_update_time, tenant_id
+FROM [dbo].[asnmaster];
+
+-- Step 3: Drop the old table
+DROP TABLE [dbo].[asnmaster];
+
+-- Step 4: Rename the new table to match the old table's name
+EXEC sp_rename '[dbo].[new_asnmaster]', 'asnmaster';
+
+
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    asn_no TEXT NOT NULL,
+    asn_batch TEXT NOT NULL,
+    estimated_arrival_time TEXT NOT NULL,
+    asn_status INTEGER NOT NULL,
+    weight REAL NOT NULL,
+    volume REAL NOT NULL,
+    goods_owner_id INTEGER NOT NULL,
+    goods_owner_name TEXT NOT NULL,
+    creator TEXT NOT NULL,
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    last_update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    tenant_id INTEGER NOT NULL

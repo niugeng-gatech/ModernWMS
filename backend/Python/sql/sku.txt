@@ -11,8 +11,8 @@ CREATE TABLE [dbo].[new_sku] (
     unit NVARCHAR(MAX) NOT NULL,
     cost NVARCHAR(MAX) NOT NULL,
     price NVARCHAR(MAX) NOT NULL,
-    create_time DATETIME DEFAULT GETDATE(),
-    last_update_time DATETIME DEFAULT GETDATE(),
+    create_time datetime2 DEFAULT GETDATE(),
+    last_update_time datetime2 DEFAULT GETDATE(),
     bar_code NVARCHAR(MAX) NOT NULL,
     CONSTRAINT FK_sku_spu FOREIGN KEY (spu_id) REFERENCES spu (id) ON DELETE CASCADE
 );

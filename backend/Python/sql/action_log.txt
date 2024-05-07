@@ -1,0 +1,12 @@
+CREATE TABLE [dbo].[action_log] (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+	vue_path NVARCHAR(MAX) NOT NULL,
+	user_name NVARCHAR(MAX) NOT NULL,
+	action_content NVARCHAR(MAX) NOT NULL,
+	action_time datetime2 DEFAULT GETDATE(),
+	tenant_id bigint NOT NULL
+);
+
+
+-- Step 3: Drop the old table
+DROP TABLE [dbo].[action_log];
