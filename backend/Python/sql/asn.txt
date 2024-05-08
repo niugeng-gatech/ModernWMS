@@ -26,7 +26,9 @@ CREATE TABLE [dbo].[new_asn] (
     unload_time datetime2 DEFAULT GETDATE(), 
     unload_person_id INT NOT NULL, 
     unload_person NVARCHAR(MAX) NOT NULL,
-    CONSTRAINT FK_asn_asnmaster FOREIGN KEY (asnmaster_id) REFERENCES asnmaster(id) ON DELETE CASCADE
+    CONSTRAINT FK_asn_asnmaster FOREIGN KEY (asnmaster_id) REFERENCES asnmaster(id) ON DELETE CASCADE,
+	CONSTRAINT FK_asn_sku FOREIGN KEY (sku_id) REFERENCES sku(id) ON DELETE CASCADE,
+	CONSTRAINT FK_asn_goods_owner FOREIGN KEY (goods_owner_id) REFERENCES goodsowner(id) ON DELETE CASCADE
 );
 
 -- Step 2: Copy data from the old table to the new table
@@ -39,3 +41,9 @@ DROP TABLE [dbo].[asn];
 
 -- Step 4: Rename the new table to match the old table's name
 EXEC sp_rename '[dbo].[new_asn]', 'asn';
+
+
+	
+	ALTER TABLE asn ADD CONSTRAINT FK_asn_asnmaster FOREIGN KEY (asnmaster_id) REFERENCES asnmaster(id) ON DELETE CASCADE;
+	ALTER TABLE asn ADD CONSTRAINT FK_asn_sku FOREIGN KEY (sku_id) REFERENCES sku(id) ON DELETE CASCADE;
+	ALTER TABLE asn ADD CONSTRAINT FK_asn_supplier FOREIGN KEY (supplier_id) REFERENCES supplier(id) ON DELETE CASCADE;

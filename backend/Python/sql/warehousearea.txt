@@ -1,0 +1,32 @@
+CREATE TABLE [dbo].[new_warehousearea] (
+ id INT IDENTITY(1,1) PRIMARY KEY,
+ warehouse_id int NOT NULL,
+    area_name NVARCHAR(MAX) NOT NULL,
+    parent_id int NOT NULL,
+    create_time datetime2 DEFAULT GETDATE(),
+    last_update_time datetime2 DEFAULT GETDATE(),
+    is_valid bit NOT NULL,
+    tenant_id bigint NOT NULL,
+    area_property tinyint NOT NULL,
+ CONSTRAINT FK_warehouseare_warehouse FOREIGN KEY (warehouse_id) REFERENCES warehouse (id) ON DELETE CASCADE
+);
+
+-- Step 2: Copy data from the old table to the new table
+INSERT INTO [dbo].[new_warehousearea] (warehouse_id, area_name, parent_id, create_time, last_update_time, is_valid, tenant_id, area_property)
+SELECT warehouse_id, area_name, parent_id, create_time, last_update_time, is_valid, tenant_id, area_property
+FROM [dbo].[warehousearea] ORDER BY id ASC;
+
+-- Step 3: Drop the old table
+DROP TABLE [dbo].[warehousearea];
+
+-- Step 4: Rename the new table to match the old table's name
+EXEC sp_rename '[dbo].[new_warehousearea]', 'warehousearea';
+
+    warehouse_id int NOT NULL,
+    area_name NVARCHAR(MAX) NOT NULL,
+    parent_id int NOT NULL,
+    create_time NVARCHAR(MAX) NOT NULL,
+    last_update_time NVARCHAR(MAX) NOT NULL,
+    is_valid int NOT NULL,
+    tenant_id int NOT NULL,
+    area_property int NOT NULL

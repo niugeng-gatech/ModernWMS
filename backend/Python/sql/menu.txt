@@ -1,0 +1,32 @@
+CREATE TABLE [dbo].[new_menu] (
+	id INT IDENTITY(1,1) PRIMARY KEY,
+	menu_name NVARCHAR(MAX) NOT NULL,
+    module NVARCHAR(MAX) NOT NULL,
+    vue_path NVARCHAR(MAX) NOT NULL,
+    vue_path_detail NVARCHAR(MAX) NOT NULL,
+    vue_directory NVARCHAR(MAX) NOT NULL,
+    sort int NOT NULL,
+    tenant_id bigint NOT NULL, 
+	menu_actions NVARCHAR(MAX) DEFAULT '[]'
+);
+
+-- Step 2: Copy data from the old table to the new table
+INSERT INTO [dbo].[new_menu] (menu_name, module, vue_path, vue_path_detail, vue_directory, sort, tenant_id, menu_actions)
+SELECT menu_name, module, vue_path, vue_path_detail, vue_directory, sort, tenant_id, menu_actions
+FROM [dbo].[menu];
+
+-- Step 3: Drop the old table
+DROP TABLE [dbo].[menu];
+
+-- Step 4: Rename the new table to match the old table's name
+EXEC sp_rename '[dbo].[new_menu]', 'menu';
+
+
+    menu_name NVARCHAR(MAX) NOT NULL,
+    module NVARCHAR(MAX) NOT NULL,
+    vue_path NVARCHAR(MAX) NOT NULL,
+    vue_path_detail NVARCHAR(MAX) NOT NULL,
+    vue_directory NVARCHAR(MAX) NOT NULL,
+    sort int NOT NULL,
+    tenant_id int NOT NULL
+, menu_actions NVARCHAR(MAX) DEFAULT '[]')

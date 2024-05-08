@@ -1,0 +1,31 @@
+CREATE TABLE [dbo].[new_rolemenu] (
+ id INT IDENTITY(1,1) PRIMARY KEY,
+ userrole_id int NOT NULL,
+    menu_id int NOT NULL,
+    authority tinyint NOT NULL,
+    create_time datetime2 DEFAULT GETDATE(),
+    last_update_time datetime2 DEFAULT GETDATE(),
+    tenant_id bigint NOT NULL, 
+ menu_actions_authority NVARCHAR(MAX) DEFAULT '[]',
+ CONSTRAINT FK_rolemenu_menu FOREIGN KEY (menu_id) REFERENCES menu(id) ON DELETE CASCADE
+);
+
+-- Step 2: Copy data from the old table to the new table
+INSERT INTO [dbo].[new_rolemenu] (userrole_id, menu_id, authority, create_time, last_update_time, tenant_id, menu_actions_authority)
+SELECT userrole_id, menu_id, authority, create_time, last_update_time, tenant_id, menu_actions_authority
+FROM [dbo].[rolemenu] ORDER BY id ASC;
+
+-- Step 3: Drop the old table
+DROP TABLE [dbo].[rolemenu];
+
+-- Step 4: Rename the new table to match the old table's name
+EXEC sp_rename '[dbo].[new_rolemenu]', 'rolemenu';
+
+
+    userrole_id int NOT NULL,
+    menu_id int NOT NULL,
+    authority int NOT NULL,
+    create_time NVARCHAR(MAX) NOT NULL,
+    last_update_time NVARCHAR(MAX) NOT NULL,
+    tenant_id int NOT NULL, 
+ menu_actions_authority NVARCHAR(MAX) DEFAULT '[]'

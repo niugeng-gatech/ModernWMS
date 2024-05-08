@@ -1,0 +1,55 @@
+CREATE TABLE [dbo].[new_goodslocation] (
+ id INT IDENTITY(1,1) PRIMARY KEY,
+ warehouse_id int NOT NULL,
+    warehouse_name NVARCHAR(MAX) NOT NULL,
+    warehouse_area_name NVARCHAR(MAX) NOT NULL,
+    warehouse_area_property tinyint NOT NULL,
+    location_name NVARCHAR(MAX) NOT NULL,
+    location_length decimal NOT NULL,
+    location_width decimal NOT NULL,
+    location_heigth decimal NOT NULL,
+    location_volume decimal NOT NULL,
+    location_load decimal NOT NULL,
+    roadway_number NVARCHAR(MAX) NOT NULL,
+    shelf_number NVARCHAR(MAX) NOT NULL,
+    layer_number NVARCHAR(MAX) NOT NULL,
+    tag_number NVARCHAR(MAX) NOT NULL,
+    create_time datetime2 DEFAULT GETDATE(),
+    last_update_time datetime2 DEFAULT GETDATE(),
+    is_valid bit NOT NULL,
+    tenant_id bigint NOT NULL,
+    warehouse_area_id int NOT NULL
+);
+
+-- Step 2: Copy data from the old table to the new table
+INSERT INTO [dbo].[new_goodslocation] (warehouse_id, warehouse_name, warehouse_area_name, warehouse_area_property, location_name, location_length, location_width, location_heigth, location_volume, location_load, roadway_number, shelf_number, layer_number, tag_number, create_time, last_update_time, is_valid, tenant_id, warehouse_area_id)
+SELECT warehouse_id, warehouse_name, warehouse_area_name, warehouse_area_property, location_name, location_length, location_width, location_heigth, location_volume, location_load, roadway_number, shelf_number, layer_number, tag_number, create_time, last_update_time, is_valid, tenant_id, warehouse_area_id
+FROM [dbo].[goodslocation];
+
+-- Step 3: Drop the old table
+DROP TABLE [dbo].[goodslocation];
+
+-- Step 4: Rename the new table to match the old table's name
+EXEC sp_rename '[dbo].[new_goodslocation]', 'goodslocation';
+
+
+
+    warehouse_id int NOT NULL,
+    warehouse_name NVARCHAR(MAX) NOT NULL,
+    warehouse_area_name NVARCHAR(MAX) NOT NULL,
+    warehouse_area_property int NOT NULL,
+    location_name NVARCHAR(MAX) NOT NULL,
+    location_length NVARCHAR(MAX) NOT NULL,
+    location_width NVARCHAR(MAX) NOT NULL,
+    location_heigth NVARCHAR(MAX) NOT NULL,
+    location_volume NVARCHAR(MAX) NOT NULL,
+    location_load NVARCHAR(MAX) NOT NULL,
+    roadway_number NVARCHAR(MAX) NOT NULL,
+    shelf_number NVARCHAR(MAX) NOT NULL,
+    layer_number NVARCHAR(MAX) NOT NULL,
+    tag_number NVARCHAR(MAX) NOT NULL,
+    create_time NVARCHAR(MAX) NOT NULL,
+    last_update_time NVARCHAR(MAX) NOT NULL,
+    is_valid int NOT NULL,
+    tenant_id int NOT NULL,
+    warehouse_area_id int NOT NULL

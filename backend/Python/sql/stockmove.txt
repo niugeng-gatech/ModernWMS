@@ -1,0 +1,42 @@
+CREATE TABLE [dbo].[new_stockfreeze] (
+ id INT IDENTITY(1,1) PRIMARY KEY,
+ job_code NVARCHAR(MAX) NOT NULL,
+    job_type bit NOT NULL,
+    sku_id int NOT NULL,
+    goods_owner_id int NOT NULL,
+    goods_location_id int NOT NULL,
+    handler NVARCHAR(MAX) NOT NULL,
+    handle_time datetime2 DEFAULT GETDATE(),
+    last_update_time datetime2 DEFAULT GETDATE(),
+    tenant_id bigint NOT NULL, 
+ series_number NVARCHAR(MAX) NOT NULL
+ CONSTRAINT FK_stockfreeze_sku FOREIGN KEY (sku_id) REFERENCES sku (id) ON DELETE CASCADE,
+ CONSTRAINT FK_stockfreeze_goodsowner FOREIGN KEY (goods_owner_id) REFERENCES goodsowner (id) ON DELETE CASCADE,
+ CONSTRAINT FK_stockfreeze_goodslocation FOREIGN KEY (goods_location_id) REFERENCES goodslocation (id) ON DELETE CASCADE
+);
+
+-- Step 2: Copy data from the old table to the new table
+INSERT INTO [dbo].[new_stockfreeze] (job_code, job_type, sku_id, goods_owner_id, goods_location_id, handler, handle_time, last_update_time, tenant_id, series_number)
+SELECT job_code, job_type, sku_id, goods_owner_id, goods_location_id, handler, handle_time, last_update_time, tenant_id, series_number
+FROM [dbo].[stockfreeze];
+
+-- Step 3: Drop the old table
+DROP TABLE [dbo].[stockfreeze];
+
+-- Step 4: Rename the new table to match the old table's name
+EXEC sp_rename '[dbo].[new_stockfreeze]', 'stockfreeze';
+
+
+
+sqlite> .schema stockfreeze
+
+    job_code NVARCHAR(MAX) NOT NULL,
+    job_type int NOT NULL,
+    sku_id int NOT NULL,
+    goods_owner_id int NOT NULL,
+    goods_location_id int NOT NULL,
+    handler NVARCHAR(MAX) NOT NULL,
+    handle_time NVARCHAR(MAX) NOT NULL,
+    last_update_time NVARCHAR(MAX) NOT NULL,
+    tenant_id int NOT NULL, 
+ series_number NVARCHAR(MAX) NOT NULL

@@ -76,18 +76,18 @@
             <v-row>
               <v-col :cols="6">
                 <v-text-field
-                  v-model="data.form.dest_googs_warehouse"
-                  :label="$t('wms.warehouseWorking.warehouseMove.dest_googs_warehouse')"
-                  :rules="data.rules.dest_googs_warehouse"
+                  v-model="data.form.dest_goods_warehouse"
+                  :label="$t('wms.warehouseWorking.warehouseMove.dest_goods_warehouse')"
+                  :rules="data.rules.dest_goods_warehouse"
                   variant="outlined"
                   disabled
                 ></v-text-field>
               </v-col>
               <v-col :cols="6">
                 <v-text-field
-                  v-model="data.form.dest_googs_location_name"
-                  :label="$t('wms.warehouseWorking.warehouseMove.dest_googs_location_name')"
-                  :rules="data.rules.dest_googs_location_name"
+                  v-model="data.form.dest_goods_location_name"
+                  :label="$t('wms.warehouseWorking.warehouseMove.dest_goods_location_name')"
+                  :rules="data.rules.dest_goods_location_name"
                   variant="outlined"
                   readonly
                   clearable
@@ -167,15 +167,15 @@ const data = reactive({
     move_status: MoveStatus.UNADJUST,
     sku_id: 0,
     orig_goods_location_id: 0,
-    dest_googs_location_id: 0,
+    dest_goods_location_id: 0,
     qty: 0,
     goods_owner_id: 0,
     handler: '',
     handle_time: '',
     orig_goods_warehouse: '',
     orig_goods_location_name: '',
-    dest_googs_warehouse: '',
-    dest_googs_location_name: '',
+    dest_goods_warehouse: '',
+    dest_goods_location_name: '',
     spu_code: '',
     spu_name: '',
     sku_code: '',
@@ -196,11 +196,11 @@ const data = reactive({
     orig_goods_location_name: [
       (val: string) => !!val || `${ i18n.global.t('system.checkText.mustInput') }${ i18n.global.t('wms.warehouseWorking.warehouseMove.orig_goods_location_name') }!`
     ],
-    dest_googs_warehouse: [
-      (val: string) => !!val || `${ i18n.global.t('system.checkText.mustInput') }${ i18n.global.t('wms.warehouseWorking.warehouseMove.dest_googs_warehouse') }!`
+    dest_goods_warehouse: [
+      (val: string) => !!val || `${ i18n.global.t('system.checkText.mustInput') }${ i18n.global.t('wms.warehouseWorking.warehouseMove.dest_goods_warehouse') }!`
     ],
-    dest_googs_location_name: [
-      (val: string) => !!val || `${ i18n.global.t('system.checkText.mustInput') }${ i18n.global.t('wms.warehouseWorking.warehouseMove.dest_googs_location_name') }!`
+    dest_goods_location_name: [
+      (val: string) => !!val || `${ i18n.global.t('system.checkText.mustInput') }${ i18n.global.t('wms.warehouseWorking.warehouseMove.dest_goods_location_name') }!`
     ],
     spu_code: [(val: string) => !!val || `${ i18n.global.t('system.checkText.mustInput') }${ i18n.global.t('base.commodityManagement.spu_code') }!`],
     spu_name: [(val: string) => !!val || `${ i18n.global.t('system.checkText.mustInput') }${ i18n.global.t('base.commodityManagement.spu_name') }!`],
@@ -271,9 +271,9 @@ const method = reactive({
 
   sureSelectLocation: (selectRecords: any) => {
     try {
-      data.form.dest_googs_location_id = selectRecords[0].id
-      data.form.dest_googs_warehouse = selectRecords[0].warehouse_name
-      data.form.dest_googs_location_name = selectRecords[0].location_name
+      data.form.dest_goods_location_id = selectRecords[0].id
+      data.form.dest_goods_warehouse = selectRecords[0].warehouse_name
+      data.form.dest_goods_location_name = selectRecords[0].location_name
     } catch (error) {
       console.error(error)
     }
@@ -293,9 +293,9 @@ const method = reactive({
   },
 
   clearLocation: () => {
-    data.form.dest_googs_location_id = 0
-    data.form.dest_googs_warehouse = ''
-    data.form.dest_googs_location_name = ''
+    data.form.dest_goods_location_id = 0
+    data.form.dest_goods_warehouse = ''
+    data.form.dest_goods_location_name = ''
   },
 
   submit: async () => {

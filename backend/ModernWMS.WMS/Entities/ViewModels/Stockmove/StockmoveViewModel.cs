@@ -59,10 +59,10 @@ namespace ModernWMS.WMS.Entities.ViewModels
         public int orig_goods_location_id { get; set; } = 0;
 
         /// <summary>
-        /// dest_googs_location_id
+        /// dest_goods_location_id
         /// </summary>
-        [Display(Name = "dest_googs_location_id")]
-        public int dest_googs_location_id { get; set; } = 0;
+        [Display(Name = "dest_goods_location_id")]
+        public int dest_goods_location_id { get; set; } = 0;
 
         /// <summary>
         /// qty
@@ -130,12 +130,12 @@ namespace ModernWMS.WMS.Entities.ViewModels
         /// <summary>
         /// destination warehouse
         /// </summary>
-        public string dest_googs_warehouse { get; set; } = string.Empty;
+        public string dest_goods_warehouse { get; set; } = string.Empty;
 
         /// <summary>
         /// destination location_name
         /// </summary>
-        public string dest_googs_location_name { get; set; } = string.Empty;
+        public string dest_goods_location_name { get; set; } = string.Empty;
 
         /// <summary>
         /// spu_code

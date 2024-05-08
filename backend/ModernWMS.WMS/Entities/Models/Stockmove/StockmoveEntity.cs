@@ -41,9 +41,9 @@ namespace ModernWMS.WMS.Entities.Models
         public int orig_goods_location_id { get; set; } = 0;
 
         /// <summary>
-        /// dest_googs_location_id
+        /// dest_goods_location_id
         /// </summary>
-        public int dest_googs_location_id { get; set; } = 0;
+        public int dest_goods_location_id { get; set; } = 0;
 
         /// <summary>
         /// qty

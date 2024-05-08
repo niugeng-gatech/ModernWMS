@@ -1,0 +1,45 @@
+CREATE TABLE [dbo].[new_stockadjust] (
+ id INT IDENTITY(1,1) PRIMARY KEY,
+ job_code NVARCHAR(MAX) NOT NULL,
+    sku_id int NOT NULL,
+    goods_owner_id int NOT NULL,
+    goods_location_id int NOT NULL,
+    qty int NOT NULL,
+    creator NVARCHAR(MAX) NOT NULL,
+    create_time datetime2 DEFAULT GETDATE(),
+    last_update_time datetime2 DEFAULT GETDATE(),
+    tenant_id bigint NOT NULL,
+    is_update_stock bit NOT NULL,
+    job_type tinyint NOT NULL,
+    source_table_id int NOT NULL, 
+ series_number NVARCHAR(MAX) NOT NULL,
+ CONSTRAINT FK_stockadjust_sku FOREIGN KEY (sku_id) REFERENCES sku (id) ON DELETE CASCADE,
+ CONSTRAINT FK_stockadjust_goodsowner FOREIGN KEY (goods_owner_id) REFERENCES goodsowner (id) ON DELETE CASCADE,
+ CONSTRAINT FK_stockadjust_goodslocation FOREIGN KEY (goods_location_id) REFERENCES goodslocation (id) ON DELETE CASCADE
+);
+
+-- Step 2: Copy data from the old table to the new table
+INSERT INTO [dbo].[new_stockadjust] (job_code, sku_id, goods_owner_id, goods_location_id, qty, creator, create_time, last_update_time, tenant_id, is_update_stock, job_type, source_table_id, series_number)
+SELECT job_code, sku_id, goods_owner_id, goods_location_id, qty, creator, create_time, last_update_time, tenant_id, is_update_stock, job_type, source_table_id, series_number
+FROM [dbo].[stockadjust] ORDER BY id ASC;
+
+-- Step 3: Drop the old table
+DROP TABLE [dbo].[stockadjust];
+
+-- Step 4: Rename the new table to match the old table's name
+EXEC sp_rename '[dbo].[new_stockadjust]', 'stockadjust';
+
+
+    job_code NVARCHAR(MAX) NOT NULL,
+    sku_id int NOT NULL,
+    goods_owner_id int NOT NULL,
+    goods_location_id int NOT NULL,
+    qty int NOT NULL,
+    creator NVARCHAR(MAX) NOT NULL,
+    create_time NVARCHAR(MAX) NOT NULL,
+    last_update_time NVARCHAR(MAX) NOT NULL,
+    tenant_id int NOT NULL,
+    is_update_stock int NOT NULL,
+    job_type int NOT NULL,
+    source_table_id int NOT NULL, 
+ series_number NVARCHAR(MAX) NOT NULL

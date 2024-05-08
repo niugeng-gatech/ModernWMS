@@ -75,14 +75,14 @@
                     :title="$t('wms.warehouseWorking.warehouseMove.orig_goods_location_name')"
                   ></vxe-column>
                   <vxe-column
-                    field="dest_googs_warehouse"
+                    field="dest_goods_warehouse"
                     width="150px"
-                    :title="$t('wms.warehouseWorking.warehouseMove.dest_googs_warehouse')"
+                    :title="$t('wms.warehouseWorking.warehouseMove.dest_goods_warehouse')"
                   ></vxe-column>
                   <vxe-column
-                    field="dest_googs_location_name"
+                    field="dest_goods_location_name"
                     width="150px"
-                    :title="$t('wms.warehouseWorking.warehouseMove.dest_googs_location_name')"
+                    :title="$t('wms.warehouseWorking.warehouseMove.dest_goods_location_name')"
                   ></vxe-column>
                   <vxe-column field="creator" :title="$t('wms.warehouseWorking.warehouseMove.creator')"></vxe-column>
                   <vxe-column
@@ -188,15 +188,15 @@ const data = reactive({
     move_status: MoveStatus.UNADJUST,
     sku_id: 0,
     orig_goods_location_id: 0,
-    dest_googs_location_id: 0,
+    dest_goods_location_id: 0,
     qty: 0,
     goods_owner_id: 0,
     handler: '',
     handle_time: '',
     orig_goods_warehouse: '',
     orig_goods_location_name: '',
-    dest_googs_warehouse: '',
-    dest_googs_location_name: '',
+    dest_goods_warehouse: '',
+    dest_goods_location_name: '',
     spu_code: '',
     spu_name: '',
     sku_code: '',
@@ -225,15 +225,15 @@ const method = reactive({
       move_status: MoveStatus.UNADJUST,
       sku_id: 0,
       orig_goods_location_id: 0,
-      dest_googs_location_id: 0,
+      dest_goods_location_id: 0,
       qty: 0,
       goods_owner_id: 0,
       handler: '',
       handle_time: '',
       orig_goods_warehouse: '',
       orig_goods_location_name: '',
-      dest_googs_warehouse: '',
-      dest_googs_location_name: '',
+      dest_goods_warehouse: '',
+      dest_goods_location_name: '',
       spu_code: '',
       spu_name: '',
       sku_code: '',

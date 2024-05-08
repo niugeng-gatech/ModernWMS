@@ -82,7 +82,7 @@ namespace ModernWMS.WMS.Services
                         join sku in _dBContext.GetDbSet<SkuEntity>().AsNoTracking() on m.sku_id equals sku.id
                         join spu in _dBContext.GetDbSet<SpuEntity>().AsNoTracking() on sku.spu_id equals spu.id
                         join orig_location in location_DBSet on m.orig_goods_location_id equals orig_location.id
-                        join dest_location in location_DBSet on m.dest_googs_location_id equals dest_location.id
+                        join dest_location in location_DBSet on m.dest_goods_location_id equals dest_location.id
                         select new StockmoveViewModel
                         {
                             id = m.id,
@@ -90,7 +90,7 @@ namespace ModernWMS.WMS.Services
                             move_status = m.move_status,
                             sku_id = m.sku_id,
                             orig_goods_location_id = m.orig_goods_location_id,
-                            dest_googs_location_id = m.dest_googs_location_id,
+                            dest_goods_location_id = m.dest_goods_location_id,
                             qty = m.qty,
                             goods_owner_id = m.goods_owner_id,
                             handler = m.handler,
@@ -103,8 +103,8 @@ namespace ModernWMS.WMS.Services
                             sku_name = sku.sku_name,
                             spu_code = spu.spu_code,
                             spu_name = spu.spu_name,
-                            dest_googs_location_name = dest_location.location_name,
-                            dest_googs_warehouse = dest_location.warehouse_name,
+                            dest_goods_location_name = dest_location.location_name,
+                            dest_goods_warehouse = dest_location.warehouse_name,
                             orig_goods_location_name = orig_location.location_name,
                             orig_goods_warehouse = orig_location.warehouse_name,
                             series_number = m.series_number,
@@ -131,7 +131,7 @@ namespace ModernWMS.WMS.Services
                               join sku in _dBContext.GetDbSet<SkuEntity>().AsNoTracking() on m.sku_id equals sku.id
                               join spu in _dBContext.GetDbSet<SpuEntity>().AsNoTracking() on sku.spu_id equals spu.id
                               join orig_location in location_DBSet on m.orig_goods_location_id equals orig_location.id
-                              join dest_location in location_DBSet on m.dest_googs_location_id equals dest_location.id
+                              join dest_location in location_DBSet on m.dest_goods_location_id equals dest_location.id
                               select new StockmoveViewModel
                               {
                                   id = m.id,
@@ -139,7 +139,7 @@ namespace ModernWMS.WMS.Services
                                   move_status = m.move_status,
                                   sku_id = m.sku_id,
                                   orig_goods_location_id = m.orig_goods_location_id,
-                                  dest_googs_location_id = m.dest_googs_location_id,
+                                  dest_goods_location_id = m.dest_goods_location_id,
                                   qty = m.qty,
                                   goods_owner_id = m.goods_owner_id,
                                   handler = m.handler,
@@ -152,8 +152,8 @@ namespace ModernWMS.WMS.Services
                                   sku_name = sku.sku_name,
                                   spu_code = spu.spu_code,
                                   spu_name = spu.spu_name,
-                                  dest_googs_location_name = dest_location.location_name,
-                                  dest_googs_warehouse = dest_location.warehouse_name,
+                                  dest_goods_location_name = dest_location.location_name,
+                                  dest_goods_warehouse = dest_location.warehouse_name,
                                   orig_goods_location_name = orig_location.location_name,
                                   orig_goods_warehouse = orig_location.warehouse_name,
                                   series_number = m.series_number,
@@ -174,7 +174,7 @@ namespace ModernWMS.WMS.Services
                               join sku in _dBContext.GetDbSet<SkuEntity>().AsNoTracking() on m.sku_id equals sku.id
                               join spu in _dBContext.GetDbSet<SpuEntity>().AsNoTracking() on sku.spu_id equals spu.id
                               join orig_location in location_DBSet on m.orig_goods_location_id equals orig_location.id
-                              join dest_location in location_DBSet on m.dest_googs_location_id equals dest_location.id
+                              join dest_location in location_DBSet on m.dest_goods_location_id equals dest_location.id
                               where m.id == id
                               select new StockmoveViewModel
                               {
@@ -183,7 +183,7 @@ namespace ModernWMS.WMS.Services
                                   move_status = m.move_status,
                                   sku_id = m.sku_id,
                                   orig_goods_location_id = m.orig_goods_location_id,
-                                  dest_googs_location_id = m.dest_googs_location_id,
+                                  dest_goods_location_id = m.dest_goods_location_id,
                                   qty = m.qty,
                                   goods_owner_id = m.goods_owner_id,
                                   handler = m.handler,
@@ -196,8 +196,8 @@ namespace ModernWMS.WMS.Services
                                   sku_name = sku.sku_name,
                                   spu_code = spu.spu_code,
                                   spu_name = spu.spu_name,
-                                  dest_googs_location_name = dest_location.location_name,
-                                  dest_googs_warehouse = dest_location.warehouse_name,
+                                  dest_goods_location_name = dest_location.location_name,
+                                  dest_goods_warehouse = dest_location.warehouse_name,
                                   orig_goods_location_name = orig_location.location_name,
                                   orig_goods_warehouse = orig_location.warehouse_name,
                                   series_number = m.series_number,
@@ -272,7 +272,7 @@ namespace ModernWMS.WMS.Services
                      qty_available = sg.is_freeze ? 0 : (sg.qty - (dp.qty_locked == null ? 0 : dp.qty_locked) - (pl.qty_locked == null ? 0 : pl.qty_locked) - (sm.qty_locked == null ? 0 : sm.qty_locked)),
                  }
                 ).FirstOrDefaultAsync();
-            var dest_stock = await stock_DBSet.FirstOrDefaultAsync(t => t.goods_owner_id == entity.goods_owner_id && t.series_number == entity.series_number && t.goods_location_id == entity.dest_googs_location_id && t.sku_id == entity.sku_id);
+            var dest_stock = await stock_DBSet.FirstOrDefaultAsync(t => t.goods_owner_id == entity.goods_owner_id && t.series_number == entity.series_number && t.goods_location_id == entity.dest_goods_location_id && t.sku_id == entity.sku_id);
             if (orig_stock == null || orig_stock.qty_available < entity.qty)
             {
                 return (0, _stringLocalizer["qty_not_available"]);
@@ -320,7 +320,7 @@ namespace ModernWMS.WMS.Services
             entity.move_status = 1;
             entity.last_update_time = DateTime.Now;
             var orig_stock = await stock_DBSet.FirstOrDefaultAsync(t => t.goods_owner_id == entity.goods_owner_id && t.series_number == entity.series_number && t.goods_location_id == entity.orig_goods_location_id && t.sku_id == entity.sku_id);
-            var dest_stock = await stock_DBSet.FirstOrDefaultAsync(t => t.goods_owner_id == entity.goods_owner_id && t.series_number == entity.series_number && t.goods_location_id == entity.dest_googs_location_id && t.sku_id != entity.sku_id);
+            var dest_stock = await stock_DBSet.FirstOrDefaultAsync(t => t.goods_owner_id == entity.goods_owner_id && t.series_number == entity.series_number && t.goods_location_id == entity.dest_goods_location_id && t.sku_id != entity.sku_id);
             if (orig_stock != null)
             {
                 if (orig_stock.qty == entity.qty)
@@ -337,7 +337,7 @@ namespace ModernWMS.WMS.Services
             {
                 dest_stock = new StockEntity
                 {
-                    goods_location_id = entity.dest_googs_location_id,
+                    goods_location_id = entity.dest_goods_location_id,
                     sku_id = entity.sku_id,
                     goods_owner_id = entity.goods_owner_id,
                     is_freeze = false,

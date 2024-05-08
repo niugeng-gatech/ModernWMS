@@ -194,7 +194,7 @@ namespace ModernWMS.WMS.Services
             {
                 return (0, _stringLocalizer["dispatch_not_comfirm"]);
             }
-            else if (await (_dBContext.GetDbSet<StockmoveEntity>().AnyAsync(t => (t.orig_goods_location_id == entity.goods_location_id || t.dest_googs_location_id == entity.goods_location_id) && t.sku_id == entity.sku_id && t.move_status == 0)))
+            else if (await (_dBContext.GetDbSet<StockmoveEntity>().AnyAsync(t => (t.orig_goods_location_id == entity.goods_location_id || t.dest_goods_location_id == entity.goods_location_id) && t.sku_id == entity.sku_id && t.move_status == 0)))
             {
                 return (0, _stringLocalizer["move_not_comfirm"]);
             }

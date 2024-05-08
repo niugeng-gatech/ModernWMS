@@ -1,0 +1,33 @@
+CREATE TABLE [dbo].[new_stock] (
+ id INT IDENTITY(1,1) PRIMARY KEY,
+ sku_id int NOT NULL,
+    goods_location_id int NOT NULL,
+    qty int NOT NULL,
+    goods_owner_id int NOT NULL,
+    is_freeze bit NOT NULL,
+    last_update_time datetime2 DEFAULT GETDATE(),
+    tenant_id bigint NOT NULL, 
+ series_number NVARCHAR(MAX) NOT NULL
+);
+
+-- Step 2: Copy data from the old table to the new table
+INSERT INTO [dbo].[new_stock] (sku_id, goods_location_id, qty, goods_owner_id, is_freeze, last_update_time, tenant_id, series_number)
+SELECT sku_id, goods_location_id, qty, goods_owner_id, is_freeze, last_update_time, tenant_id, series_number
+FROM [dbo].[stock] ORDER BY id ASC;
+
+-- Step 3: Drop the old table
+DROP TABLE [dbo].[stock];
+
+-- Step 4: Rename the new table to match the old table's name
+EXEC sp_rename '[dbo].[new_stock]', 'stock';
+
+
+ 
+    sku_id int NOT NULL,
+    goods_location_id int NOT NULL,
+    qty int NOT NULL,
+    goods_owner_id int NOT NULL,
+    is_freeze int NOT NULL,
+    last_update_time NVARCHAR(MAX) NOT NULL,
+    tenant_id int NOT NULL, 
+ series_number NVARCHAR(MAX)

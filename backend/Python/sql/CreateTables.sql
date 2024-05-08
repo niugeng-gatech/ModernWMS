@@ -234,7 +234,7 @@ CREATE TABLE "stockmove" (
     "move_status" INTEGER NOT NULL,
     "sku_id" INTEGER NOT NULL,
     "orig_goods_location_id" INTEGER NOT NULL,
-    "dest_googs_location_id" INTEGER NOT NULL,
+    "dest_goods_location_id" INTEGER NOT NULL,
     "qty" INTEGER NOT NULL,
     "goods_owner_id" INTEGER NOT NULL,
     "handler" TEXT NOT NULL,

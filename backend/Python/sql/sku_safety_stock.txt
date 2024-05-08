@@ -1,0 +1,26 @@
+CREATE TABLE [dbo].[new_sku_safety_stock] (
+ id INT IDENTITY(1,1) PRIMARY KEY,
+ sku_id int NOT NULL,
+ safety_stock_qty int NOT NULL,
+ warehouse_id int NOT NULL,
+ warehouse_name NVARCHAR(MAX) NOT NULL
+ CONSTRAINT FK_sku_safety_stock_sku FOREIGN KEY (sku_id) REFERENCES sku(id) ON DELETE CASCADE,
+ CONSTRAINT FK_sku_safety_stock_warehouse FOREIGN KEY (warehouse_id) REFERENCES warehouse(id) ON DELETE CASCADE
+);
+
+-- Step 2: Copy data from the old table to the new table
+INSERT INTO [dbo].[new_sku_safety_stock] (sku_id, safety_stock_qty, warehouse_id, warehouse_name)
+SELECT sku_id, safety_stock_qty, warehouse_id, warehouse_name
+FROM [dbo].[sku_safety_stock] ORDER BY id ASC;
+
+-- Step 3: Drop the old table
+DROP TABLE [dbo].[sku_safety_stock];
+
+-- Step 4: Rename the new table to match the old table's name
+EXEC sp_rename '[dbo].[new_sku_safety_stock]', 'sku_safety_stock';
+
+
+ sku_id int NOT NULL,
+ safety_stock_qty int,
+ warehouse_id int NOT NULL,
+ warehouse_name NVARCHAR(MAX) NOT NULL

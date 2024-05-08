@@ -384,10 +384,10 @@
   <data name="orig_goods_location_name" xml:space="preserve">
     <value>来源库位</value>
   </data>
-  <data name="dest_googs_warehouse" xml:space="preserve">
+  <data name="dest_goods_warehouse" xml:space="preserve">
     <value>目标仓库</value>
   </data>
-  <data name="dest_googs_location_name" xml:space="preserve">
+  <data name="dest_goods_location_name" xml:space="preserve">
     <value>目标库位</value>
   </data>
   <data name="freeze" xml:space="preserve">

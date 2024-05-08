@@ -39,3 +39,6 @@ EXEC sp_rename '[dbo].[new_asnmaster]', 'asnmaster';
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
     last_update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
     tenant_id INTEGER NOT NULL
+	
+	
+	ALTER TABLE asnmaster ADD CONSTRAINT FK_asnmaster_goods_owner FOREIGN KEY (goods_owner_id) REFERENCES goodsowner(id) ON DELETE CASCADE;

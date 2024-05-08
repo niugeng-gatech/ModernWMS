@@ -1,0 +1,37 @@
+CREATE TABLE [dbo].[new_goodsowner] (
+ id INT IDENTITY(1,1) PRIMARY KEY,
+     goods_owner_name NVARCHAR(MAX) NOT NULL,
+    city NVARCHAR(MAX) NOT NULL,
+    address NVARCHAR(MAX) NOT NULL,
+    manager NVARCHAR(MAX) NOT NULL,
+    contact_tel NVARCHAR(MAX) NOT NULL,
+    creator NVARCHAR(MAX) NOT NULL,
+    create_time datetime2 DEFAULT GETDATE(),
+    last_update_time datetime2 DEFAULT GETDATE(),
+    is_valid bit NOT NULL,
+    tenant_id bigint NOT NULL
+);
+
+-- Step 2: Copy data from the old table to the new table
+INSERT INTO [dbo].[new_goodsowner] (goods_owner_name, city, address, manager, contact_tel, creator, create_time, last_update_time, is_valid, tenant_id)
+SELECT goods_owner_name, city, address, manager, contact_tel, creator, create_time, last_update_time, is_valid, tenant_id
+FROM [dbo].[goodsowner];
+
+-- Step 3: Drop the old table
+DROP TABLE [dbo].[goodsowner];
+
+-- Step 4: Rename the new table to match the old table's name
+EXEC sp_rename '[dbo].[new_goodsowner]', 'goodsowner';
+
+
+
+    goods_owner_name NVARCHAR(MAX) NOT NULL,
+    city NVARCHAR(MAX) NOT NULL,
+    address NVARCHAR(MAX) NOT NULL,
+    manager NVARCHAR(MAX) NOT NULL,
+    contact_tel NVARCHAR(MAX) NOT NULL,
+    creator NVARCHAR(MAX) NOT NULL,
+    create_time NVARCHAR(MAX) NOT NULL,
+    last_update_time NVARCHAR(MAX) NOT NULL,
+    is_valid int NOT NULL,
+    tenant_id int NOT NULL
