@@ -50,56 +50,53 @@
               height: cardHeight
             }"
           >
-            <vxe-table
-              ref="xTable"
-              :column-config="{
+              <vxe-table ref="xTable"
+                         :column-config="{
                 minWidth: '100px'
               }"
-              :data="data.tableData"
-              :height="tableHeight"
-              align="center"
-            >
-              <template #empty>
-                {{ i18n.global.t('system.page.noData') }}
-              </template>
-              <vxe-column type="seq" width="60"></vxe-column>
-              <vxe-column type="checkbox" width="50"></vxe-column>
-              <vxe-column field="supplier_name" :title="$t('base.supplier.supplier_name')"></vxe-column>
-              <vxe-column field="city" :title="$t('base.supplier.city')"></vxe-column>
-              <vxe-column field="address" :title="$t('base.supplier.address')"></vxe-column>
-              <vxe-column field="manager" :title="$t('base.supplier.manager')"></vxe-column>
-              <vxe-column field="email" :title="$t('base.supplier.email')"></vxe-column>
-              <vxe-column field="contact_tel" :title="$t('base.supplier.contact_tel')"></vxe-column>
-              <vxe-column field="creator" :title="$t('base.supplier.creator')"></vxe-column>
-              <vxe-column field="create_time" width="170px" :formatter="['formatDate', 'yyyy-MM-dd HH:mm']" :title="$t('base.supplier.create_time')">
-              </vxe-column>
-              <vxe-column
-                field="last_update_time"
-                width="170px"
-                :formatter="['formatDate', 'yyyy-MM-dd HH:mm']"
-                :title="$t('base.supplier.last_update_time')"
-              >
-              </vxe-column>
-              <vxe-column field="operate" :title="$t('system.page.operate')" width="160" :resizable="false" show-overflow>
-                <template #default="{ row }">
-                  <tooltip-btn
-                    :flat="true"
-                    icon="mdi-pencil-outline"
-                    :tooltip-text="$t('system.page.edit')"
-                    :disabled="!data.authorityList.includes('save')"
-                    @click="method.editRow(row)"
-                  ></tooltip-btn>
-                  <tooltip-btn
-                    :flat="true"
-                    icon="mdi-delete-outline"
-                    :tooltip-text="$t('system.page.delete')"
-                    :icon-color="!data.authorityList.includes('delete')?'':errorColor"
-                    :disabled="!data.authorityList.includes('delete')"
-                    @click="method.deleteRow(row)"
-                  ></tooltip-btn>
-                </template>
-              </vxe-column>
-            </vxe-table>
+                         :data="data.tableData"
+                         :height="tableHeight"
+                         align="center">
+                  <template #empty>
+                      {{ i18n.global.t('system.page.noData') }}
+                  </template>
+                  <vxe-column type="seq" width="60"></vxe-column>
+                  <vxe-column type="checkbox" width="50"></vxe-column>
+                  <vxe-column field="supplier_name" :title="$t('base.supplier.supplier_name')"></vxe-column>
+                  <vxe-column field="city" :title="$t('base.supplier.city')"></vxe-column>
+                  <vxe-column field="address" :title="$t('base.supplier.address')"></vxe-column>
+                  <vxe-column field="manager" :title="$t('base.supplier.manager')"></vxe-column>
+                  <vxe-column field="email" :title="$t('base.supplier.email')"></vxe-column>
+                  <vxe-column field="contact_tel" :title="$t('base.supplier.contact_tel')"></vxe-column>
+                  <vxe-column field="creator" :title="$t('base.supplier.creator')"></vxe-column>
+                  <vxe-column field="create_time"
+                              width="170px"
+                              :title="$t('base.supplier.create_time')">
+                      <template #default="{ row, column }">
+                          <span>{{ formatDate(row[column.property], 'yyyy-MM-dd HH:mm') }}</span>
+                      </template>
+                  </vxe-column>
+                  <vxe-column field="last_update_time"
+                              width="170px"
+                              :formatter="['formatDate', 'yyyy-MM-dd HH:mm']"
+                              :title="$t('base.supplier.last_update_time')">
+                  </vxe-column>
+                  <vxe-column field="operate" :title="$t('system.page.operate')" width="160" :resizable="false" show-overflow>
+                      <template #default="{ row }">
+                          <tooltip-btn :flat="true"
+                                       icon="mdi-pencil-outline"
+                                       :tooltip-text="$t('system.page.edit')"
+                                       :disabled="!data.authorityList.includes('save')"
+                                       @click="method.editRow(row)"></tooltip-btn>
+                          <tooltip-btn :flat="true"
+                                       icon="mdi-delete-outline"
+                                       :tooltip-text="$t('system.page.delete')"
+                                       :icon-color="!data.authorityList.includes('delete')?'':errorColor"
+                                       :disabled="!data.authorityList.includes('delete')"
+                                       @click="method.deleteRow(row)"></tooltip-btn>
+                      </template>
+                  </vxe-column>
+              </vxe-table>
             <custom-pager
               :current-page="data.tablePage.pageIndex"
               :page-size="data.tablePage.pageSize"
@@ -139,6 +136,7 @@ import importSupplierTable from './import-supplier-table.vue'
 import customPager from '@/components/custom-pager.vue'
 import { exportData } from '@/utils/exportTable'
 import BtnGroup from '@/components/system/btnGroup.vue'
+import { formatDate } from '@/utils/format/formatSystem'
 
 const xTable = ref()
 

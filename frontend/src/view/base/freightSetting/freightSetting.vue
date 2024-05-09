@@ -72,50 +72,47 @@
                   height: cardHeight
                 }"
               >
-                <vxe-table ref="xTable" :column-config="{ minWidth: '100px' }" :data="data.tableData" :height="tableHeight" align="center">
-                  <template #empty>
-                    {{ i18n.global.t('system.page.noData') }}
-                  </template>
-                  <vxe-column type="seq" width="60"></vxe-column>
-                  <vxe-column type="checkbox" width="50"></vxe-column>
-                  <vxe-column field="carrier" :title="$t('base.freightSetting.carrier')"></vxe-column>
-                  <vxe-column field="departure_city" :title="$t('base.freightSetting.departure_city')"></vxe-column>
-                  <vxe-column field="arrival_city" :title="$t('base.freightSetting.arrival_city')"></vxe-column>
-                  <vxe-column field="price_per_weight" :title="$t('base.freightSetting.price_per_weight')"></vxe-column>
-                  <vxe-column field="price_per_volume" :title="$t('base.freightSetting.price_per_volume')"></vxe-column>
-                  <vxe-column field="min_payment" :title="$t('base.freightSetting.min_payment')"></vxe-column>
-                  <vxe-column field="creator" :title="$t('base.freightSetting.creator')"></vxe-column>
-                  <vxe-column
-                    field="create_time"
-                    width="170px"
-                    :formatter="['formatDate', 'yyyy-MM-dd HH:mm']"
-                    :title="$t('base.freightSetting.create_time')"
-                  ></vxe-column>
-                  <vxe-column field="is_valid" :title="$t('base.freightSetting.is_valid')">
-                    <template #default="{ row, column }">
-                      <span>{{ row[column.property] ? $t('system.combobox.yesOrNo.yes') : $t('system.combobox.yesOrNo.no') }}</span>
-                    </template>
-                  </vxe-column>
-                  <vxe-column field="operate" :title="$t('system.page.operate')" width="160" :resizable="false" show-overflow>
-                    <template #default="{ row }">
-                      <tooltip-btn
-                        :flat="true"
-                        icon="mdi-pencil-outline"
-                        :tooltip-text="$t('system.page.edit')"
-                        :disabled="!data.authorityList.includes('save')"
-                        @click="method.editRow(row)"
-                      ></tooltip-btn>
-                      <tooltip-btn
-                        :flat="true"
-                        icon="mdi-delete-outline"
-                        :tooltip-text="$t('system.page.delete')"
-                        :icon-color="!data.authorityList.includes('delete')?'':errorColor"
-                        :disabled="!data.authorityList.includes('delete')"
-                        @click="method.deleteRow(row)"
-                      ></tooltip-btn>
-                    </template>
-                  </vxe-column>
-                </vxe-table>
+                  <vxe-table ref="xTable" :column-config="{ minWidth: '100px' }" :data="data.tableData" :height="tableHeight" align="center">
+                      <template #empty>
+                          {{ i18n.global.t('system.page.noData') }}
+                      </template>
+                      <vxe-column type="seq" width="60"></vxe-column>
+                      <vxe-column type="checkbox" width="50"></vxe-column>
+                      <vxe-column field="carrier" :title="$t('base.freightSetting.carrier')"></vxe-column>
+                      <vxe-column field="departure_city" :title="$t('base.freightSetting.departure_city')"></vxe-column>
+                      <vxe-column field="arrival_city" :title="$t('base.freightSetting.arrival_city')"></vxe-column>
+                      <vxe-column field="price_per_weight" :title="$t('base.freightSetting.price_per_weight')"></vxe-column>
+                      <vxe-column field="price_per_volume" :title="$t('base.freightSetting.price_per_volume')"></vxe-column>
+                      <vxe-column field="min_payment" :title="$t('base.freightSetting.min_payment')"></vxe-column>
+                      <vxe-column field="creator" :title="$t('base.freightSetting.creator')"></vxe-column>
+                      <vxe-column field="create_time"
+                                  width="170px"
+                                  :title="$t('base.freightSetting.create_time')">
+                          <template #default="{ row, column }">
+                              <span>{{ formatDate(row[column.property], 'yyyy-MM-dd HH:mm') }}</span>
+                          </template>
+                      </vxe-column>
+                      <vxe-column field="is_valid" :title="$t('base.freightSetting.is_valid')">
+                          <template #default="{ row, column }">
+                              <span>{{ row[column.property] ? $t('system.combobox.yesOrNo.yes') : $t('system.combobox.yesOrNo.no') }}</span>
+                          </template>
+                      </vxe-column>
+                      <vxe-column field="operate" :title="$t('system.page.operate')" width="160" :resizable="false" show-overflow>
+                          <template #default="{ row }">
+                              <tooltip-btn :flat="true"
+                                           icon="mdi-pencil-outline"
+                                           :tooltip-text="$t('system.page.edit')"
+                                           :disabled="!data.authorityList.includes('save')"
+                                           @click="method.editRow(row)"></tooltip-btn>
+                              <tooltip-btn :flat="true"
+                                           icon="mdi-delete-outline"
+                                           :tooltip-text="$t('system.page.delete')"
+                                           :icon-color="!data.authorityList.includes('delete')?'':errorColor"
+                                           :disabled="!data.authorityList.includes('delete')"
+                                           @click="method.deleteRow(row)"></tooltip-btn>
+                          </template>
+                      </vxe-column>
+                  </vxe-table>
                 <custom-pager
                   :current-page="data.tablePage.pageIndex"
                   :page-size="data.tablePage.pageSize"
@@ -154,6 +151,7 @@ import importTable from './import-table.vue'
 import i18n from '@/languages/i18n'
 import { exportData } from '@/utils/exportTable'
 import BtnGroup from '@/components/system/btnGroup.vue'
+import { formatDate } from '@/utils/format/formatSystem'
 
 const xTable = ref()
 

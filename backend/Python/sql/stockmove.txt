@@ -1,42 +1,50 @@
-CREATE TABLE [dbo].[new_stockfreeze] (
+CREATE TABLE [dbo].[new_stockmove] (
  id INT IDENTITY(1,1) PRIMARY KEY,
  job_code NVARCHAR(MAX) NOT NULL,
-    job_type bit NOT NULL,
+    move_status tinyint NOT NULL,
     sku_id int NOT NULL,
+    orig_goods_location_id int NOT NULL,
+    dest_goods_location_id int NOT NULL,
+    qty int NOT NULL,
     goods_owner_id int NOT NULL,
-    goods_location_id int NOT NULL,
     handler NVARCHAR(MAX) NOT NULL,
     handle_time datetime2 DEFAULT GETDATE(),
+    creator NVARCHAR(MAX) NOT NULL,
+    create_time datetime2 DEFAULT GETDATE(),
     last_update_time datetime2 DEFAULT GETDATE(),
     tenant_id bigint NOT NULL, 
- series_number NVARCHAR(MAX) NOT NULL
- CONSTRAINT FK_stockfreeze_sku FOREIGN KEY (sku_id) REFERENCES sku (id) ON DELETE CASCADE,
- CONSTRAINT FK_stockfreeze_goodsowner FOREIGN KEY (goods_owner_id) REFERENCES goodsowner (id) ON DELETE CASCADE,
- CONSTRAINT FK_stockfreeze_goodslocation FOREIGN KEY (goods_location_id) REFERENCES goodslocation (id) ON DELETE CASCADE
+ series_number NVARCHAR(MAX) NOT NULL,
+ CONSTRAINT FK_stockmove_sku FOREIGN KEY (sku_id) REFERENCES sku (id) ON DELETE CASCADE,
+ CONSTRAINT FK_stockmove_goodslocation_orig FOREIGN KEY (orig_goods_location_id) REFERENCES goodslocation (id),
+ CONSTRAINT FK_stockmove_goodslocation_dest FOREIGN KEY (dest_goods_location_id) REFERENCES goodslocation (id),
 );
 
 -- Step 2: Copy data from the old table to the new table
-INSERT INTO [dbo].[new_stockfreeze] (job_code, job_type, sku_id, goods_owner_id, goods_location_id, handler, handle_time, last_update_time, tenant_id, series_number)
-SELECT job_code, job_type, sku_id, goods_owner_id, goods_location_id, handler, handle_time, last_update_time, tenant_id, series_number
-FROM [dbo].[stockfreeze];
+INSERT INTO [dbo].[new_stockmove] (job_code, move_status, sku_id, orig_goods_location_id, dest_goods_location_id, qty, goods_owner_id, handler, handle_time, creator, create_time, last_update_time, tenant_id, series_number)
+SELECT job_code, move_status, sku_id, orig_goods_location_id, dest_googs_location_id, qty, goods_owner_id, handler, handle_time, creator, create_time, last_update_time, tenant_id, series_number
+FROM [dbo].[stockmove];
 
 -- Step 3: Drop the old table
-DROP TABLE [dbo].[stockfreeze];
+DROP TABLE [dbo].[stockmove];
 
 -- Step 4: Rename the new table to match the old table's name
-EXEC sp_rename '[dbo].[new_stockfreeze]', 'stockfreeze';
+EXEC sp_rename '[dbo].[new_stockmove]', 'stockmove';
 
 
 
-sqlite> .schema stockfreeze
+sqlite> .schema stockmove
 
     job_code NVARCHAR(MAX) NOT NULL,
-    job_type int NOT NULL,
+    move_status int NOT NULL,
     sku_id int NOT NULL,
+    orig_goods_location_id int NOT NULL,
+    dest_googs_location_id int NOT NULL,
+    qty int NOT NULL,
     goods_owner_id int NOT NULL,
-    goods_location_id int NOT NULL,
     handler NVARCHAR(MAX) NOT NULL,
     handle_time NVARCHAR(MAX) NOT NULL,
+    creator NVARCHAR(MAX) NOT NULL,
+    create_time NVARCHAR(MAX) NOT NULL,
     last_update_time NVARCHAR(MAX) NOT NULL,
     tenant_id int NOT NULL, 
  series_number NVARCHAR(MAX) NOT NULL

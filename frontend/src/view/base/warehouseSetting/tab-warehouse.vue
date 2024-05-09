@@ -63,47 +63,44 @@
       height: cardHeight
     }"
   >
-    <vxe-table ref="xTableWarehouse" :column-config="{ minWidth: '100px' }" :data="data.tableData" :height="tableHeight" align="center">
-      <vxe-column type="seq" width="60"></vxe-column>
-      <vxe-column type="checkbox" width="50"></vxe-column>
-      <vxe-column field="warehouse_name" :title="$t('base.warehouseSetting.warehouse_name')"></vxe-column>
-      <vxe-column field="city" :title="$t('base.warehouseSetting.city')"></vxe-column>
-      <vxe-column field="address" :title="$t('base.warehouseSetting.address')"></vxe-column>
-      <vxe-column field="contact_tel" :title="$t('base.warehouseSetting.contact_tel')"></vxe-column>
-      <vxe-column field="email" :title="$t('base.warehouseSetting.email')"></vxe-column>
-      <vxe-column field="manager" :title="$t('base.warehouseSetting.manager')"></vxe-column>
-      <vxe-column field="creator" :title="$t('base.warehouseSetting.creator')"></vxe-column>
-      <vxe-column
-        field="create_time"
-        width="170px"
-        :formatter="['formatDate', 'yyyy-MM-dd HH:mm']"
-        :title="$t('base.warehouseSetting.create_time')"
-      ></vxe-column>
-      <vxe-column field="is_valid" :title="$t('base.warehouseSetting.is_valid')">
-        <template #default="{ row, column }">
-          <span>{{ formatIsValid(row[column.property]) }}</span>
-        </template>
-      </vxe-column>
-      <vxe-column field="operate" :title="$t('system.page.operate')" width="160" :resizable="false" show-overflow>
-        <template #default="{ row }">
-          <tooltip-btn
-            :flat="true"
-            icon="mdi-pencil-outline"
-            :tooltip-text="$t('system.page.edit')"
-            :disabled="!data.authorityList.includes('warehouse-save')"
-            @click="method.editRow(row)"
-          ></tooltip-btn>
-          <tooltip-btn
-            :flat="true"
-            icon="mdi-delete-outline"
-            :tooltip-text="$t('system.page.delete')"
-            :icon-color="!data.authorityList.includes('warehouse-delete')?'':errorColor"
-            :disabled="!data.authorityList.includes('warehouse-delete')"
-            @click="method.deleteRow(row)"
-          ></tooltip-btn>
-        </template>
-      </vxe-column>
-    </vxe-table>
+      <vxe-table ref="xTableWarehouse" :column-config="{ minWidth: '100px' }" :data="data.tableData" :height="tableHeight" align="center">
+          <vxe-column type="seq" width="60"></vxe-column>
+          <vxe-column type="checkbox" width="50"></vxe-column>
+          <vxe-column field="warehouse_name" :title="$t('base.warehouseSetting.warehouse_name')"></vxe-column>
+          <vxe-column field="city" :title="$t('base.warehouseSetting.city')"></vxe-column>
+          <vxe-column field="address" :title="$t('base.warehouseSetting.address')"></vxe-column>
+          <vxe-column field="contact_tel" :title="$t('base.warehouseSetting.contact_tel')"></vxe-column>
+          <vxe-column field="email" :title="$t('base.warehouseSetting.email')"></vxe-column>
+          <vxe-column field="manager" :title="$t('base.warehouseSetting.manager')"></vxe-column>
+          <vxe-column field="creator" :title="$t('base.warehouseSetting.creator')"></vxe-column>
+          <vxe-column field="create_time"
+                      width="170px"
+                      :title="$t('base.warehouseSetting.create_time')">
+              <template #default="{ row, column }">
+                  <span>{{ formatDate(row[column.property], 'yyyy-MM-dd HH:mm') }}</span>
+              </template>
+          </vxe-column>
+          <vxe-column field="is_valid" :title="$t('base.warehouseSetting.is_valid')">
+              <template #default="{ row, column }">
+                  <span>{{ formatIsValid(row[column.property]) }}</span>
+              </template>
+          </vxe-column>
+          <vxe-column field="operate" :title="$t('system.page.operate')" width="160" :resizable="false" show-overflow>
+              <template #default="{ row }">
+                  <tooltip-btn :flat="true"
+                               icon="mdi-pencil-outline"
+                               :tooltip-text="$t('system.page.edit')"
+                               :disabled="!data.authorityList.includes('warehouse-save')"
+                               @click="method.editRow(row)"></tooltip-btn>
+                  <tooltip-btn :flat="true"
+                               icon="mdi-delete-outline"
+                               :tooltip-text="$t('system.page.delete')"
+                               :icon-color="!data.authorityList.includes('warehouse-delete')?'':errorColor"
+                               :disabled="!data.authorityList.includes('warehouse-delete')"
+                               @click="method.deleteRow(row)"></tooltip-btn>
+              </template>
+          </vxe-column>
+      </vxe-table>
     <custom-pager
       :current-page="data.tablePage.pageIndex"
       :page-size="data.tablePage.pageSize"
@@ -122,6 +119,7 @@
 <script lang="ts" setup>
 import { computed, ref, reactive, watch, onMounted } from 'vue'
 import { VxePagerEvents } from 'vxe-table'
+import { formatDate } from '@/utils/format/formatSystem'
 import { computedCardHeight, computedTableHeight, errorColor } from '@/constant/style'
 import { WarehouseVO } from '@/types/Base/Warehouse'
 import { PAGE_SIZE, PAGE_LAYOUT, DEFAULT_PAGE_SIZE } from '@/constant/vxeTable'

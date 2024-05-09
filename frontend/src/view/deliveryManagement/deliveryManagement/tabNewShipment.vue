@@ -120,6 +120,7 @@ import { exportData } from '@/utils/exportTable'
 import { DEBOUNCE_TIME } from '@/constant/system'
 import SearchDeliveredMainDetail from './search-delivered-main-detail.vue'
 import BtnGroup from '@/components/system/btnGroup.vue'
+import { formatDate } from '@/utils/format/formatSystem'
 
 const xTable = ref()
 

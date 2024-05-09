@@ -47,51 +47,46 @@
               height: cardHeight
             }"
           >
-            <vxe-table
-              ref="xTable"
-              :column-config="{
+              <vxe-table ref="xTable"
+                         :column-config="{
                 minWidth: '100px'
               }"
-              :data="data.tableData"
-              :height="tableHeight"
-              align="center"
-            >
-              <template #empty>
-                {{ i18n.global.t('system.page.noData') }}
-              </template>
-              <vxe-column type="seq" width="60"></vxe-column>
-              <vxe-column field="goods_owner_name" :title="$t('base.ownerOfCargo.goods_owner_name')"></vxe-column>
-              <vxe-column field="city" :title="$t('base.ownerOfCargo.city')"></vxe-column>
-              <vxe-column field="address" :title="$t('base.ownerOfCargo.address')"></vxe-column>
-              <vxe-column field="contact_tel" :title="$t('base.ownerOfCargo.contact_tel')"></vxe-column>
-              <vxe-column field="manager" :title="$t('base.ownerOfCargo.manager')"></vxe-column>
-              <vxe-column field="creator" :title="$t('base.ownerOfCargo.creator')"></vxe-column>
-              <vxe-column
-                field="create_time"
-                width="170px"
-                :formatter="['formatDate', 'yyyy-MM-dd HH:mm']"
-                :title="$t('base.ownerOfCargo.create_time')"
-              ></vxe-column>
-              <vxe-column field="operate" :title="$t('system.page.operate')" width="160" :resizable="false" show-overflow>
-                <template #default="{ row }">
-                  <tooltip-btn
-                    :flat="true"
-                    icon="mdi-pencil-outline"
-                    :tooltip-text="$t('system.page.edit')"
-                    :disabled="!data.authorityList.includes('save')"
-                    @click="method.editRow(row)"
-                  ></tooltip-btn>
-                  <tooltip-btn
-                    :flat="true"
-                    icon="mdi-delete-outline"
-                    :tooltip-text="$t('system.page.delete')"
-                    :icon-color="!data.authorityList.includes('delete')?'':errorColor"
-                    :disabled="!data.authorityList.includes('delete')"
-                    @click="method.deleteRow(row)"
-                  ></tooltip-btn>
-                </template>
-              </vxe-column>
-            </vxe-table>
+                         :data="data.tableData"
+                         :height="tableHeight"
+                         align="center">
+                  <template #empty>
+                      {{ i18n.global.t('system.page.noData') }}
+                  </template>
+                  <vxe-column type="seq" width="60"></vxe-column>
+                  <vxe-column field="goods_owner_name" :title="$t('base.ownerOfCargo.goods_owner_name')"></vxe-column>
+                  <vxe-column field="city" :title="$t('base.ownerOfCargo.city')"></vxe-column>
+                  <vxe-column field="address" :title="$t('base.ownerOfCargo.address')"></vxe-column>
+                  <vxe-column field="contact_tel" :title="$t('base.ownerOfCargo.contact_tel')"></vxe-column>
+                  <vxe-column field="manager" :title="$t('base.ownerOfCargo.manager')"></vxe-column>
+                  <vxe-column field="creator" :title="$t('base.ownerOfCargo.creator')"></vxe-column>
+                  <vxe-column field="create_time"
+                              width="170px"
+                              :title="$t('base.ownerOfCargo.create_time')">
+                      <template #default="{ row, column }">
+                          <span>{{ formatDate(row[column.property], 'yyyy-MM-dd HH:mm') }}</span>
+                      </template>
+                  </vxe-column>
+                  <vxe-column field="operate" :title="$t('system.page.operate')" width="160" :resizable="false" show-overflow>
+                      <template #default="{ row }">
+                          <tooltip-btn :flat="true"
+                                       icon="mdi-pencil-outline"
+                                       :tooltip-text="$t('system.page.edit')"
+                                       :disabled="!data.authorityList.includes('save')"
+                                       @click="method.editRow(row)"></tooltip-btn>
+                          <tooltip-btn :flat="true"
+                                       icon="mdi-delete-outline"
+                                       :tooltip-text="$t('system.page.delete')"
+                                       :icon-color="!data.authorityList.includes('delete')?'':errorColor"
+                                       :disabled="!data.authorityList.includes('delete')"
+                                       @click="method.deleteRow(row)"></tooltip-btn>
+                      </template>
+                  </vxe-column>
+              </vxe-table>
             <custom-pager
               :current-page="data.tablePage.pageIndex"
               :page-size="data.tablePage.pageSize"
@@ -129,6 +124,7 @@ import { PAGE_SIZE, PAGE_LAYOUT, DEFAULT_PAGE_SIZE } from '@/constant/vxeTable'
 import { exportData } from '@/utils/exportTable'
 import { DEBOUNCE_TIME } from '@/constant/system'
 import BtnGroup from '@/components/system/btnGroup.vue'
+import { formatDate } from '@/utils/format/formatSystem'
 
 const xTable = ref()
 

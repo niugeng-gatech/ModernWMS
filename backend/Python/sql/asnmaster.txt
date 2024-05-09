@@ -3,7 +3,7 @@ CREATE TABLE [dbo].[new_asnmaster] (
  asn_no NVARCHAR(MAX) NOT NULL,
     asn_batch NVARCHAR(MAX) NOT NULL,
     estimated_arrival_time datetime2 DEFAULT GETDATE(),
-    asn_status INT NOT NULL,
+    asn_status tinyint NOT NULL,
     weight decimal NOT NULL,
     volume decimal NOT NULL,
     goods_owner_id INT NOT NULL,

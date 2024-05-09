@@ -1,0 +1,29 @@
+CREATE TABLE [dbo].[new_userrole] (
+	id INT IDENTITY(1,1) PRIMARY KEY,
+	role_name NVARCHAR(MAX) NOT NULL,
+    is_valid bit NOT NULL,
+    create_time datetime2 DEFAULT GETDATE(),
+    last_update_time datetime2 DEFAULT GETDATE(),
+    tenant_id bigint NOT NULL
+);
+
+-- Step 2: Copy data from the old table to the new table
+INSERT INTO [dbo].[new_userrole] (role_name, is_valid, create_time, last_update_time, tenant_id)
+SELECT role_name, is_valid, create_time, last_update_time, tenant_id
+FROM [dbo].[userrole];
+
+-- Step 3: Drop the old table
+DROP TABLE [dbo].[userrole];
+
+-- Step 4: Rename the new table to match the old table's name
+EXEC sp_rename '[dbo].[new_userrole]', 'userrole';
+
+
+
+sqlite> .schema userrole
+
+    role_name NVARCHAR(MAX) NOT NULL,
+    is_valid INTEGER NOT NULL,
+    create_time NVARCHAR(MAX) NOT NULL,
+    last_update_time NVARCHAR(MAX) NOT NULL,
+    tenant_id INTEGER NOT NULL

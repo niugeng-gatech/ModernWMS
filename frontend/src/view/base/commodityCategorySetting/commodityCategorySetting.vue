@@ -67,39 +67,36 @@
               height: cardHeight
             }"
           >
-            <vxe-table ref="xTable" :data="data.tableData" :height="tableHeight" :tree-config="data.tableTreeConfig" align="center">
-              <template #empty>
-                {{ i18n.global.t('system.page.noData') }}
-              </template>
-              <vxe-column type="seq" width="80"></vxe-column>
-              <vxe-column field="category_name" align="left" :title="$t('base.commodityCategorySetting.category_name')" tree-node></vxe-column>
-              <vxe-column field="creator" :title="$t('base.commodityCategorySetting.creator')"></vxe-column>
-              <vxe-column
-                field="create_time"
-                width="170px"
-                :formatter="['formatDate', 'yyyy-MM-dd HH:mm']"
-                :title="$t('base.commodityCategorySetting.create_time')"
-              ></vxe-column>
-              <vxe-column :title="$t('system.page.operate')" width="160" :resizable="false" show-overflow>
-                <template #default="{ row }">
-                  <tooltip-btn
-                    :flat="true"
-                    icon="mdi-pencil-outline"
-                    :tooltip-text="$t('system.page.edit')"
-                    :disabled="!data.authorityList.includes('save')"
-                    @click="method.editRow(row)"
-                  ></tooltip-btn>
-                  <tooltip-btn
-                    :flat="true"
-                    icon="mdi-delete-outline"
-                    :tooltip-text="$t('system.page.delete')"
-                    :icon-color="!data.authorityList.includes('delete')?'':errorColor"
-                    :disabled="!data.authorityList.includes('delete')"
-                    @click="method.deleteRow(row)"
-                  ></tooltip-btn>
-                </template>
-              </vxe-column>
-            </vxe-table>
+              <vxe-table ref="xTable" :data="data.tableData" :height="tableHeight" :tree-config="data.tableTreeConfig" align="center">
+                  <template #empty>
+                      {{ i18n.global.t('system.page.noData') }}
+                  </template>
+                  <vxe-column type="seq" width="80"></vxe-column>
+                  <vxe-column field="category_name" align="left" :title="$t('base.commodityCategorySetting.category_name')" tree-node></vxe-column>
+                  <vxe-column field="creator" :title="$t('base.commodityCategorySetting.creator')"></vxe-column>
+                  <vxe-column field="create_time"
+                              width="170px"
+                              :title="$t('base.commodityCategorySetting.create_time')">
+                      <template #default="{ row, column }">
+                          <span>{{ formatDate(row[column.property], 'yyyy-MM-dd HH:mm') }}</span>
+                      </template>
+                  </vxe-column>
+                  <vxe-column :title="$t('system.page.operate')" width="160" :resizable="false" show-overflow>
+                      <template #default="{ row }">
+                          <tooltip-btn :flat="true"
+                                       icon="mdi-pencil-outline"
+                                       :tooltip-text="$t('system.page.edit')"
+                                       :disabled="!data.authorityList.includes('save')"
+                                       @click="method.editRow(row)"></tooltip-btn>
+                          <tooltip-btn :flat="true"
+                                       icon="mdi-delete-outline"
+                                       :tooltip-text="$t('system.page.delete')"
+                                       :icon-color="!data.authorityList.includes('delete')?'':errorColor"
+                                       :disabled="!data.authorityList.includes('delete')"
+                                       @click="method.deleteRow(row)"></tooltip-btn>
+                      </template>
+                  </vxe-column>
+              </vxe-table>
           </div>
         </v-card-text>
       </v-card>
@@ -121,6 +118,7 @@ import i18n from '@/languages/i18n'
 import { exportData } from '@/utils/exportTable'
 import BtnGroup from '@/components/system/btnGroup.vue'
 import { getMenuAuthorityList } from '@/utils/common'
+import { formatDate } from '@/utils/format/formatSystem'
 
 const xTable = ref()
 

@@ -1,0 +1,37 @@
+CREATE TABLE [dbo].[new_stockprocess] (
+ id INT IDENTITY(1,1) PRIMARY KEY,
+ job_code  NVARCHAR(MAX) NOT NULL,
+     job_type  bit NOT NULL,
+     process_status  bit NOT NULL,
+     processor  NVARCHAR(MAX) NOT NULL,
+     process_time datetime2 DEFAULT GETDATE(),
+     creator  NVARCHAR(MAX) NOT NULL,
+     create_time datetime2 DEFAULT GETDATE(),
+     last_update_time datetime2 DEFAULT GETDATE(),
+     tenant_id  bigint NOT NULL
+);
+
+-- Step 2: Copy data from the old table to the new table
+INSERT INTO [dbo].[new_stockprocess] (job_code, job_type, process_status, processor, process_time, creator, create_time, last_update_time, tenant_id)
+SELECT job_code, job_type, process_status, processor, process_time, creator, create_time, last_update_time, tenant_id
+FROM [dbo].[stockprocess];
+
+-- Step 3: Drop the old table
+DROP TABLE [dbo].[stockprocess];
+
+-- Step 4: Rename the new table to match the old table's name
+EXEC sp_rename '[dbo].[new_stockprocess]', 'stockprocess';
+
+
+
+sqlite> .schema stockprocess
+
+     job_code  NVARCHAR(MAX) NOT NULL,
+     job_type  int NOT NULL,
+     process_status  int NOT NULL,
+     processor  NVARCHAR(MAX) NOT NULL,
+     process_time  NVARCHAR(MAX) NOT NULL,
+     creator  NVARCHAR(MAX) NOT NULL,
+     create_time  NVARCHAR(MAX) NOT NULL,
+     last_update_time  NVARCHAR(MAX) NOT NULL,
+     tenant_id  int NOT NULL

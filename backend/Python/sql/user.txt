@@ -1,0 +1,43 @@
+CREATE TABLE [dbo].[new_user] (
+id INT IDENTITY(1,1) PRIMARY KEY,
+    user_num NVARCHAR(MAX) NOT NULL,
+    user_name NVARCHAR(MAX) NOT NULL,
+    contact_tel NVARCHAR(MAX) NOT NULL,
+    user_role NVARCHAR(MAX) NOT NULL,
+    sex NVARCHAR(MAX) NOT NULL,
+    is_valid bit NOT NULL,
+    auth_string NVARCHAR(MAX) NOT NULL,
+    email NVARCHAR(MAX) NOT NULL,
+    creator NVARCHAR(MAX) NOT NULL,
+    create_time datetime2 DEFAULT GETDATE(),
+    last_update_time datetime2 DEFAULT GETDATE(),
+    tenant_id bigint NOT NULL
+);
+
+-- Step 2: Copy data from the old table to the new table
+INSERT INTO [dbo].[new_user] (user_num,user_name,contact_tel,user_role,sex,is_valid,auth_string,email,creator,create_time,last_update_time,tenant_id)
+SELECT user_num,user_name,contact_tel,user_role,sex,is_valid,auth_string,email,creator,create_time,last_update_time,tenant_id
+FROM [dbo].[user];
+
+-- Step 3: Drop the old table
+DROP TABLE [dbo].[user];
+
+-- Step 4: Rename the new table to match the old table's name
+EXEC sp_rename '[dbo].[new_user]', 'user';
+
+
+
+sqlite> .schema user
+
+    user_num NVARCHAR(MAX) NOT NULL,
+    user_name NVARCHAR(MAX) NOT NULL,
+    contact_tel NVARCHAR(MAX) NOT NULL,
+    user_role NVARCHAR(MAX) NOT NULL,
+    sex NVARCHAR(MAX) NOT NULL,
+    is_valid INTEGER NOT NULL,
+    auth_string NVARCHAR(MAX) NOT NULL,
+    email NVARCHAR(MAX) NOT NULL,
+    creator NVARCHAR(MAX) NOT NULL,
+    create_time NVARCHAR(MAX) NOT NULL,
+    last_update_time NVARCHAR(MAX) NOT NULL,
+    tenant_id INTEGER NOT NULL

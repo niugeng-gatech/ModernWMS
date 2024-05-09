@@ -47,63 +47,64 @@
                   height: cardHeight
                 }"
               >
-                <vxe-table ref="xTable" :column-config="{ minWidth: '100px' }" :data="data.tableData" :height="tableHeight" align="center">
-                  <template #empty>
-                    {{ i18n.global.t('system.page.noData') }}
-                  </template>
-                  <vxe-column type="seq" width="60"></vxe-column>
-                  <vxe-column type="checkbox" width="50"></vxe-column>
-                  <vxe-column field="job_code" width="150px" :title="$t('wms.warehouseWorking.warehouseAdjust.job_code')"></vxe-column>
-                  <vxe-column field="job_type" width="150px" :title="$t('wms.warehouseWorking.warehouseAdjust.job_type')">
-                    <template #default="{ row, column }">
-                      <span>{{ formatAdjustJobType(row[column.property]) }}</span>
-                    </template>
-                  </vxe-column>
-                  <vxe-column field="spu_code" width="150px" :title="$t('base.commodityManagement.spu_code')"></vxe-column>
-                  <vxe-column field="spu_name" width="150px" :title="$t('base.commodityManagement.spu_name')"></vxe-column>
-                  <vxe-column field="sku_code" width="150px" :title="$t('base.commodityManagement.sku_code')"></vxe-column>
-                  <vxe-column field="qty" width="150px" :title="$t('wms.warehouseWorking.warehouseAdjust.qty')"></vxe-column>
-                  <vxe-column field="warehouse_name" width="150px" :title="$t('wms.warehouseWorking.warehouseAdjust.warehouse')"></vxe-column>
-                  <vxe-column field="location_name" width="150px" :title="$t('wms.warehouseWorking.warehouseAdjust.location_name')"></vxe-column>
-                  <!-- <vxe-column field="handler" width="150px" :title="$t('wms.warehouseWorking.warehouseAdjust.handler')"></vxe-column>
-                  <vxe-column
-                    field="handle_time"
-                    width="170px"
-                    :title="$t('wms.warehouseWorking.warehouseAdjust.handle_time')"
-                  ></vxe-column> -->
-                  <vxe-column field="creator" :title="$t('wms.warehouseWorking.warehouseAdjust.creator')"></vxe-column>
-                  <vxe-column
-                    field="create_time"
-                    width="170px"
-                    :formatter="['formatDate', 'yyyy-MM-dd HH:mm']"
-                    :title="$t('wms.warehouseWorking.warehouseAdjust.create_time')"
-                  ></vxe-column>
-                  <!-- <vxe-column field="operate" :title="$t('system.page.operate')" width="200" :resizable="false" show-overflow>
-                    <template #default="{ row }">
-                      <tooltip-btn
-                        :flat="true"
-                        icon="mdi-eye-outline"
-                        :tooltip-text="$t('system.page.view')"
-                        @click="method.viewRow(row)"
-                      ></tooltip-btn>
-                      <tooltip-btn
-                        :flat="true"
-                        icon="mdi-book-open-outline"
-                        :tooltip-text="$t('wms.warehouseWorking.warehouseAdjust.confirmAdjust')"
-                        :disabled="method.confirmAdjustBtnDisabled(row)"
-                        @click="method.confirmAdjust(row)"
-                      ></tooltip-btn>
-                      <tooltip-btn
-                        :flat="true"
-                        icon="mdi-delete-outline"
-                        :tooltip-text="$t('system.page.delete')"
-                        :icon-color="errorColor"
-                        :disabled="method.confirmAdjustBtnDisabled(row)"
-                        @click="method.deleteRow(row)"
-                      ></tooltip-btn>
-                    </template>
-                  </vxe-column> -->
-                </vxe-table>
+                  <vxe-table ref="xTable" :column-config="{ minWidth: '100px' }" :data="data.tableData" :height="tableHeight" align="center">
+                      <template #empty>
+                          {{ i18n.global.t('system.page.noData') }}
+                      </template>
+                      <vxe-column type="seq" width="60"></vxe-column>
+                      <vxe-column type="checkbox" width="50"></vxe-column>
+                      <vxe-column field="job_code" width="150px" :title="$t('wms.warehouseWorking.warehouseAdjust.job_code')"></vxe-column>
+                      <vxe-column field="job_type" width="150px" :title="$t('wms.warehouseWorking.warehouseAdjust.job_type')">
+                          <template #default="{ row, column }">
+                              <span>{{ formatAdjustJobType(row[column.property]) }}</span>
+                          </template>
+                      </vxe-column>
+                      <vxe-column field="spu_code" width="150px" :title="$t('base.commodityManagement.spu_code')"></vxe-column>
+                      <vxe-column field="spu_name" width="150px" :title="$t('base.commodityManagement.spu_name')"></vxe-column>
+                      <vxe-column field="sku_code" width="150px" :title="$t('base.commodityManagement.sku_code')"></vxe-column>
+                      <vxe-column field="qty" width="150px" :title="$t('wms.warehouseWorking.warehouseAdjust.qty')"></vxe-column>
+                      <vxe-column field="warehouse_name" width="150px" :title="$t('wms.warehouseWorking.warehouseAdjust.warehouse')"></vxe-column>
+                      <vxe-column field="location_name" width="150px" :title="$t('wms.warehouseWorking.warehouseAdjust.location_name')"></vxe-column>
+                      <!-- <vxe-column field="handler" width="150px" :title="$t('wms.warehouseWorking.warehouseAdjust.handler')"></vxe-column>
+    <vxe-column
+      field="handle_time"
+      width="170px"
+      :title="$t('wms.warehouseWorking.warehouseAdjust.handle_time')"
+    ></vxe-column> -->
+                      <vxe-column field="creator" :title="$t('wms.warehouseWorking.warehouseAdjust.creator')"></vxe-column>
+                      <vxe-column field="create_time"
+                                  width="170px"
+                                  :title="$t('wms.warehouseWorking.warehouseAdjust.create_time')">
+                          <template #default="{ row, column }">
+                              <span>{{ formatDate(row[column.property], 'yyyy-MM-dd HH:mm') }}</span>
+                          </template>
+                      </vxe-column>
+                      <!-- <vxe-column field="operate" :title="$t('system.page.operate')" width="200" :resizable="false" show-overflow>
+      <template #default="{ row }">
+        <tooltip-btn
+          :flat="true"
+          icon="mdi-eye-outline"
+          :tooltip-text="$t('system.page.view')"
+          @click="method.viewRow(row)"
+        ></tooltip-btn>
+        <tooltip-btn
+          :flat="true"
+          icon="mdi-book-open-outline"
+          :tooltip-text="$t('wms.warehouseWorking.warehouseAdjust.confirmAdjust')"
+          :disabled="method.confirmAdjustBtnDisabled(row)"
+          @click="method.confirmAdjust(row)"
+        ></tooltip-btn>
+        <tooltip-btn
+          :flat="true"
+          icon="mdi-delete-outline"
+          :tooltip-text="$t('system.page.delete')"
+          :icon-color="errorColor"
+          :disabled="method.confirmAdjustBtnDisabled(row)"
+          @click="method.deleteRow(row)"
+        ></tooltip-btn>
+      </template>
+    </vxe-column> -->
+                  </vxe-table>
                 <custom-pager
                   :current-page="data.tablePage.pageIndex"
                   :page-size="data.tablePage.pageSize"
@@ -148,6 +149,7 @@ import i18n from '@/languages/i18n'
 import customPager from '@/components/custom-pager.vue'
 import { exportData } from '@/utils/exportTable'
 import BtnGroup from '@/components/system/btnGroup.vue'
+import { formatDate } from '@/utils/format/formatSystem'
 
 const xTable = ref()
 

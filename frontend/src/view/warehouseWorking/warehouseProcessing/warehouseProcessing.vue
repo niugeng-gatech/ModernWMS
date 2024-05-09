@@ -56,71 +56,62 @@
                   height: cardHeight
                 }"
               >
-                <vxe-table ref="xTable" :column-config="{ minWidth: '100px' }" :data="data.tableData" :height="tableHeight" align="center">
-                  <template #empty>
-                    {{ i18n.global.t('system.page.noData') }}
-                  </template>
-                  <vxe-column type="seq" width="60"></vxe-column>
-                  <vxe-column type="checkbox" width="50"></vxe-column>
-                  <vxe-column field="job_code" width="150px" :title="$t('wms.warehouseWorking.warehouseProcessing.job_code')"></vxe-column>
-                  <vxe-column field="job_type" :title="$t('wms.warehouseWorking.warehouseProcessing.job_type')">
-                    <template #default="{ row, column }">
-                      <span>{{ formatProcessJobType(row[column.property]) }}</span>
-                    </template>
-                  </vxe-column>
-                  <vxe-column field="adjust_status" :title="$t('wms.warehouseWorking.warehouseProcessing.adjust_status')">
-                    <template #default="{ row, column }">
-                      <span>{{ formatIsValid(row[column.property]) }}</span>
-                    </template>
-                  </vxe-column>
-                  <vxe-column field="processor" :title="$t('wms.warehouseWorking.warehouseProcessing.processor')"></vxe-column>
-                  <vxe-column
-                    field="process_time"
-                    width="170px"
-                    :formatter="['formatDate', 'yyyy-MM-dd HH:mm']"
-                    :title="$t('wms.warehouseWorking.warehouseProcessing.process_time')"
-                  >
-                  </vxe-column>
-                  <vxe-column field="creator" :title="$t('wms.warehouseWorking.warehouseProcessing.creator')"></vxe-column>
-                  <vxe-column
-                    field="create_time"
-                    width="170px"
-                    :formatter="['formatDate', 'yyyy-MM-dd HH:mm']"
-                    :title="$t('wms.warehouseWorking.warehouseProcessing.create_time')"
-                  ></vxe-column>
-                  <vxe-column field="operate" :title="$t('system.page.operate')" width="250" :resizable="false" show-overflow>
-                    <template #default="{ row }">
-                      <tooltip-btn
-                        :flat="true"
-                        icon="mdi-eye-outline"
-                        :tooltip-text="$t('system.page.view')"
-                        @click="method.viewRow(row)"
-                      ></tooltip-btn>
-                      <tooltip-btn
-                        :flat="true"
-                        icon="mdi-book-check-outline"
-                        :tooltip-text="$t('wms.warehouseWorking.warehouseProcessing.confirmProcess')"
-                        :disabled="!data.authorityList.includes('confirmOpeartion') || method.confirmProcessBtnDisabled(row)"
-                        @click="method.confirmProcess(row)"
-                      ></tooltip-btn>
-                      <tooltip-btn
-                        :flat="true"
-                        icon="mdi-book-open-outline"
-                        :tooltip-text="$t('wms.warehouseWorking.warehouseProcessing.confirmAdjust')"
-                        :disabled="!data.authorityList.includes('confirmAdjust') || method.confirmAdjustBtnDisabled(row)"
-                        @click="method.confirmAdjust(row)"
-                      ></tooltip-btn>
-                      <tooltip-btn
-                        :flat="true"
-                        icon="mdi-delete-outline"
-                        :tooltip-text="$t('system.page.delete')"
-                        :icon-color="!data.authorityList.includes('delete') || method.confirmProcessBtnDisabled(row)?'':errorColor"
-                        :disabled="!data.authorityList.includes('delete') || method.confirmProcessBtnDisabled(row)"
-                        @click="method.deleteRow(row)"
-                      ></tooltip-btn>
-                    </template>
-                  </vxe-column>
-                </vxe-table>
+                  <vxe-table ref="xTable" :column-config="{ minWidth: '100px' }" :data="data.tableData" :height="tableHeight" align="center">
+                      <template #empty>
+                          {{ i18n.global.t('system.page.noData') }}
+                      </template>
+                      <vxe-column type="seq" width="60"></vxe-column>
+                      <vxe-column type="checkbox" width="50"></vxe-column>
+                      <vxe-column field="job_code" width="150px" :title="$t('wms.warehouseWorking.warehouseProcessing.job_code')"></vxe-column>
+                      <vxe-column field="job_type" :title="$t('wms.warehouseWorking.warehouseProcessing.job_type')">
+                          <template #default="{ row, column }">
+                              <span>{{ formatProcessJobType(row[column.property]) }}</span>
+                          </template>
+                      </vxe-column>
+                      <vxe-column field="adjust_status" :title="$t('wms.warehouseWorking.warehouseProcessing.adjust_status')">
+                          <template #default="{ row, column }">
+                              <span>{{ formatIsValid(row[column.property]) }}</span>
+                          </template>
+                      </vxe-column>
+                      <vxe-column field="processor" :title="$t('wms.warehouseWorking.warehouseProcessing.processor')"></vxe-column>
+                      <vxe-column field="process_time"
+                                  width="170px"
+                                  :formatter="['formatDate', 'yyyy-MM-dd HH:mm']"
+                                  :title="$t('wms.warehouseWorking.warehouseProcessing.process_time')">
+                      </vxe-column>
+                      <vxe-column field="creator" :title="$t('wms.warehouseWorking.warehouseProcessing.creator')"></vxe-column>
+                      <vxe-column field="create_time"
+                                  width="170px"
+                                  :title="$t('wms.warehouseWorking.warehouseProcessing.create_time')">
+                          <template #default="{ row, column }">
+                              <span>{{ formatDate(row[column.property], 'yyyy-MM-dd HH:mm') }}</span>
+                          </template>
+                      </vxe-column>
+                      <vxe-column field="operate" :title="$t('system.page.operate')" width="250" :resizable="false" show-overflow>
+                          <template #default="{ row }">
+                              <tooltip-btn :flat="true"
+                                           icon="mdi-eye-outline"
+                                           :tooltip-text="$t('system.page.view')"
+                                           @click="method.viewRow(row)"></tooltip-btn>
+                              <tooltip-btn :flat="true"
+                                           icon="mdi-book-check-outline"
+                                           :tooltip-text="$t('wms.warehouseWorking.warehouseProcessing.confirmProcess')"
+                                           :disabled="!data.authorityList.includes('confirmOpeartion') || method.confirmProcessBtnDisabled(row)"
+                                           @click="method.confirmProcess(row)"></tooltip-btn>
+                              <tooltip-btn :flat="true"
+                                           icon="mdi-book-open-outline"
+                                           :tooltip-text="$t('wms.warehouseWorking.warehouseProcessing.confirmAdjust')"
+                                           :disabled="!data.authorityList.includes('confirmAdjust') || method.confirmAdjustBtnDisabled(row)"
+                                           @click="method.confirmAdjust(row)"></tooltip-btn>
+                              <tooltip-btn :flat="true"
+                                           icon="mdi-delete-outline"
+                                           :tooltip-text="$t('system.page.delete')"
+                                           :icon-color="!data.authorityList.includes('delete') || method.confirmProcessBtnDisabled(row)?'':errorColor"
+                                           :disabled="!data.authorityList.includes('delete') || method.confirmProcessBtnDisabled(row)"
+                                           @click="method.deleteRow(row)"></tooltip-btn>
+                          </template>
+                      </vxe-column>
+                  </vxe-table>
                 <custom-pager
                   :current-page="data.tablePage.pageIndex"
                   :page-size="data.tablePage.pageSize"
@@ -167,6 +158,7 @@ import i18n from '@/languages/i18n'
 import customPager from '@/components/custom-pager.vue'
 import { exportData } from '@/utils/exportTable'
 import BtnGroup from '@/components/system/btnGroup.vue'
+import { formatDate } from '@/utils/format/formatSystem'
 
 const xTable = ref()
 

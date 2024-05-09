@@ -60,76 +60,71 @@
       height: cardHeight
     }"
   >
-    <vxe-table
-      ref="xTable"
-      :checkbox-config="{
+      <vxe-table ref="xTable"
+                 :checkbox-config="{
         checkMethod: method.getCheckBoxDisableState,
         visibleMethod: method.getCheckBoxDisableState
       }"
-      :column-config="{ minWidth: '100px' }"
-      :data="data.tableData"
-      :height="tableHeight"
-      align="center"
-    >
-      <template #empty>
-        {{ i18n.global.t('system.page.noData') }}
-      </template>
-      <vxe-column type="seq" width="60"></vxe-column>
-      <vxe-column type="checkbox" width="50"></vxe-column>
-      <vxe-column :title="$t('wms.deliveryManagement.state')">
-        <template #default="{ row }">
-          <span>{{ `${row.is_todo ? $t('wms.deliveryManagement.packageTodo') : $t('wms.deliveryManagement.packageReady')}` }}</span>
-        </template>
-      </vxe-column>
-      <vxe-column field="dispatch_no" :title="$t('wms.deliveryManagement.dispatch_no')"></vxe-column>
-      <vxe-column field="spu_code" :title="$t('wms.deliveryManagement.spu_code')"></vxe-column>
-      <vxe-column field="spu_description" width="200px" :title="$t('wms.deliveryManagement.spu_description')"></vxe-column>
-      <vxe-column field="spu_name" :title="$t('wms.deliveryManagement.spu_name')"></vxe-column>
-      <vxe-column field="sku_code" :title="$t('wms.deliveryManagement.sku_code')"></vxe-column>
-      <vxe-column field="bar_code" :title="$t('wms.deliveryManagement.bar_code')"></vxe-column>
-      <vxe-column field="qty" :title="$t('wms.deliveryManagement.order_qty')"></vxe-column>
-      <vxe-column field="unpackage_qty" :title="$t('wms.deliveryManagement.unpackage_qty')"></vxe-column>
-      <vxe-column field="package_qty" :title="$t('wms.deliveryManagement.package_qty')"></vxe-column>
-      <vxe-column field="weight" :title="$t('wms.deliveryManagement.detailWeight')">
-        <template #default="{ row }">
-          <span>{{ `${row.weight} ${GetUnit('weight', row.weight_unit)}` }}</span>
-        </template>
-      </vxe-column>
-      <vxe-column field="volume" :title="$t('wms.deliveryManagement.detailVolume')">
-        <template #default="{ row }">
-          <span>{{ `${row.volume} ${GetUnit('volume', row.volume_unit)}` }}</span>
-        </template>
-      </vxe-column>
-      <vxe-column field="package_person" :title="$t('wms.deliveryManagement.package_person')"></vxe-column>
-      <vxe-column
-        field="package_time"
-        width="170px"
-        :formatter="['formatDate', 'yyyy-MM-dd HH:mm']"
-        :title="$t('wms.deliveryManagement.package_time')"
-      ></vxe-column>
-      <vxe-column field="customer_name" :title="$t('wms.deliveryManagement.customer_name')"></vxe-column>
-      <vxe-column field="creator" :title="$t('wms.deliveryManagement.creator')"></vxe-column>
-      <vxe-column
-        field="create_time"
-        width="170px"
-        :formatter="['formatDate', 'yyyy-MM-dd HH:mm']"
-        :title="$t('wms.deliveryManagement.create_time')"
-      ></vxe-column>
-      <vxe-column field="operate" :title="$t('system.page.operate')" width="140" :resizable="false" show-overflow>
-        <template #default="{ row }">
-          <div style="width: 100%; display: flex; justify-content: center">
-            <tooltip-btn :flat="true" icon="mdi-eye-outline" :tooltip-text="$t('system.page.view')" @click="method.viewRow(row)"></tooltip-btn>
-            <tooltip-btn
-              :flat="true"
-              icon="mdi-arrow-u-left-top"
-              :tooltip-text="$t('wms.deliveryManagement.backToThePreviousStep')"
-              :disabled="!data.authorityList.includes('packaged-revoke')"
-              @click="method.backToThePreviousStep(row)"
-            ></tooltip-btn>
-          </div>
-        </template>
-      </vxe-column>
-    </vxe-table>
+                 :column-config="{ minWidth: '100px' }"
+                 :data="data.tableData"
+                 :height="tableHeight"
+                 align="center">
+          <template #empty>
+              {{ i18n.global.t('system.page.noData') }}
+          </template>
+          <vxe-column type="seq" width="60"></vxe-column>
+          <vxe-column type="checkbox" width="50"></vxe-column>
+          <vxe-column :title="$t('wms.deliveryManagement.state')">
+              <template #default="{ row }">
+                  <span>{{ `${row.is_todo ? $t('wms.deliveryManagement.packageTodo') : $t('wms.deliveryManagement.packageReady')}` }}</span>
+              </template>
+          </vxe-column>
+          <vxe-column field="dispatch_no" :title="$t('wms.deliveryManagement.dispatch_no')"></vxe-column>
+          <vxe-column field="spu_code" :title="$t('wms.deliveryManagement.spu_code')"></vxe-column>
+          <vxe-column field="spu_description" width="200px" :title="$t('wms.deliveryManagement.spu_description')"></vxe-column>
+          <vxe-column field="spu_name" :title="$t('wms.deliveryManagement.spu_name')"></vxe-column>
+          <vxe-column field="sku_code" :title="$t('wms.deliveryManagement.sku_code')"></vxe-column>
+          <vxe-column field="bar_code" :title="$t('wms.deliveryManagement.bar_code')"></vxe-column>
+          <vxe-column field="qty" :title="$t('wms.deliveryManagement.order_qty')"></vxe-column>
+          <vxe-column field="unpackage_qty" :title="$t('wms.deliveryManagement.unpackage_qty')"></vxe-column>
+          <vxe-column field="package_qty" :title="$t('wms.deliveryManagement.package_qty')"></vxe-column>
+          <vxe-column field="weight" :title="$t('wms.deliveryManagement.detailWeight')">
+              <template #default="{ row }">
+                  <span>{{ `${row.weight} ${GetUnit('weight', row.weight_unit)}` }}</span>
+              </template>
+          </vxe-column>
+          <vxe-column field="volume" :title="$t('wms.deliveryManagement.detailVolume')">
+              <template #default="{ row }">
+                  <span>{{ `${row.volume} ${GetUnit('volume', row.volume_unit)}` }}</span>
+              </template>
+          </vxe-column>
+          <vxe-column field="package_person" :title="$t('wms.deliveryManagement.package_person')"></vxe-column>
+          <vxe-column field="package_time"
+                      width="170px"
+                      :formatter="['formatDate', 'yyyy-MM-dd HH:mm']"
+                      :title="$t('wms.deliveryManagement.package_time')"></vxe-column>
+          <vxe-column field="customer_name" :title="$t('wms.deliveryManagement.customer_name')"></vxe-column>
+          <vxe-column field="creator" :title="$t('wms.deliveryManagement.creator')"></vxe-column>
+          <vxe-column field="create_time"
+                      width="170px"
+                      :title="$t('base.deliveryManagement.create_time')">
+              <template #default="{ row, column }">
+                  <span>{{ formatDate(row[column.property], 'yyyy-MM-dd HH:mm') }}</span>
+              </template>
+          </vxe-column>
+          <vxe-column field="operate" :title="$t('system.page.operate')" width="140" :resizable="false" show-overflow>
+              <template #default="{ row }">
+                  <div style="width: 100%; display: flex; justify-content: center">
+                      <tooltip-btn :flat="true" icon="mdi-eye-outline" :tooltip-text="$t('system.page.view')" @click="method.viewRow(row)"></tooltip-btn>
+                      <tooltip-btn :flat="true"
+                                   icon="mdi-arrow-u-left-top"
+                                   :tooltip-text="$t('wms.deliveryManagement.backToThePreviousStep')"
+                                   :disabled="!data.authorityList.includes('packaged-revoke')"
+                                   @click="method.backToThePreviousStep(row)"></tooltip-btn>
+                  </div>
+              </template>
+          </vxe-column>
+      </vxe-table>
     <custom-pager
       :current-page="data.tablePage.pageIndex"
       :page-size="data.tablePage.pageSize"
@@ -166,6 +161,7 @@ import { DEBOUNCE_TIME } from '@/constant/system'
 import BtnGroup from '@/components/system/btnGroup.vue'
 import PackageConfirm from './package-confirm.vue'
 import { httpCodeJudge } from '@/utils/http/httpCodeJudge'
+import { formatDate } from '@/utils/format/formatSystem'
 
 const xTable = ref()
 const PackageConfirmRef = ref()

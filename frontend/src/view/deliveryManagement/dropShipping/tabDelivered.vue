@@ -62,63 +62,64 @@
       height: cardHeight
     }"
   >
-    <vxe-table ref="xTable" :column-config="{ minWidth: '100px' }" :data="data.tableData" :height="tableHeight" align="center">
-      <template #empty>
-        {{ i18n.global.t('system.page.noData') }}
-      </template>
-      <vxe-column type="seq" width="60"></vxe-column>
-      <vxe-column type="checkbox" width="50"></vxe-column>
-      <vxe-column :title="$t('wms.dropShipping.state')">
-        <template #default="{ row }">
-          <span>{{ `${row.is_todo ? $t('wms.dropShipping.deliveryTodo') : $t('wms.dropShipping.deliveryReady')}` }}</span>
-        </template>
-      </vxe-column>
-      <vxe-column field="dispatch_no" :title="$t('wms.dropShipping.dispatch_no')"></vxe-column>
-      <vxe-column field="spu_code" :title="$t('wms.dropShipping.spu_code')"></vxe-column>
-      <vxe-column field="spu_description" width="200px" :title="$t('wms.dropShipping.spu_description')"></vxe-column>
-      <vxe-column field="spu_name" :title="$t('wms.dropShipping.spu_name')"></vxe-column>
-      <vxe-column field="sku_code" :title="$t('wms.dropShipping.sku_code')"></vxe-column>
-      <vxe-column field="bar_code" :title="$t('wms.dropShipping.bar_code')"></vxe-column>
-      <vxe-column field="qty" :title="$t('wms.dropShipping.order_qty')"></vxe-column>
-      <vxe-column field="weight" :title="$t('wms.dropShipping.detailWeight')">
-        <template #default="{ row }">
-          <span>{{ `${row.weight} ${GetUnit('weight', row.weight_unit)}` }}</span>
-        </template>
-      </vxe-column>
-      <vxe-column field="volume" :title="$t('wms.dropShipping.detailVolume')">
-        <template #default="{ row }">
-          <span>{{ `${row.volume} ${GetUnit('volume', row.volume_unit)}` }}</span>
-        </template>
-      </vxe-column>
-      <vxe-column field="package_no" :title="$t('wms.dropShipping.package_no')"></vxe-column>
-      <vxe-column field="weighing_weight" :title="$t('wms.dropShipping.weighing_weight')">
-        <template #default="{ row }">
-          <span>{{ `${row.weighing_weight} ${GetUnit('weight', row.weight_unit)}` }}</span>
-        </template>
-      </vxe-column>
-      <vxe-column field="weighing_no" :title="$t('wms.dropShipping.weighing_no')"></vxe-column>
-      <vxe-column field="customer_name" :title="$t('wms.dropShipping.customer_name')"></vxe-column>
-      <vxe-column field="creator" :title="$t('wms.dropShipping.creator')"></vxe-column>
-      <vxe-column
-        field="create_time"
-        width="170px"
-        :formatter="['formatDate', 'yyyy-MM-dd HH:mm']"
-        :title="$t('wms.dropShipping.create_time')"
-      ></vxe-column>
-      <vxe-column field="operate" :title="$t('system.page.operate')" width="140" :resizable="false" show-overflow>
-        <template #default="{ row }">
-          <div style="width: 100%; display: flex; justify-content: center">
-            <tooltip-btn :flat="true" icon="mdi-eye-outline" :tooltip-text="$t('system.page.view')" @click="method.viewRow(row)"></tooltip-btn>
-            <!-- <tooltip-btn
-              :flat="true"
-              icon="mdi-email-check"
-              :tooltip-text="$t('wms.dropShipping.signIn')"
-              @click="method.handleSignIn(row)"
-            ></tooltip-btn> -->
-          </div>
-        </template>
-      </vxe-column>
-    </vxe-table>
+      <vxe-table ref="xTable" :column-config="{ minWidth: '100px' }" :data="data.tableData" :height="tableHeight" align="center">
+          <template #empty>
+              {{ i18n.global.t('system.page.noData') }}
+          </template>
+          <vxe-column type="seq" width="60"></vxe-column>
+          <vxe-column type="checkbox" width="50"></vxe-column>
+          <vxe-column :title="$t('wms.dropShipping.state')">
+              <template #default="{ row }">
+                  <span>{{ `${row.is_todo ? $t('wms.dropShipping.deliveryTodo') : $t('wms.dropShipping.deliveryReady')}` }}</span>
+              </template>
+          </vxe-column>
+          <vxe-column field="dispatch_no" :title="$t('wms.dropShipping.dispatch_no')"></vxe-column>
+          <vxe-column field="spu_code" :title="$t('wms.dropShipping.spu_code')"></vxe-column>
+          <vxe-column field="spu_description" width="200px" :title="$t('wms.dropShipping.spu_description')"></vxe-column>
+          <vxe-column field="spu_name" :title="$t('wms.dropShipping.spu_name')"></vxe-column>
+          <vxe-column field="sku_code" :title="$t('wms.dropShipping.sku_code')"></vxe-column>
+          <vxe-column field="bar_code" :title="$t('wms.dropShipping.bar_code')"></vxe-column>
+          <vxe-column field="qty" :title="$t('wms.dropShipping.order_qty')"></vxe-column>
+          <vxe-column field="weight" :title="$t('wms.dropShipping.detailWeight')">
+              <template #default="{ row }">
+                  <span>{{ `${row.weight} ${GetUnit('weight', row.weight_unit)}` }}</span>
+              </template>
+          </vxe-column>
+          <vxe-column field="volume" :title="$t('wms.dropShipping.detailVolume')">
+              <template #default="{ row }">
+                  <span>{{ `${row.volume} ${GetUnit('volume', row.volume_unit)}` }}</span>
+              </template>
+          </vxe-column>
+          <vxe-column field="package_no" :title="$t('wms.dropShipping.package_no')"></vxe-column>
+          <vxe-column field="weighing_weight" :title="$t('wms.dropShipping.weighing_weight')">
+              <template #default="{ row }">
+                  <span>{{ `${row.weighing_weight} ${GetUnit('weight', row.weight_unit)}` }}</span>
+              </template>
+          </vxe-column>
+          <vxe-column field="weighing_no" :title="$t('wms.dropShipping.weighing_no')"></vxe-column>
+          <vxe-column field="customer_name" :title="$t('wms.dropShipping.customer_name')"></vxe-column>
+          <vxe-column field="creator" :title="$t('wms.dropShipping.creator')"></vxe-column>
+          <vxe-column field="create_time"
+                      width="170px"
+                      :title="$t('base.dropShipping.create_time')">
+              <template #default="{ row, column }">
+                  <span>{{ formatDate(row[column.property], 'yyyy-MM-dd HH:mm') }}</span>
+              </template>
+          </vxe-column>
+          <vxe-column field="operate" :title="$t('system.page.operate')" width="140" :resizable="false" show-overflow>
+              <template #default="{ row }">
+                  <div style="width: 100%; display: flex; justify-content: center">
+                      <tooltip-btn :flat="true" icon="mdi-eye-outline" :tooltip-text="$t('system.page.view')" @click="method.viewRow(row)"></tooltip-btn>
+                      <!-- <tooltip-btn
+                  :flat="true"
+                  icon="mdi-email-check"
+                  :tooltip-text="$t('wms.dropShipping.signIn')"
+                  @click="method.handleSignIn(row)"
+                ></tooltip-btn> -->
+                  </div>
+              </template>
+          </vxe-column>
+      </vxe-table>
     <custom-pager
       :current-page="data.tablePage.pageIndex"
       :page-size="data.tablePage.pageSize"
@@ -169,6 +170,7 @@ import { exportData } from '@/utils/exportTable'
 import { DEBOUNCE_TIME } from '@/constant/system'
 import BtnGroup from '@/components/system/btnGroup.vue'
 import { httpCodeJudge } from '@/utils/http/httpCodeJudge'
+import { formatDate } from '@/utils/format/formatSystem'
 
 const xTable = ref()
 const SignInConfirmRef = ref()

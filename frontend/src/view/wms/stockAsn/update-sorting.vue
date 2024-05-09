@@ -4,46 +4,48 @@
       <v-card>
         <v-toolbar color="white" :title="`${$t('wms.stockAsnInfo.editSorting')}`"></v-toolbar>
         <v-card-text>
-          <vxe-table
-            ref="xTable"
-            keep-source
-            :column-config="{ minWidth: '100px' }"
-            :data="data.tableData"
-            :height="SYSTEM_HEIGHT.SELECT_TABLE"
-            align="center"
-            :edit-rules="data.validRules"
-            :edit-config="{ trigger: 'click', mode: 'cell', activeMethod: method.activeMethod }"
-            :mouse-config="{ selected: true }"
-            :keyboard-config="{ isArrow: true, isDel: true, isEnter: true, isTab: true, isEdit: true, isChecked: true }"
-          >
-            <template #empty>
-              {{ i18n.global.t('system.page.noData') }}
-            </template>
-            <vxe-column type="seq" width="60"></vxe-column>
-            <vxe-column field="series_number" :title="$t('wms.stockAsnInfo.series_number')" :edit-render="{ autofocus: '.vxe-input--inner' }">
-              <template #edit="{ row }">
-                <vxe-input v-model="row.series_number" type="text"></vxe-input>
-              </template>
-            </vxe-column>
-            <vxe-column field="sorted_qty" :title="$t('wms.stockAsnInfo.sorted_qty')" :edit-render="{ autofocus: '.vxe-input--inner' }">
-              <template #edit="{ row }">
-                <vxe-input v-model="row.sorted_qty" type="text"></vxe-input>
-              </template>
-            </vxe-column>
-            <vxe-column field="creator" :title="$t('wms.deliveryManagement.creator')"> </vxe-column>
-            <vxe-column field="create_time" :formatter="['formatDate', 'yyyy-MM-dd']" :title="$t('wms.deliveryManagement.create_time')"> </vxe-column>
-            <vxe-column field="operate" :title="$t('system.page.operate')" width="100" :resizable="false" show-overflow>
-              <template #default="{ row }">
-                <tooltip-btn
-                  :flat="true"
-                  icon="mdi-delete-outline"
-                  :tooltip-text="$t('system.page.delete')"
-                  :icon-color="errorColor"
-                  @click="method.deleteRow(row)"
-                ></tooltip-btn>
-              </template>
-            </vxe-column>
-          </vxe-table>
+            <vxe-table ref="xTable"
+                       keep-source
+                       :column-config="{ minWidth: '100px' }"
+                       :data="data.tableData"
+                       :height="SYSTEM_HEIGHT.SELECT_TABLE"
+                       align="center"
+                       :edit-rules="data.validRules"
+                       :edit-config="{ trigger: 'click', mode: 'cell', activeMethod: method.activeMethod }"
+                       :mouse-config="{ selected: true }"
+                       :keyboard-config="{ isArrow: true, isDel: true, isEnter: true, isTab: true, isEdit: true, isChecked: true }">
+                <template #empty>
+                    {{ i18n.global.t('system.page.noData') }}
+                </template>
+                <vxe-column type="seq" width="60"></vxe-column>
+                <vxe-column field="series_number" :title="$t('wms.stockAsnInfo.series_number')" :edit-render="{ autofocus: '.vxe-input--inner' }">
+                    <template #edit="{ row }">
+                        <vxe-input v-model="row.series_number" type="text"></vxe-input>
+                    </template>
+                </vxe-column>
+                <vxe-column field="sorted_qty" :title="$t('wms.stockAsnInfo.sorted_qty')" :edit-render="{ autofocus: '.vxe-input--inner' }">
+                    <template #edit="{ row }">
+                        <vxe-input v-model="row.sorted_qty" type="text"></vxe-input>
+                    </template>
+                </vxe-column>
+                <vxe-column field="creator" :title="$t('wms.deliveryManagement.creator')"> </vxe-column>
+                <vxe-column field="create_time"
+                            width="170px"
+                            :title="$t('wms.deliveryManagement.create_time')">
+                    <template #default="{ row, column }">
+                        <span>{{ formatDate(row[column.property], 'yyyy-MM-dd HH:mm') }}</span>
+                    </template>
+                </vxe-column>
+                <vxe-column field="operate" :title="$t('system.page.operate')" width="100" :resizable="false" show-overflow>
+                    <template #default="{ row }">
+                        <tooltip-btn :flat="true"
+                                     icon="mdi-delete-outline"
+                                     :tooltip-text="$t('system.page.delete')"
+                                     :icon-color="errorColor"
+                                     @click="method.deleteRow(row)"></tooltip-btn>
+                    </template>
+                </vxe-column>
+            </vxe-table>
         </v-card-text>
         <v-card-actions class="justify-end">
           <v-btn variant="text" @click="method.closeDialog">{{ $t('system.page.close') }}</v-btn>
@@ -63,6 +65,7 @@ import { getSorting } from '@/api/wms/stockAsn'
 import { UpdateSortingVo } from '@/types/WMS/StockAsn'
 import tooltipBtn from '@/components/tooltip-btn.vue'
 import { isInteger } from '@/utils/dataVerification/tableRule'
+import { formatDate } from '@/utils/format/formatSystem'
 
 const xTable = ref()
 

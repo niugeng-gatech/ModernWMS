@@ -381,7 +381,7 @@ namespace ModernWMS.WMS.Services
             }
             else if (entities.Any(t => t.asn_status > 0))
             {
-                return (false, "[202]" + $"{_stringLocalizer["ASN_Status_Is_Not_Pre_Delivery"]}");
+                return (false, $"{_stringLocalizer["ASN_Status_Is_Not_Pre_Delivery"]}");
             }
             entities.ForEach(t =>
             {
@@ -417,7 +417,7 @@ namespace ModernWMS.WMS.Services
             }
             if (entities.Any(t => t.asn_status != (byte)1))
             {
-                return (false, "[202]" + $"{_stringLocalizer["ASN_Status_Is_Not_Pre_Delivery"]}");
+                return (false, $"{_stringLocalizer["ASN_Status_Is_Not_Pre_Delivery"]}");
             }
             entities.ForEach(e =>
             {
@@ -453,7 +453,7 @@ namespace ModernWMS.WMS.Services
             }
             else if (entities.Any(t => t.asn_status > 1))
             {
-                return (false, "[202]" + $"{_stringLocalizer["ASN_Status_Is_Not_Pre_Load"]}");
+                return (false, $"{_stringLocalizer["ASN_Status_Is_Not_Pre_Load"]}");
             }
             entities.ForEach(t =>
             {
@@ -494,7 +494,7 @@ namespace ModernWMS.WMS.Services
             }
             if (entities.Any(t => t.asn_status != (byte)2))
             {
-                return (false, "[202]" + $"{_stringLocalizer["ASN_Status_Is_Not_Pre_Load"]}");
+                return (false, $"{_stringLocalizer["ASN_Status_Is_Not_Pre_Load"]}");
             }
 
             entities.ForEach(e =>
@@ -534,7 +534,7 @@ namespace ModernWMS.WMS.Services
             }
             else if (entities.Any(t => t.asn_status != 2))
             {
-                return (false, "[202]" + $"{_stringLocalizer["ASN_Status_Is_Not_Pre_Sort"]}");
+                return (false, $"{_stringLocalizer["ASN_Status_Is_Not_Pre_Sort"]}");
             }
             var sortEntities = viewModels.Where(v => entities.Select(e => e.id).ToList().Contains(v.asn_id))
                 .Select(v => new AsnsortEntity
@@ -663,7 +663,7 @@ namespace ModernWMS.WMS.Services
             }
             else if (entities.Any(t => t.sorted_qty < 1))
             {
-                return (false, "[202]" + $"{_stringLocalizer["ASN_Status_Is_Not_Sorting"]}");
+                return (false, $"{_stringLocalizer["ASN_Status_Is_Not_Sorted"]}");
             }
             entities.ForEach(e =>
             {
@@ -705,11 +705,11 @@ namespace ModernWMS.WMS.Services
             }
             else if (entities.Any(t => t.actual_qty > 0))
             {
-                return (false, "[202]" + $"{_stringLocalizer["ASN_Status_Is_Putaway"]}");
+                return (false, $"{_stringLocalizer["ASN_Status_Is_Putaway"]}");
             }
             else if (entities.Any(t => t.sorted_qty < 1))
             {
-                return (false, "[202]" + $"{_stringLocalizer["ASN_Status_Is_Not_Sorting"]}");
+                return (false, $"{_stringLocalizer["ASN_Status_Is_Not_Sorting"]}");
             }
             entities.ForEach(e =>
             {
@@ -784,21 +784,21 @@ namespace ModernWMS.WMS.Services
                                                 .ToListAsync();
             if (!Locations.Any() || LocationIdList.Count != Locations.Count)
             {
-                return (false, "[202]" + string.Format(_stringLocalizer["Required"], _stringLocalizer["location_name"]));
+                return (false, string.Format(_stringLocalizer["Required"], _stringLocalizer["location_name"]));
             }
             int sumPutawayQty = viewModels.Sum(v => v.putaway_qty);
             var entity = await Asns.FirstOrDefaultAsync(t => t.id == viewModels[0].asn_id);
             if (entity == null)
             {
-                return (false, "[202]" + _stringLocalizer["not_exists_entity"]);
+                return (false, _stringLocalizer["not_exists_entity"]);
             }
             else if (entity.asn_status != 3)
             {
-                return (false, "[202]" + $"{entity.asn_no}{_stringLocalizer["ASN_Status_Is_Not_Sorted"]}");
+                return (false, $"{entity.asn_no}{_stringLocalizer["ASN_Status_Is_Not_Sorted"]}");
             }
             else if (entity.actual_qty + sumPutawayQty > entity.sorted_qty)
             {
-                return (false, "[202]" + $"{entity.asn_no}{_stringLocalizer["ASN_Total_PutAway_Qty_Greater_Than_Sorted_Qty"]}");
+                return (false, $"{entity.asn_no}{_stringLocalizer["ASN_Total_PutAway_Qty_Greater_Than_Sorted_Qty"]}");
             }
             entity.actual_qty += sumPutawayQty;
             if (entity.actual_qty.Equals(entity.sorted_qty))
