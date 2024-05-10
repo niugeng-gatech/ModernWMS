@@ -78,8 +78,10 @@
                   </vxe-column>
                   <vxe-column field="last_update_time"
                               width="170px"
-                              :formatter="['formatDate', 'yyyy-MM-dd HH:mm']"
                               :title="$t('base.supplier.last_update_time')">
+                      <template #default="{ row, column }">
+                          <span>{{ formatDate(row[column.property], 'yyyy-MM-dd HH:mm') }}</span>
+                      </template>
                   </vxe-column>
                   <vxe-column field="operate" :title="$t('system.page.operate')" width="160" :resizable="false" show-overflow>
                       <template #default="{ row }">
