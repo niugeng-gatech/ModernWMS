@@ -1,0 +1,45 @@
+md D:\Geng\ModernWMS-run\frontend\
+md D:\Geng\ModernWMS-run\backend\
+cd D:\Geng\ModernWMS\backend
+dotnet publish 
+copy-item -path "D:\Geng\ModernWMS\backend\ModernWMS\bin\Release\net8.0\publish\*" -destination "D:\Geng\ModernWMS-run\backend\" -recurse -Force
+copy-Item "D:\Geng\ModernWMS\backend\ModernWMS\wms.db" -Destination "D:\Geng\ModernWMS-run\backend\" -Force
+cd D:\Geng\ModernWMS\frontend  
+yarn
+yarn build 
+yarn build --mode development
+copy-item -path "D:\Geng\ModernWMS\frontend\dist\*" -destination "D:\Geng\ModernWMS-run\frontend\" -recurse -Force
+
+
+md D:\Geng\nginx\
+cd D:\Geng\nginx
+wget -Uri http://nginx.org/download/nginx-1.16.1.zip -OutFile nginx-1.16.1.zip
+Expand-Archive -Path D:\Geng\nginx\nginx-1.16.1.zip -DestinationPath D:\Geng\nginx\
+copy-item -path "D:\Geng\ModernWMS-run\frontend\*" -destination "D:\Geng\nginx\nginx-1.16.1\html\" -recurse -Force
+cd D:\Geng\nginx\nginx-1.16.1\
+start nginx.exe
+cd D:\Geng\ModernWMS-run\backend\
+dotnet ModernWMS.dll --urls http://127.0.0.1:20011
+
+
+setx "%path%;D:\Geng\SQLite3"
+
+setx /m path "%path%;D:\Geng\SQLite3"
+
+http://127.0.0.1:20011
+
+Math.Round(t.lenght * dec * t.width * dec * t.height * dec, 3)
+
+cd D:\Geng\ModernWMS\backend\ModernWMS\bin\Debug\net7.0\
+
+.\nginx.exe -s stop
+
+$t('base.warehouseSetting.create_time')
+
+
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
+import { formatDate } from '@/utils/format/formatSystem'
+
+copy-item -path "D:\Geng\ModernWMS\frontend\dist\*" -destination "D:\Geng\nginx\nginx-1.16.1\html\" -recurse -Force
+
