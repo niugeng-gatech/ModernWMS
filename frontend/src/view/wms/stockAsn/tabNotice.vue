@@ -62,9 +62,9 @@
       <vxe-column
         field="estimated_arrival_time"
         :title="$t('wms.stockAsnInfo.estimated_arrival_time')">
-            <template #default="{ row, column }">
-                <span>{{ formatDate(row[column.property], 'yyyy-MM-dd HH:mm') }}</span>
-            </template>
+        <template #default="{ row, column }">
+            <span>{{ formatDate(row[column.property], 'yyyy-MM-dd HH:mm') }}</span>
+        </template>
       </vxe-column>
       <vxe-column field="goods_owner_name" :title="$t('wms.stockAsnInfo.goods_owner_name')"></vxe-column>
       <vxe-column field="operate" :title="$t('system.page.operate')" width="140px" :resizable="false" show-overflow>
