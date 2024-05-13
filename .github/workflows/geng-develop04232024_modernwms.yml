@@ -7,11 +7,12 @@ on:
   push:
     branches:
       - geng/develop04232024
+    paths:
+      - frontend/**
   workflow_dispatch:
 
 jobs:
   build:
-    if: github.event_name == 'push' && contains(github.event.head_commit.modified, 'backend/')
     runs-on: windows-latest
     defaults:
       run:
