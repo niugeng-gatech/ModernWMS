@@ -97,7 +97,7 @@
           <vxe-column field="creator" :title="$t('wms.deliveryManagement.creator')"></vxe-column>
           <vxe-column field="create_time"
                       width="170px"
-                      :title="$t('base.deliveryManagement.create_time')">
+                      :title="$t('wms.deliveryManagement.create_time')">
               <template #default="{ row, column }">
                   <span>{{ formatDate(row[column.property], 'yyyy-MM-dd HH:mm') }}</span>
               </template>
