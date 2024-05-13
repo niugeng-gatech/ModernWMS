@@ -61,9 +61,11 @@
       <vxe-column field="asn_batch" :title="$t('wms.stockAsnInfo.asn_batch')"></vxe-column>
       <vxe-column
         field="estimated_arrival_time"
-        :formatter="['formatDate', 'yyyy-MM-dd']"
-        :title="$t('wms.stockAsnInfo.estimated_arrival_time')"
-      ></vxe-column>
+        :title="$t('wms.stockAsnInfo.estimated_arrival_time')">
+            <template #default="{ row, column }">
+                <span>{{ formatDate(row[column.property], 'yyyy-MM-dd HH:mm') }}</span>
+            </template>
+      </vxe-column>
       <vxe-column field="goods_owner_name" :title="$t('wms.stockAsnInfo.goods_owner_name')"></vxe-column>
       <vxe-column field="operate" :title="$t('system.page.operate')" width="140px" :resizable="false" show-overflow>
         <template #default="{ row }">
@@ -135,6 +137,7 @@ import { exportData } from '@/utils/exportTable'
 import BtnGroup from '@/components/system/btnGroup.vue'
 import QrCodeDialog from '@/components/codeDialog/qrCodeDialog.vue'
 import { httpCodeJudge } from '@/utils/http/httpCodeJudge'
+import { formatDate } from '@/utils/format/formatSystem'
 
 const xTable = ref()
 const qrCodeDialogRef = ref()
