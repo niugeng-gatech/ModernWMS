@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    if: github.event_name == 'push' && github.event.head_commit.modified | any(startswith('backend/'))
+    if: github.event_name == 'push' && contains(github.event.head_commit.modified, 'backend/')
     runs-on: windows-latest
     defaults:
       run:
