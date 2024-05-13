@@ -142,9 +142,10 @@ function GetModuleAndIcon(name: string) {
       return 'account-hard-hat-outline '
     case 'deliveryModule':
     case 'deliveryManagement':
-    case 'dropShipping':
     case 'deliveryStatistic':
       return 'cube-send'
+    case 'dropShipping':
+      return 'gift-outline'
     case 'companySetting':
       return 'office-building'
     case 'roleMenu':
