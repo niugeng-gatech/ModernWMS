@@ -11,6 +11,7 @@ on:
 
 jobs:
   build:
+    if: github.event_name == 'push' && github.event.head_commit.modified | any(startswith('backend/'))
     runs-on: windows-latest
     defaults:
       run:
