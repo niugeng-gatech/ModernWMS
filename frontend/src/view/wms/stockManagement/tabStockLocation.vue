@@ -47,7 +47,7 @@
       <vxe-column field="location_name" :title="$t('wms.stockLocation.location_name')"></vxe-column>
       <vxe-column field="spu_code" :title="$t('wms.stockLocation.spu_code')">
         <template #default="{ row }">
-          <div :class="'text-decoration-none'" @click="method.showSkuInfo(row)"> {{ row.sku_code }}</div>
+            <div :class="'text-decoration-none'" @click="method.showSkuInfo(row)"> {{ row.spu_code }}</div>
         </template>
       </vxe-column>
       <vxe-column field="spu_name" :title="$t('wms.stockLocation.spu_name')"></vxe-column>
