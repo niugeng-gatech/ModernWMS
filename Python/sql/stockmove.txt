@@ -13,15 +13,15 @@ CREATE TABLE [dbo].[new_stockmove] (
     create_time datetime2 DEFAULT GETDATE(),
     last_update_time datetime2 DEFAULT GETDATE(),
     tenant_id bigint NOT NULL, 
- series_number NVARCHAR(MAX) NOT NULL,
+ serial_number NVARCHAR(MAX) NOT NULL,
  CONSTRAINT FK_stockmove_sku FOREIGN KEY (sku_id) REFERENCES sku (id) ON DELETE CASCADE,
  CONSTRAINT FK_stockmove_goodslocation_orig FOREIGN KEY (orig_goods_location_id) REFERENCES goodslocation (id),
  CONSTRAINT FK_stockmove_goodslocation_dest FOREIGN KEY (dest_goods_location_id) REFERENCES goodslocation (id),
 );
 
 -- Step 2: Copy data from the old table to the new table
-INSERT INTO [dbo].[new_stockmove] (job_code, move_status, sku_id, orig_goods_location_id, dest_goods_location_id, qty, goods_owner_id, handler, handle_time, creator, create_time, last_update_time, tenant_id, series_number)
-SELECT job_code, move_status, sku_id, orig_goods_location_id, dest_googs_location_id, qty, goods_owner_id, handler, handle_time, creator, create_time, last_update_time, tenant_id, series_number
+INSERT INTO [dbo].[new_stockmove] (job_code, move_status, sku_id, orig_goods_location_id, dest_goods_location_id, qty, goods_owner_id, handler, handle_time, creator, create_time, last_update_time, tenant_id, serial_number)
+SELECT job_code, move_status, sku_id, orig_goods_location_id, dest_googs_location_id, qty, goods_owner_id, handler, handle_time, creator, create_time, last_update_time, tenant_id, serial_number
 FROM [dbo].[stockmove];
 
 -- Step 3: Drop the old table
@@ -47,4 +47,4 @@ sqlite> .schema stockmove
     create_time NVARCHAR(MAX) NOT NULL,
     last_update_time NVARCHAR(MAX) NOT NULL,
     tenant_id int NOT NULL, 
- series_number NVARCHAR(MAX) NOT NULL
+ serial_number NVARCHAR(MAX) NOT NULL

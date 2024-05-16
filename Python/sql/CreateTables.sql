@@ -37,7 +37,7 @@ CREATE TABLE "asnsort" (
     "last_update_time" TEXT NOT NULL,
     "is_valid" INTEGER NOT NULL,
     "tenant_id" INTEGER NOT NULL,
-    "series_number" TEXT, 
+    "serial_number" TEXT, 
     "putaway_qty" INTEGER NOT NULL);
 CREATE TABLE "spu" (	
     "id" INTEGER NOT NULL PRIMARY KEY IDENTITY(1,1),	
@@ -122,7 +122,7 @@ CREATE TABLE "dispatchlist" (
     "freightfee" TEXT NOT NULL,
     "last_update_time" TEXT NOT NULL,
     "tenant_id" INTEGER NOT NULL, 
-    "series_number" TEXT);
+    "serial_number" TEXT);
 CREATE TABLE "freightfee" (
     "id" INTEGER NOT NULL CONSTRAINT "PK_freightfee" PRIMARY KEY IDENTITY(1,1),
     "carrier" TEXT NOT NULL,
@@ -200,7 +200,7 @@ CREATE TABLE "stock" (
     "is_freeze" INTEGER NOT NULL,
     "last_update_time" TEXT NOT NULL,
     "tenant_id" INTEGER NOT NULL, 
-    "series_number" TEXT);
+    "serial_number" TEXT);
 CREATE TABLE "stockadjust" (
     "id" INTEGER NOT NULL CONSTRAINT "PK_stockadjust" PRIMARY KEY IDENTITY(1,1),
     "job_code" TEXT NOT NULL,
@@ -215,7 +215,7 @@ CREATE TABLE "stockadjust" (
     "is_update_stock" INTEGER NOT NULL,
     "job_type" INTEGER NOT NULL,
     "source_table_id" INTEGER NOT NULL, 
-    "series_number" TEXT NOT NULL);
+    "serial_number" TEXT NOT NULL);
 CREATE TABLE "stockfreeze" (
     "id" INTEGER NOT NULL CONSTRAINT "PK_stockfreeze" PRIMARY KEY IDENTITY(1,1),
     "job_code" TEXT NOT NULL,
@@ -227,7 +227,7 @@ CREATE TABLE "stockfreeze" (
     "handle_time" TEXT NOT NULL,
     "last_update_time" TEXT NOT NULL,
     "tenant_id" INTEGER NOT NULL, 
-    "series_number" TEXT NOT NULL);
+    "serial_number" TEXT NOT NULL);
 CREATE TABLE "stockmove" (
     "id" INTEGER NOT NULL CONSTRAINT "PK_stockmove" PRIMARY KEY IDENTITY(1,1),
     "job_code" TEXT NOT NULL,
@@ -243,7 +243,7 @@ CREATE TABLE "stockmove" (
     "create_time" TEXT NOT NULL,
     "last_update_time" TEXT NOT NULL,
     "tenant_id" INTEGER NOT NULL, 
-    "series_number" TEXT);
+    "serial_number" TEXT);
 CREATE TABLE "stockprocess" (
     "id" INTEGER NOT NULL CONSTRAINT "PK_stockprocess" PRIMARY KEY IDENTITY(1,1),
     "job_code" TEXT NOT NULL,
@@ -345,7 +345,7 @@ CREATE TABLE "dispatchpicklist" (
     "picked_qty" INTEGER NOT NULL,
     "is_update_stock" INTEGER NOT NULL,
     "last_update_time" TEXT NOT NULL, 
-    "series_number" TEXT,
+    "serial_number" TEXT,
     CONSTRAINT "FK_dispatchpicklist_dispatchlist_dispatchlist_id" FOREIGN KEY ("dispatchlist_id") REFERENCES "dispatchlist" ("id") ON DELETE CASCADE
 );
 CREATE TABLE "sku" (
@@ -377,7 +377,7 @@ CREATE TABLE "stockprocessdetail" (
     "tenant_id" INTEGER NOT NULL,
     "is_source" INTEGER NOT NULL,
     "is_update_stock" INTEGER NOT NULL, 
-    "series_number" TEXT,
+    "serial_number" TEXT,
     CONSTRAINT "FK_stockprocessdetail_stockprocess_stock_process_id" FOREIGN KEY ("stock_process_id") REFERENCES "stockprocess" ("id") ON DELETE CASCADE
 );
 CREATE TABLE "action_log" (	

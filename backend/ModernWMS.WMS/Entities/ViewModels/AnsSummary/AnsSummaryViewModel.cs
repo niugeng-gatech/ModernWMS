@@ -108,9 +108,9 @@ namespace ModernWMS.WMS.Entities.ViewModels
         public string supplier_name { get; set; } = string.Empty;
 
         /// <summary>
-        /// series_number
+        /// serial_number
         /// </summary>
-        public string series_number { get; set; } = string.Empty;
+        public string serial_number { get; set; } = string.Empty;
 
         /// <summary>
         /// goods_owner_id

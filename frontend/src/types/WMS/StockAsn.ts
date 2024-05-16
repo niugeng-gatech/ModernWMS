@@ -94,7 +94,7 @@ export interface UpdateSortingVo {
   id: number
   asn_id: number
   sorted_qty: number
-  series_number: string
+  serial_number: string
   creator: string
   create_time: string
   last_update_time: string

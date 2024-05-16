@@ -81,9 +81,9 @@ namespace ModernWMS.WMS.Entities.Models
         public int source_table_id { get; set; } = 0;
 
         /// <summary>
-        /// series_number
+        /// serial_number
         /// </summary>
-        public string series_number { get; set; } = string.Empty;
+        public string serial_number { get; set; } = string.Empty;
 
         #endregion Property
     }

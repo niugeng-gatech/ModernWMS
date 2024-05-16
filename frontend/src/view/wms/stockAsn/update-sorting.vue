@@ -18,9 +18,9 @@
                     {{ i18n.global.t('system.page.noData') }}
                 </template>
                 <vxe-column type="seq" width="60"></vxe-column>
-                <vxe-column field="series_number" :title="$t('wms.stockAsnInfo.series_number')" :edit-render="{ autofocus: '.vxe-input--inner' }">
+                <vxe-column field="serial_number" :title="$t('wms.stockAsnInfo.serial_number')" :edit-render="{ autofocus: '.vxe-input--inner' }">
                     <template #edit="{ row }">
-                        <vxe-input v-model="row.series_number" type="text"></vxe-input>
+                        <vxe-input v-model="row.serial_number" type="text"></vxe-input>
                     </template>
                 </vxe-column>
                 <vxe-column field="sorted_qty" :title="$t('wms.stockAsnInfo.sorted_qty')" :edit-render="{ autofocus: '.vxe-input--inner' }">
@@ -83,7 +83,7 @@ const data = reactive({
         trigger: 'change'
       }
     ],
-    series_number: [
+    serial_number: [
       {
         type: 'string',
         min: 0,
@@ -97,7 +97,7 @@ const data = reactive({
 
 const method = reactive({
   activeMethod({ row, column }: any) {
-    if (!row.series_number && column.field === 'series_number') {
+    if (!row.serial_number && column.field === 'serial_number') {
       return false
     }
     return true

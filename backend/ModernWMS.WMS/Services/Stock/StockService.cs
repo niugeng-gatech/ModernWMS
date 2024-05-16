@@ -204,14 +204,14 @@ namespace ModernWMS.WMS.Services
                                     join gw in _dBContext.GetDbSet<GoodsownerEntity>().AsNoTracking() on stock.goods_owner_id equals gw.id into gw_left
                                     from gw in gw_left.DefaultIfEmpty()
                                     where stock.tenant_id == currentUser.tenant_id
-                                    group new { stock, gw } by new { stock.sku_id, stock.goods_location_id, stock.goods_owner_id, stock.series_number, gw.goods_owner_name } into sg
+                                    group new { stock, gw } by new { stock.sku_id, stock.goods_location_id, stock.goods_owner_id, stock.serial_number, gw.goods_owner_name } into sg
                                     select new
                                     {
                                         sku_id = sg.Key.sku_id,
                                         goods_location_id = sg.Key.goods_location_id,
                                         goods_owner_id = sg.Key.goods_owner_id,
                                         goods_owner_name = sg.Key.goods_owner_name,
-                                        series_number = sg.Key.series_number,
+                                        serial_number = sg.Key.serial_number,
                                         qty_frozen = sg.Where(t => t.stock.is_freeze == true).Sum(e => e.stock.qty),
                                         qty = sg.Sum(t => t.stock.qty)
                                     };
@@ -219,44 +219,44 @@ namespace ModernWMS.WMS.Services
             var dispatch_group_datas = from dp in dispatch_DBSet.AsNoTracking()
                                        join dpp in dispatchpick_DBSet.AsNoTracking() on dp.id equals dpp.dispatchlist_id
                                        where dp.dispatch_status > 1 && dp.dispatch_status < 6
-                                       group dpp by new { dpp.sku_id, dpp.goods_location_id, dpp.goods_owner_id, dpp.series_number } into dg
+                                       group dpp by new { dpp.sku_id, dpp.goods_location_id, dpp.goods_owner_id, dpp.serial_number } into dg
                                        select new
                                        {
                                            sku_id = dg.Key.sku_id,
                                            goods_location_id = dg.Key.goods_location_id,
                                            goods_owner_id = dg.Key.goods_owner_id,
-                                           series_number = dg.Key.series_number,
+                                           serial_number = dg.Key.serial_number,
                                            qty_locked = dg.Sum(t => t.pick_qty)
                                        };
             var process_locked_group_datas = from pd in processdetail_DBSet
                                              where pd.is_update_stock == false && pd.is_source == true
-                                             group pd by new { pd.sku_id, pd.goods_location_id, pd.goods_owner_id, pd.series_number } into pdg
+                                             group pd by new { pd.sku_id, pd.goods_location_id, pd.goods_owner_id, pd.serial_number } into pdg
                                              select new
                                              {
                                                  sku_id = pdg.Key.sku_id,
                                                  goods_location_id = pdg.Key.goods_location_id,
                                                  goods_owner_id = pdg.Key.goods_owner_id,
-                                                 series_number = pdg.Key.series_number,
+                                                 serial_number = pdg.Key.serial_number,
                                                  qty_locked = pdg.Sum(t => t.qty)
                                              };
 
             var move_locked_group_datas = from m in move_DBSet.AsNoTracking()
                                           where m.move_status == 0
-                                          group m by new { m.sku_id, m.orig_goods_location_id, m.goods_owner_id, m.series_number } into mg
+                                          group m by new { m.sku_id, m.orig_goods_location_id, m.goods_owner_id, m.serial_number } into mg
                                           select new
                                           {
                                               sku_id = mg.Key.sku_id,
                                               goods_location_id = mg.Key.orig_goods_location_id,
                                               goods_owner_id = mg.Key.goods_owner_id,
-                                              series_number = mg.Key.series_number,
+                                              serial_number = mg.Key.serial_number,
                                               qty_locked = mg.Sum(t => t.qty)
                                           };
             var query = from sg in stock_group_datas
-                        join dp in dispatch_group_datas on new { sg.sku_id, sg.goods_location_id, sg.goods_owner_id, sg.series_number } equals new { dp.sku_id, dp.goods_location_id, dp.goods_owner_id, dp.series_number } into dp_left
+                        join dp in dispatch_group_datas on new { sg.sku_id, sg.goods_location_id, sg.goods_owner_id, sg.serial_number } equals new { dp.sku_id, dp.goods_location_id, dp.goods_owner_id, dp.serial_number } into dp_left
                         from dp in dp_left.DefaultIfEmpty()
-                        join pl in process_locked_group_datas on new { sg.sku_id, sg.goods_location_id, sg.goods_owner_id, sg.series_number } equals new { pl.sku_id, pl.goods_location_id, pl.goods_owner_id, pl.series_number } into pl_left
+                        join pl in process_locked_group_datas on new { sg.sku_id, sg.goods_location_id, sg.goods_owner_id, sg.serial_number } equals new { pl.sku_id, pl.goods_location_id, pl.goods_owner_id, pl.serial_number } into pl_left
                         from pl in pl_left.DefaultIfEmpty()
-                        join m in move_locked_group_datas on new { sg.sku_id, sg.goods_location_id, sg.goods_owner_id, sg.series_number } equals new { m.sku_id, m.goods_location_id, m.goods_owner_id, m.series_number } into m_left
+                        join m in move_locked_group_datas on new { sg.sku_id, sg.goods_location_id, sg.goods_owner_id, sg.serial_number } equals new { m.sku_id, m.goods_location_id, m.goods_owner_id, m.serial_number } into m_left
                         from m in m_left.DefaultIfEmpty()
                         join sku in sku_DBSet on sg.sku_id equals sku.id
                         join spu in spu_DBSet on sku.spu_id equals spu.id
@@ -275,7 +275,7 @@ namespace ModernWMS.WMS.Services
                             qty = sg.qty,
                             location_name = gl.location_name,
                             warehouse_name = gl.warehouse_name,
-                            series_number = sg.series_number,
+                            serial_number = sg.serial_number,
                         };
             query = query.Where(t => t.qty > 0).Where(queries.AsExpression<LocationStockManagementViewModel>());
             int totals = await query.CountAsync();
@@ -420,43 +420,43 @@ namespace ModernWMS.WMS.Services
             var dispatch_group_datas = from dp in dispatch_DBSet.AsNoTracking()
                                        join dpp in dispatchpick_DBSet.AsNoTracking() on dp.id equals dpp.dispatchlist_id
                                        where dp.dispatch_status > 1 && dp.dispatch_status < 6
-                                       group dpp by new { dpp.sku_id, dpp.goods_location_id, dpp.goods_owner_id, dpp.series_number } into dg
+                                       group dpp by new { dpp.sku_id, dpp.goods_location_id, dpp.goods_owner_id, dpp.serial_number } into dg
                                        select new
                                        {
                                            goods_owner_id = dg.Key.goods_owner_id,
                                            sku_id = dg.Key.sku_id,
                                            goods_location_id = dg.Key.goods_location_id,
-                                           series_number = dg.Key.series_number,
+                                           serial_number = dg.Key.serial_number,
                                            qty_locked = dg.Sum(t => t.pick_qty)
                                        };
             var process_locked_group_datas = from pd in processdetail_DBSet
                                              where pd.is_update_stock == false && pd.is_source == true
-                                             group pd by new { pd.sku_id, pd.goods_location_id, pd.goods_owner_id, pd.series_number } into pdg
+                                             group pd by new { pd.sku_id, pd.goods_location_id, pd.goods_owner_id, pd.serial_number } into pdg
                                              select new
                                              {
                                                  goods_owner_id = pdg.Key.goods_owner_id,
                                                  sku_id = pdg.Key.sku_id,
                                                  goods_location_id = pdg.Key.goods_location_id,
-                                                 series_number = pdg.Key.series_number,
+                                                 serial_number = pdg.Key.serial_number,
                                                  qty_locked = pdg.Sum(t => t.qty)
                                              };
             var move_locked_group_datas = from m in move_DBSet.AsNoTracking()
                                           where m.move_status == 0
-                                          group m by new { m.sku_id, m.orig_goods_location_id, m.goods_owner_id, m.series_number } into mg
+                                          group m by new { m.sku_id, m.orig_goods_location_id, m.goods_owner_id, m.serial_number } into mg
                                           select new
                                           {
                                               goods_owner_id = mg.Key.goods_owner_id,
                                               sku_id = mg.Key.sku_id,
                                               goods_location_id = mg.Key.orig_goods_location_id,
-                                              series_number = mg.Key.series_number,
+                                              serial_number = mg.Key.serial_number,
                                               qty_locked = mg.Sum(t => t.qty)
                                           };
             var query = from sg in DbSet.AsNoTracking()
-                        join dp in dispatch_group_datas on new { sg.sku_id, sg.goods_location_id, sg.goods_owner_id, sg.series_number } equals new { dp.sku_id, dp.goods_location_id, dp.goods_owner_id, dp.series_number } into dp_left
+                        join dp in dispatch_group_datas on new { sg.sku_id, sg.goods_location_id, sg.goods_owner_id, sg.serial_number } equals new { dp.sku_id, dp.goods_location_id, dp.goods_owner_id, dp.serial_number } into dp_left
                         from dp in dp_left.DefaultIfEmpty()
-                        join pl in process_locked_group_datas on new { sg.sku_id, sg.goods_location_id, sg.goods_owner_id, sg.series_number } equals new { pl.sku_id, pl.goods_location_id, pl.goods_owner_id, pl.series_number } into pl_left
+                        join pl in process_locked_group_datas on new { sg.sku_id, sg.goods_location_id, sg.goods_owner_id, sg.serial_number } equals new { pl.sku_id, pl.goods_location_id, pl.goods_owner_id, pl.serial_number } into pl_left
                         from pl in pl_left.DefaultIfEmpty()
-                        join m in move_locked_group_datas on new { sg.sku_id, sg.goods_location_id, sg.goods_owner_id, sg.series_number } equals new { m.sku_id, m.goods_location_id, m.goods_owner_id, m.series_number } into m_left
+                        join m in move_locked_group_datas on new { sg.sku_id, sg.goods_location_id, sg.goods_owner_id, sg.serial_number } equals new { m.sku_id, m.goods_location_id, m.goods_owner_id, m.serial_number } into m_left
                         from m in m_left.DefaultIfEmpty()
                         join sku in sku_DBSet on sg.sku_id equals sku.id
                         join spu in spu_DBSet on sku.spu_id equals spu.id
@@ -480,7 +480,7 @@ namespace ModernWMS.WMS.Services
                             gl.warehouse_name,
                             sg.id,
                             sku.unit,
-                            sg.series_number,
+                            sg.serial_number,
                             sg.tenant_id
                         } into g
                         select new StockViewModel
@@ -496,7 +496,7 @@ namespace ModernWMS.WMS.Services
                             goods_owner_id = g.Key.goods_owner_id,
                             location_name = g.Key.location_name,
                             warehouse_name = g.Key.warehouse_name,
-                            series_number = g.Key.series_number,
+                            serial_number = g.Key.serial_number,
                             is_freeze = g.Key.is_freeze,
                             id = g.Key.id,
                             tenant_id = g.Key.tenant_id,
@@ -595,14 +595,14 @@ namespace ModernWMS.WMS.Services
                                     && (input.warehouse_id == 0 || gl.warehouse_id == input.warehouse_id)
                                     && (input.spu_name == "" || spu.spu_name.Contains(input.spu_name))
                                     && (input.location_name == "" || gl.location_name.Contains(input.location_name))
-                                    group new { stock, gw } by new { stock.sku_id, stock.goods_location_id, stock.goods_owner_id, gw.goods_owner_name, stock.series_number } into sg
+                                    group new { stock, gw } by new { stock.sku_id, stock.goods_location_id, stock.goods_owner_id, gw.goods_owner_name, stock.serial_number } into sg
                                     select new
                                     {
                                         sku_id = sg.Key.sku_id,
                                         goods_location_id = sg.Key.goods_location_id,
                                         goods_owner_id = sg.Key.goods_owner_id,
                                         goods_owner_name = sg.Key.goods_owner_name,
-                                        series_number = sg.Key.series_number,
+                                        serial_number = sg.Key.serial_number,
                                         qty_frozen = sg.Where(t => t.stock.is_freeze == true).Sum(e => e.stock.qty),
                                         qty = sg.Sum(t => t.stock.qty)
                                     };
@@ -610,44 +610,44 @@ namespace ModernWMS.WMS.Services
             var dispatch_group_datas = from dp in dispatch_DBSet.AsNoTracking()
                                        join dpp in dispatchpick_DBSet.AsNoTracking() on dp.id equals dpp.dispatchlist_id
                                        where dp.dispatch_status > 1 && dp.dispatch_status < 6
-                                       group dpp by new { dpp.sku_id, dpp.goods_location_id, dpp.goods_owner_id, dpp.series_number } into dg
+                                       group dpp by new { dpp.sku_id, dpp.goods_location_id, dpp.goods_owner_id, dpp.serial_number } into dg
                                        select new
                                        {
                                            sku_id = dg.Key.sku_id,
                                            goods_location_id = dg.Key.goods_location_id,
                                            goods_owner_id = dg.Key.goods_owner_id,
-                                           series_number = dg.Key.series_number,
+                                           serial_number = dg.Key.serial_number,
                                            qty_locked = dg.Sum(t => t.pick_qty)
                                        };
             var process_locked_group_datas = from pd in processdetail_DBSet
                                              where pd.is_update_stock == false && pd.is_source == true
-                                             group pd by new { pd.sku_id, pd.goods_location_id, pd.goods_owner_id, pd.series_number } into pdg
+                                             group pd by new { pd.sku_id, pd.goods_location_id, pd.goods_owner_id, pd.serial_number } into pdg
                                              select new
                                              {
                                                  sku_id = pdg.Key.sku_id,
                                                  goods_location_id = pdg.Key.goods_location_id,
                                                  goods_owner_id = pdg.Key.goods_owner_id,
-                                                 series_number = pdg.Key.series_number,
+                                                 serial_number = pdg.Key.serial_number,
                                                  qty_locked = pdg.Sum(t => t.qty)
                                              };
 
             var move_locked_group_datas = from m in move_DBSet.AsNoTracking()
                                           where m.move_status == 0
-                                          group m by new { m.sku_id, m.orig_goods_location_id, m.goods_owner_id, m.series_number } into mg
+                                          group m by new { m.sku_id, m.orig_goods_location_id, m.goods_owner_id, m.serial_number } into mg
                                           select new
                                           {
                                               sku_id = mg.Key.sku_id,
                                               goods_location_id = mg.Key.orig_goods_location_id,
                                               goods_owner_id = mg.Key.goods_owner_id,
-                                              series_number = mg.Key.series_number,
+                                              serial_number = mg.Key.serial_number,
                                               qty_locked = mg.Sum(t => t.qty)
                                           };
             var query = from sg in stock_group_datas
-                        join dp in dispatch_group_datas on new { sg.sku_id, sg.goods_location_id, sg.goods_owner_id, sg.series_number } equals new { dp.sku_id, dp.goods_location_id, dp.goods_owner_id, dp.series_number } into dp_left
+                        join dp in dispatch_group_datas on new { sg.sku_id, sg.goods_location_id, sg.goods_owner_id, sg.serial_number } equals new { dp.sku_id, dp.goods_location_id, dp.goods_owner_id, dp.serial_number } into dp_left
                         from dp in dp_left.DefaultIfEmpty()
-                        join pl in process_locked_group_datas on new { sg.sku_id, sg.goods_location_id, sg.goods_owner_id, sg.series_number } equals new { pl.sku_id, pl.goods_location_id, pl.goods_owner_id, pl.series_number } into pl_left
+                        join pl in process_locked_group_datas on new { sg.sku_id, sg.goods_location_id, sg.goods_owner_id, sg.serial_number } equals new { pl.sku_id, pl.goods_location_id, pl.goods_owner_id, pl.serial_number } into pl_left
                         from pl in pl_left.DefaultIfEmpty()
-                        join m in move_locked_group_datas on new { sg.sku_id, sg.goods_location_id, sg.goods_owner_id, sg.series_number } equals new { m.sku_id, m.goods_location_id, m.goods_owner_id, m.series_number } into m_left
+                        join m in move_locked_group_datas on new { sg.sku_id, sg.goods_location_id, sg.goods_owner_id, sg.serial_number } equals new { m.sku_id, m.goods_location_id, m.goods_owner_id, m.serial_number } into m_left
                         from m in m_left.DefaultIfEmpty()
                         join sku in sku_DBSet on sg.sku_id equals sku.id
                         join spu in spu_DBSet on sku.spu_id equals spu.id
@@ -666,7 +666,7 @@ namespace ModernWMS.WMS.Services
                             qty = sg.qty,
                             location_name = gl.location_name,
                             warehouse_name = gl.warehouse_name,
-                            series_number = sg.series_number,
+                            serial_number = sg.serial_number,
                             goods_location_id = sg.goods_location_id
                         };
 
@@ -718,7 +718,7 @@ namespace ModernWMS.WMS.Services
                             spu.spu_code,
                             sku.sku_name,
                             sku.sku_code,
-                            dpp.series_number,
+                            dpp.serial_number,
                             dp.customer_name,
                             dp.create_time,
                             dpp.goods_owner_id,
@@ -734,7 +734,7 @@ namespace ModernWMS.WMS.Services
                             spu_code = dg.Key.spu_code,
                             sku_name = dg.Key.sku_name,
                             sku_code = dg.Key.sku_code,
-                            series_number = dg.Key.series_number,
+                            serial_number = dg.Key.serial_number,
                             customer_name = dg.Key.customer_name,
                             delivery_date = dg.Key.create_time,
                             goods_owner_name = dg.Key.goods_owner_name,

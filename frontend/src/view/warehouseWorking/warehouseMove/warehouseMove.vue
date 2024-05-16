@@ -187,7 +187,7 @@ const data = reactive({
     spu_name: '',
     sku_code: '',
     sku_name: '',
-    series_number: '',
+    serial_number: '',
     creator: '',
     create_time: ''
   },
@@ -224,7 +224,7 @@ const method = reactive({
       spu_name: '',
       sku_code: '',
       sku_name: '',
-      series_number: '',
+      serial_number: '',
       creator: '',
       create_time: ''
     }

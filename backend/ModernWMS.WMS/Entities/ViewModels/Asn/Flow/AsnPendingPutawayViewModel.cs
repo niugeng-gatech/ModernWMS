@@ -42,10 +42,10 @@ namespace ModernWMS.WMS.Entities.ViewModels
         public string goods_owner_name { get; set; } = string.Empty;
 
         /// <summary>
-        /// series_number
+        /// serial_number
         /// </summary>
-        [Display(Name = "series_number")]
-        public string series_number { get; set; } = string.Empty;
+        [Display(Name = "serial_number")]
+        public string serial_number { get; set; } = string.Empty;
 
         /// <summary>
         /// sorted_qty

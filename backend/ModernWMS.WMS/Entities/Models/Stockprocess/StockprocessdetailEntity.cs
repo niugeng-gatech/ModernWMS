@@ -76,9 +76,9 @@ namespace ModernWMS.WMS.Entities.Models
         public bool is_update_stock { get; set; } = false;
 
         /// <summary>
-        /// series_number
+        /// serial_number
         /// </summary>
-        public string series_number { get; set; } = string.Empty;
+        public string serial_number { get; set; } = string.Empty;
 
         #endregion Property
     }

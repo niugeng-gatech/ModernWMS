@@ -28,13 +28,12 @@ CREATE TABLE [dbo].[new_dispatchlist] (
     carrier NVARCHAR(MAX) NOT NULL,
     freightfee decimal NOT NULL,
     last_update_time datetime2 DEFAULT GETDATE(),
-    tenant_id bigint NOT NULL,
- series_number NVARCHAR(MAX) NOT NULL
+    tenant_id bigint NOT NULL
 );
 
 -- Step 2: Copy data from the old table to the new table
-INSERT INTO [dbo].[new_dispatchlist] (dispatch_no, dispatch_status, customer_id, customer_name, sku_id, qty, weight, volume, creator, create_time, damage_qty, lock_qty, picked_qty, intrasit_qty, package_qty, weighing_qty, actual_qty, sign_qty, package_no, package_person, package_time, weighing_no, weighing_person, weighing_weight, waybill_no, carrier, freightfee, last_update_time, tenant_id, series_number)
-SELECT dispatch_no, dispatch_status, customer_id, customer_name, sku_id, qty, weight, volume, creator, create_time, damage_qty, lock_qty, picked_qty, intrasit_qty, package_qty, weighing_qty, actual_qty, sign_qty, package_no, package_person, package_time, weighing_no, weighing_person, weighing_weight, waybill_no, carrier, freightfee, last_update_time, tenant_id, series_number
+INSERT INTO [dbo].[new_dispatchlist] (dispatch_no, dispatch_status, customer_id, customer_name, sku_id, qty, weight, volume, creator, create_time, damage_qty, lock_qty, picked_qty, intrasit_qty, package_qty, weighing_qty, actual_qty, sign_qty, package_no, package_person, package_time, weighing_no, weighing_person, weighing_weight, waybill_no, carrier, freightfee, last_update_time, tenant_id)
+SELECT dispatch_no, dispatch_status, customer_id, customer_name, sku_id, qty, weight, volume, creator, create_time, damage_qty, lock_qty, picked_qty, intrasit_qty, package_qty, weighing_qty, actual_qty, sign_qty, package_no, package_person, package_time, weighing_no, weighing_person, weighing_weight, waybill_no, carrier, freightfee, last_update_time, tenant_id
 FROM [dbo].[dispatchlist];
 
 -- Step 3: Drop the old table
@@ -78,4 +77,4 @@ EXEC sp_rename '[dbo].[new_dispatchlist]', 'dispatchlist';
     freightfee NVARCHAR(MAX) NOT NULL,
     last_update_time NVARCHAR(MAX) NOT NULL,
     tenant_id INTEGER NOT NULL,
- series_number NVARCHAR(MAX)
+ serial_number NVARCHAR(MAX)

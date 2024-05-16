@@ -32,9 +32,9 @@ namespace ModernWMS.WMS.Entities.ViewModels
         public int asn_id { get; set; } = 0;
 
         /// <summary>
-        /// series_number
+        /// serial_number
         /// </summary>
-        public string series_number { get; set; } = string.Empty;
+        public string serial_number { get; set; } = string.Empty;
 
         /// <summary>
         /// sorted_qty

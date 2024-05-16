@@ -31,9 +31,9 @@ EXEC sp_rename '[dbo].[new_dispatchpicklist]', 'dispatchpicklist';
     pick_qty INTEGER NOT NULL,
     picked_qty INTEGER NOT NULL,
     is_update_stock INTEGER NOT NULL,
-    last_update_time TEXT NOT NULL, series_number TEXT,
+    last_update_time TEXT NOT NULL, serial_number TEXT,
     CONSTRAINT FK_dispatchpicklist_dispatchlist_dispatchlist_id FOREIGN KEY (dispatchlist_id) REFERENCES dispatchlist (id) ON DELETE CASCADE
 	
 UPDATE [dbo].[dispatchpicklist]
-SET series_number = ''
+SET serial_number = ''
 WHERE id = 3;

@@ -72,10 +72,10 @@ namespace ModernWMS.WMS.Entities.ViewModels.Stock
         public string customer_name { get; set; } = string.Empty;
 
         /// <summary>
-        /// series_number
+        /// serial_number
         /// </summary>
 
-        public string series_number { get; set; } = string.Empty;
+        public string serial_number { get; set; } = string.Empty;
 
         /// <summary>
         /// delivery qty

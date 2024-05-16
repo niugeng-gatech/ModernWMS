@@ -9,15 +9,15 @@ CREATE TABLE [dbo].[new_stockprocessdetail] (
     tenant_id bigint NOT NULL,
     is_source bit NOT NULL,
     is_update_stock bit NOT NULL, 
- series_number NVARCHAR(MAX) NOT NULL,
+ serial_number NVARCHAR(MAX) NOT NULL,
  CONSTRAINT FK_stockprocessdetail_stockprocess FOREIGN KEY (stock_process_id) REFERENCES stockprocess (id) ON DELETE CASCADE,
  CONSTRAINT FK_stockprocessdetail_goods_owner FOREIGN KEY (goods_owner_id) REFERENCES goodsowner (id),
  CONSTRAINT FK_stockprocessdetail_goods_location FOREIGN KEY (goods_location_id) REFERENCES goodslocation (id)
 );
 
 -- Step 2: Copy data from the old table to the new table
-INSERT INTO [dbo].[new_stockprocessdetail] (stock_process_id, sku_id, goods_owner_id, goods_location_id, qty, last_update_time, tenant_id, is_source, is_update_stock, series_number)
-SELECT stock_process_id, sku_id, goods_owner_id, goods_location_id, qty, last_update_time, tenant_id, is_source, is_update_stock, series_number
+INSERT INTO [dbo].[new_stockprocessdetail] (stock_process_id, sku_id, goods_owner_id, goods_location_id, qty, last_update_time, tenant_id, is_source, is_update_stock, serial_number)
+SELECT stock_process_id, sku_id, goods_owner_id, goods_location_id, qty, last_update_time, tenant_id, is_source, is_update_stock, serial_number
 FROM [dbo].[stockprocessdetail];
 
 -- Step 3: Drop the old table
@@ -39,5 +39,5 @@ sqlite> .schema stockprocessdetail
     tenant_id int NOT NULL,
     is_source int NOT NULL,
     is_update_stock int NOT NULL, 
- series_number NVARCHAR(MAX),
+ serial_number NVARCHAR(MAX),
     CONSTRAINT FK_stockprocessdetail_stockprocess_stock_process_id FOREIGN KEY (stock_process_id) REFERENCES stockprocess (id) ON DELETE CASCADE

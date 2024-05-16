@@ -113,11 +113,11 @@ namespace ModernWMS.WMS.Entities.ViewModels
         public string location_name { get; set; } = string.Empty;
 
         /// <summary>
-        /// series_number
+        /// serial_number
         /// </summary>
-        [Display(Name = "series_number")]
+        [Display(Name = "serial_number")]
         [MaxLength(64, ErrorMessage = "MaxLength")]
-        public string series_number { get; set; } = string.Empty;
+        public string serial_number { get; set; } = string.Empty;
 
         #endregion Property
     }

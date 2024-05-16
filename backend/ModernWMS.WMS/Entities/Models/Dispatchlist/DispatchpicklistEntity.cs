@@ -71,9 +71,9 @@ namespace ModernWMS.WMS.Entities.Models
         public DateTime last_update_time { get; set; } = UtilConvert.MinDate;
 
         /// <summary>
-        /// series_number
+        /// serial_number
         /// </summary>
-        public string series_number { get; set; } = string.Empty;
+        public string serial_number { get; set; } = string.Empty;
 
         #endregion Property
     }

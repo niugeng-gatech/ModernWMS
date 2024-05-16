@@ -12,15 +12,15 @@ CREATE TABLE [dbo].[new_stockadjust] (
     is_update_stock bit NOT NULL,
     job_type tinyint NOT NULL,
     source_table_id int NOT NULL, 
- series_number NVARCHAR(MAX) NOT NULL,
+ serial_number NVARCHAR(MAX) NOT NULL,
  CONSTRAINT FK_stockadjust_sku FOREIGN KEY (sku_id) REFERENCES sku (id) ON DELETE CASCADE,
  CONSTRAINT FK_stockadjust_goodsowner FOREIGN KEY (goods_owner_id) REFERENCES goodsowner (id) ON DELETE CASCADE,
  CONSTRAINT FK_stockadjust_goodslocation FOREIGN KEY (goods_location_id) REFERENCES goodslocation (id) ON DELETE CASCADE
 );
 
 -- Step 2: Copy data from the old table to the new table
-INSERT INTO [dbo].[new_stockadjust] (job_code, sku_id, goods_owner_id, goods_location_id, qty, creator, create_time, last_update_time, tenant_id, is_update_stock, job_type, source_table_id, series_number)
-SELECT job_code, sku_id, goods_owner_id, goods_location_id, qty, creator, create_time, last_update_time, tenant_id, is_update_stock, job_type, source_table_id, series_number
+INSERT INTO [dbo].[new_stockadjust] (job_code, sku_id, goods_owner_id, goods_location_id, qty, creator, create_time, last_update_time, tenant_id, is_update_stock, job_type, source_table_id, serial_number)
+SELECT job_code, sku_id, goods_owner_id, goods_location_id, qty, creator, create_time, last_update_time, tenant_id, is_update_stock, job_type, source_table_id, serial_number
 FROM [dbo].[stockadjust] ORDER BY id ASC;
 
 -- Step 3: Drop the old table
@@ -42,4 +42,4 @@ EXEC sp_rename '[dbo].[new_stockadjust]', 'stockadjust';
     is_update_stock int NOT NULL,
     job_type int NOT NULL,
     source_table_id int NOT NULL, 
- series_number NVARCHAR(MAX) NOT NULL
+ serial_number NVARCHAR(MAX) NOT NULL

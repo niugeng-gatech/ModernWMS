@@ -107,7 +107,7 @@ namespace ModernWMS.WMS.Services
                             creator = sj.creator,
                             create_time = sj.create_time,
                             last_update_time = sj.last_update_time,
-                            series_number = sj.series_number,
+                            serial_number = sj.serial_number,
                         };
             query = query.Where(queries.AsExpression<StockadjustViewModel>());
             int totals = await query.CountAsync();
@@ -194,7 +194,7 @@ namespace ModernWMS.WMS.Services
             entity.job_type = viewModel.job_type;
             entity.source_table_id = viewModel.source_table_id;
             entity.last_update_time = DateTime.Now;
-            entity.series_number = viewModel.series_number;
+            entity.serial_number = viewModel.serial_number;
             var qty = await _dBContext.SaveChangesAsync();
             if (qty > 0)
             {
@@ -255,7 +255,7 @@ namespace ModernWMS.WMS.Services
                 }
             }
             var stock_DBSet = _dBContext.GetDbSet<StockEntity>();
-            var stock = await stock_DBSet.Where(t => t.goods_owner_id == entity.goods_owner_id && t.series_number == entity.series_number && t.goods_location_id == entity.goods_location_id && t.sku_id == entity.sku_id).FirstOrDefaultAsync();
+            var stock = await stock_DBSet.Where(t => t.goods_owner_id == entity.goods_owner_id && t.serial_number == entity.serial_number && t.goods_location_id == entity.goods_location_id && t.sku_id == entity.sku_id).FirstOrDefaultAsync();
             if (stock == null)
             {
                 stock = new StockEntity
@@ -265,7 +265,7 @@ namespace ModernWMS.WMS.Services
                     goods_location_id = entity.goods_location_id,
                     qty = entity.qty,
                     goods_owner_id = entity.goods_owner_id,
-                    series_number = entity.series_number,
+                    serial_number = entity.serial_number,
                     is_freeze = false,
                     last_update_time = DateTime.Now,
                     tenant_id = entity.tenant_id,

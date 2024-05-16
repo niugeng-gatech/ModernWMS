@@ -98,7 +98,7 @@ namespace ModernWMS.WMS.Services
                             spu_name = spu.spu_name,
                             location_name = location.location_name,
                             warehouse_name = location.warehouse_name,
-                            series_number = m.series_number,
+                            serial_number = m.serial_number,
                         };
             query = query
                 .Where(t => t.tenant_id.Equals(currentUser.tenant_id))
@@ -151,7 +151,7 @@ namespace ModernWMS.WMS.Services
                                   spu_name = spu.spu_name,
                                   location_name = location.location_name,
                                   warehouse_name = location.warehouse_name,
-                                  series_number = m.series_number,
+                                  serial_number = m.serial_number,
                               }).FirstOrDefaultAsync();
             if (data == null)
             {
@@ -234,7 +234,7 @@ namespace ModernWMS.WMS.Services
             entity.handler = viewModel.handler;
             entity.handle_time = viewModel.handle_time;
             entity.last_update_time = DateTime.Now;
-            entity.series_number = viewModel.series_number;
+            entity.serial_number = viewModel.serial_number;
             var qty = await _dBContext.SaveChangesAsync();
             if (qty > 0)
             {

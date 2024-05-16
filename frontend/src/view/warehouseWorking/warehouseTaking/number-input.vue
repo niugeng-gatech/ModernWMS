@@ -67,7 +67,7 @@ const data = reactive({
     adjust_status: false,
     handler: '',
     handle_time: '',
-    series_number: ''
+    serial_number: ''
   }),
   rules: {
     book_qty: [

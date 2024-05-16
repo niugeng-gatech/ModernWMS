@@ -55,7 +55,7 @@
               variant="outlined"
               disabled
             ></v-text-field>
-            <v-text-field v-model="data.form.series_number" :label="$t('wms.stockLocation.series_number')" variant="outlined" disabled></v-text-field>
+            <v-text-field v-model="data.form.serial_number" :label="$t('wms.stockLocation.serial_number')" variant="outlined" disabled></v-text-field>
             <v-text-field
               v-model="data.form.warehouse_name"
               :label="$t('wms.warehouseWorking.warehouseTaking.warehouse')"
@@ -150,7 +150,7 @@ const data = reactive({
     spu_code: '',
     spu_name: '',
     sku_code: '',
-    series_number: '',
+    serial_number: '',
     warehouse_name: '',
     location_name: '',
     handler: '',
@@ -203,7 +203,7 @@ const method = reactive({
       data.form.spu_code = selectRecords[0].spu_code
       data.form.spu_name = selectRecords[0].spu_name
       data.form.sku_code = selectRecords[0].sku_code
-      data.form.series_number = selectRecords[0].series_number
+      data.form.serial_number = selectRecords[0].serial_number
       data.form.book_qty = selectRecords[0].qty_available
     } catch (error) {
       // console.error(error)

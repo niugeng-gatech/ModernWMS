@@ -62,7 +62,7 @@
                       <vxe-column field="spu_code" width="150px" :title="$t('base.commodityManagement.spu_code')"></vxe-column>
                       <vxe-column field="spu_name" width="150px" :title="$t('base.commodityManagement.spu_name')"></vxe-column>
                       <vxe-column field="sku_code" width="150px" :title="$t('base.commodityManagement.sku_code')"></vxe-column>
-                      <vxe-column field="series_number" width="150px" :title="$t('wms.stockLocation.series_number')"></vxe-column>
+                      <vxe-column field="serial_number" width="150px" :title="$t('wms.stockLocation.serial_number')"></vxe-column>
                       <vxe-column field="warehouse_name" width="150px" :title="$t('wms.warehouseWorking.warehouseTaking.warehouse')"></vxe-column>
                       <vxe-column field="location_name" width="150px" :title="$t('wms.warehouseWorking.warehouseTaking.location_name')"></vxe-column>
                       <vxe-column field="book_qty" width="150px" :title="$t('wms.warehouseWorking.warehouseTaking.book_qty')"></vxe-column>
@@ -176,7 +176,7 @@ const data = reactive({
     spu_code: '',
     spu_name: '',
     sku_code: '',
-    series_number: '',
+    serial_number: '',
     warehouse_name: '',
     location_name: '',
     handler: '',
@@ -215,7 +215,7 @@ const method = reactive({
       spu_code: '',
       spu_name: '',
       sku_code: '',
-      series_number: '',
+      serial_number: '',
       warehouse_name: '',
       location_name: '',
       handler: '',

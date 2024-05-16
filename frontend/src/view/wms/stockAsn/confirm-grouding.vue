@@ -32,7 +32,7 @@
             <vxe-column type="seq" width="60"></vxe-column>
             <vxe-column type="checkbox" width="50"></vxe-column>
             <vxe-column field="goods_owner_name" :title="$t('wms.stockAsnInfo.goods_owner_name')"> </vxe-column>
-            <vxe-column field="series_number" :title="$t('wms.stockAsnInfo.series_number')"> </vxe-column>
+            <vxe-column field="serial_number" :title="$t('wms.stockAsnInfo.serial_number')"> </vxe-column>
             <vxe-column field="location_name" :title="$t('base.warehouseSetting.location_name')" :edit-render="{ autofocus: '.vxe-input--inner' }">
             </vxe-column>
 
@@ -107,7 +107,7 @@ const data = reactive({
       },
       { validator: validQty, trigger: 'change' }
     ],
-    series_number: [],
+    serial_number: [],
     location_name: [{ validator: validLocationName, trigger: 'change' }]
   } as any
 })

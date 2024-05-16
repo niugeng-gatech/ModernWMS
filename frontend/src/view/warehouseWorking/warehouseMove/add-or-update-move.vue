@@ -44,8 +44,8 @@
               </v-col>
               <v-col :cols="6">
                 <v-text-field
-                  v-model="data.form.series_number"
-                  :label="$t('wms.stockLocation.series_number')"
+                  v-model="data.form.serial_number"
+                  :label="$t('wms.stockLocation.serial_number')"
                   variant="outlined"
                   disabled
                 ></v-text-field>
@@ -180,7 +180,7 @@ const data = reactive({
     spu_name: '',
     sku_code: '',
     sku_name: '',
-    series_number: '',
+    serial_number: '',
     creator: '',
     create_time: ''
   }),
@@ -261,7 +261,7 @@ const method = reactive({
       data.form.spu_name = selectRecords[0].spu_name
       data.form.sku_code = selectRecords[0].sku_code
       data.form.sku_name = selectRecords[0].sku_name
-      data.form.series_number = selectRecords[0].series_number
+      data.form.serial_number = selectRecords[0].serial_number
 
       data.curAvailableQty = selectRecords[0].qty_available
     } catch (error) {

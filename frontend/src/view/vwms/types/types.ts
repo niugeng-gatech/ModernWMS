@@ -54,7 +54,7 @@ export interface productInfoType {
   qty_available:number,
   qty_frozen:number,
   qty_locked:number,
-  series_number:string | null,
+  serial_number:string | null,
   sku_code:string,
   sku_id:number,
   sku_name:string,

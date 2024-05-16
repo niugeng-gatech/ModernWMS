@@ -49,7 +49,7 @@
                   <vxe-column field="spu_code" :title="$t('wms.warehouseWorking.warehouseProcessing.spu_code')"></vxe-column>
                   <vxe-column field="spu_name" :title="$t('wms.warehouseWorking.warehouseProcessing.spu_name')"></vxe-column>
                   <vxe-column field="sku_code" :title="$t('wms.warehouseWorking.warehouseProcessing.sku_code')"></vxe-column>
-                  <vxe-column field="series_number" :title="$t('wms.stockLocation.series_number')"></vxe-column>
+                  <vxe-column field="serial_number" :title="$t('wms.stockLocation.serial_number')"></vxe-column>
                   <vxe-column
                     field="qty"
                     :title="$t('wms.warehouseWorking.warehouseProcessing.qty')"
@@ -265,7 +265,7 @@ const method = reactive({
             spu_code: record.spu_code,
             spu_name: record.spu_name,
             sku_code: record.sku_code,
-            series_number: record.series_number,
+            serial_number: record.serial_number,
             unit: record.unit,
             is_update_stock: false,
             qty_available: record.qty_available
@@ -291,7 +291,7 @@ const method = reactive({
           spu_code: selectRecords[0].spu_code,
           spu_name: selectRecords[0].spu_name,
           sku_code: selectRecords[0].sku_code,
-          series_number: selectRecords[0].series_number,
+          serial_number: selectRecords[0].serial_number,
           unit: selectRecords[0].unit,
           is_update_stock: false,
           qty_available: selectRecords[0].qty_available

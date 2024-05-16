@@ -15,8 +15,8 @@
               <v-col :cols="10">
                 <v-text-field
                   v-model="snNum.snNum"
-                  :label="$t('wms.stockAsnInfo.series_number')"
-                  :rules="data.rules.series_number"
+                  :label="$t('wms.stockAsnInfo.serial_number')"
+                  :rules="data.rules.serial_number"
                   variant="outlined"
                 ></v-text-field>
               </v-col>
@@ -79,8 +79,8 @@ const data = reactive({
       (val: string) => !!val || `${ i18n.global.t('system.checkText.mustInput') }${ i18n.global.t('wms.stockAsnInfo.sorted_qty') }!`,
       (val: number) => IsInteger(val, 'greaterThanZero') === '' || IsInteger(val, 'greaterThanZero')
     ],
-    series_number: [
-      (val: string) => !!val || `${ i18n.global.t('system.checkText.mustInput') }${ i18n.global.t('wms.stockAsnInfo.series_number') }!`,
+    serial_number: [
+      (val: string) => !!val || `${ i18n.global.t('system.checkText.mustInput') }${ i18n.global.t('wms.stockAsnInfo.serial_number') }!`,
       (val: string) => StringLength(val, 0, 64) === '' || StringLength(val, 0, 64)
     ]
   }
@@ -127,7 +127,7 @@ const method = reactive({
       for (const item of data.SNList) {
         reqData.push({
           asn_id: data.form.asn_id,
-          series_number: item.snNum,
+          serial_number: item.snNum,
           sorted_qty: 1
         })
       }
@@ -137,7 +137,7 @@ const method = reactive({
         const margin = data.form.sorted_qty - data.SNList.length
         reqData.push({
           asn_id: data.form.asn_id,
-          series_number: '',
+          serial_number: '',
           sorted_qty: margin
         })
       }

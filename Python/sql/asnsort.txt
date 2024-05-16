@@ -7,14 +7,14 @@ CREATE TABLE [dbo].[new_asnsort] (
     last_update_time datetime2 DEFAULT GETDATE(),
     is_valid bit NOT NULL,
     tenant_id bigint NOT NULL,
- series_number NVARCHAR(MAX) NOT NULL, 
+ serial_number NVARCHAR(MAX) NOT NULL, 
  putaway_qty INT NOT NULL,
  CONSTRAINT FK_asnsort_asn FOREIGN KEY (asn_id) REFERENCES asn(id) ON DELETE CASCADE
 );
 
 -- Step 2: Copy data from the old table to the new table
-INSERT INTO [dbo].[new_asnsort] (asn_id, sorted_qty, creator, create_time, last_update_time, is_valid, tenant_id, series_number, putaway_qty)
-SELECT asn_id, sorted_qty, creator, create_time, last_update_time, is_valid, tenant_id, series_number, putaway_qty
+INSERT INTO [dbo].[new_asnsort] (asn_id, sorted_qty, creator, create_time, last_update_time, is_valid, tenant_id, serial_number, putaway_qty)
+SELECT asn_id, sorted_qty, creator, create_time, last_update_time, is_valid, tenant_id, serial_number, putaway_qty
 FROM [dbo].[asnsort];
 
 -- Step 3: Drop the old table
@@ -31,5 +31,5 @@ EXEC sp_rename '[dbo].[new_asnsort]', 'asnsort';
     "last_update_time" TEXT NOT NULL,
     "is_valid" INTEGER NOT NULL,
     "tenant_id" INTEGER NOT NULL, 
- series_number TEXT, 
+ serial_number TEXT, 
  putaway_qty INTEGER NOT NULL)

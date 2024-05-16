@@ -38,13 +38,13 @@ export const unconfirmArrival = (idList: number[]) => http({
     data: idList
   })
 
-export const editSorting = (data: { asn_id: number; series_number: string; sorted_qty: number }[]) => http({
+export const editSorting = (data: { asn_id: number; serial_number: string; sorted_qty: number }[]) => http({
     url: '/asn/sorting',
     method: 'put',
     data
   })
 
-export const modifySorting = (data: { asn_id: number; series_number: string; sorted_qty: number }[]) => http({
+export const modifySorting = (data: { asn_id: number; serial_number: string; sorted_qty: number }[]) => http({
     url: '/asn/sorting-modify',
     method: 'put',
     data
@@ -70,7 +70,7 @@ export const confirmPutaway = (
   data: {
     asn_id: number
     goods_owner_id: number
-    series_number: string
+    serial_number: string
     goods_location_id: number
     putaway_qty: number
   }[]

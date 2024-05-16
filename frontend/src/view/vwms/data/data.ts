@@ -308,7 +308,7 @@ const productData:productInfoType[] = [
     qty_locked: 0,
     qty_frozen: 0,
     goods_owner_name: '空',
-    series_number: '',
+    serial_number: '',
     goods_location_id: 448
   },
   {
@@ -324,7 +324,7 @@ const productData:productInfoType[] = [
     qty_locked: 50,
     qty_frozen: 0,
     goods_owner_name: '空',
-    series_number: '',
+    serial_number: '',
     goods_location_id: 441
   },
   {
@@ -340,7 +340,7 @@ const productData:productInfoType[] = [
     qty_locked: 100,
     qty_frozen: 0,
     goods_owner_name: '空',
-    series_number: '',
+    serial_number: '',
     goods_location_id: 442
   },
   {
@@ -356,7 +356,7 @@ const productData:productInfoType[] = [
     qty_locked: 150,
     qty_frozen: 0,
     goods_owner_name: '空',
-    series_number: '',
+    serial_number: '',
     goods_location_id: 443
   },
   {
@@ -372,7 +372,7 @@ const productData:productInfoType[] = [
     qty_locked: 200,
     qty_frozen: 0,
     goods_owner_name: '空',
-    series_number: '',
+    serial_number: '',
     goods_location_id: 444
   },
   {
@@ -388,7 +388,7 @@ const productData:productInfoType[] = [
     qty_locked: 40,
     qty_frozen: 0,
     goods_owner_name: '空',
-    series_number: '',
+    serial_number: '',
     goods_location_id: 445
   },
   {
@@ -404,7 +404,7 @@ const productData:productInfoType[] = [
     qty_locked: 0,
     qty_frozen: 0,
     goods_owner_name: '空',
-    series_number: '',
+    serial_number: '',
     goods_location_id: 446
   },
   {
@@ -420,7 +420,7 @@ const productData:productInfoType[] = [
     qty_locked: 0,
     qty_frozen: 0,
     goods_owner_name: '空',
-    series_number: '',
+    serial_number: '',
     goods_location_id: 449
   },
   {
@@ -436,7 +436,7 @@ const productData:productInfoType[] = [
     qty_locked: 0,
     qty_frozen: 0,
     goods_owner_name: '空',
-    series_number: '',
+    serial_number: '',
     goods_location_id: 442
   },
   {
@@ -452,7 +452,7 @@ const productData:productInfoType[] = [
     qty_locked: 0,
     qty_frozen: 0,
     goods_owner_name: '空',
-    series_number: '',
+    serial_number: '',
     goods_location_id: 442
   }
 ]

@@ -246,7 +246,7 @@ const method = reactive({
     }
   },
   // Callback after modifying sorting information
-  addSortingSure: async (reqData: { asn_id: number; series_number: string; sorted_qty: number }[]) => {
+  addSortingSure: async (reqData: { asn_id: number; serial_number: string; sorted_qty: number }[]) => {
     const { data: res } = await editSorting(reqData)
     if (!res.isSuccess) {
       // 2023-12-06 Add automatic refresh of expired data

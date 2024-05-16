@@ -19,7 +19,7 @@
             </template>
             <vxe-column type="seq" width="60"></vxe-column>
             <vxe-column field="goods_owner_name" :title="$t('wms.stockAsnInfo.goods_owner_name')"> </vxe-column>
-            <vxe-column field="series_number" :title="$t('wms.stockAsnInfo.series_number')"> </vxe-column>
+            <vxe-column field="serial_number" :title="$t('wms.stockAsnInfo.serial_number')"> </vxe-column>
           </vxe-table>
         </v-card-text>
         <v-card-actions class="justify-end">

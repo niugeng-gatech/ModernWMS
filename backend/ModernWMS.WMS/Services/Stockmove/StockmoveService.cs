@@ -107,7 +107,7 @@ namespace ModernWMS.WMS.Services
                             dest_goods_warehouse = dest_location.warehouse_name,
                             orig_goods_location_name = orig_location.location_name,
                             orig_goods_warehouse = orig_location.warehouse_name,
-                            series_number = m.series_number,
+                            serial_number = m.serial_number,
                         };
             query = query.Where(t => t.tenant_id.Equals(currentUser.tenant_id))
                 .Where(queries.AsExpression<StockmoveViewModel>());
@@ -156,7 +156,7 @@ namespace ModernWMS.WMS.Services
                                   dest_goods_warehouse = dest_location.warehouse_name,
                                   orig_goods_location_name = orig_location.location_name,
                                   orig_goods_warehouse = orig_location.warehouse_name,
-                                  series_number = m.series_number,
+                                  serial_number = m.serial_number,
                               }
             ).ToListAsync();
             return data.Adapt<List<StockmoveViewModel>>();
@@ -200,7 +200,7 @@ namespace ModernWMS.WMS.Services
                                   dest_goods_warehouse = dest_location.warehouse_name,
                                   orig_goods_location_name = orig_location.location_name,
                                   orig_goods_warehouse = orig_location.warehouse_name,
-                                  series_number = m.series_number,
+                                  serial_number = m.serial_number,
                               }).FirstOrDefaultAsync();
             if (data == null)
             {
@@ -226,7 +226,7 @@ namespace ModernWMS.WMS.Services
             var dispatch_group_datas = from dp in dispatch_DBSet.AsNoTracking()
                                        join dpp in dispatchpick_DBSet.AsNoTracking() on dp.id equals dpp.dispatchlist_id
                                        where dp.dispatch_status > 1 && dp.dispatch_status < 6
-                                       && dpp.goods_owner_id == entity.goods_owner_id && dpp.series_number == entity.series_number && dpp.goods_location_id == entity.orig_goods_location_id && dpp.sku_id == entity.sku_id
+                                       && dpp.goods_owner_id == entity.goods_owner_id && dpp.serial_number == entity.serial_number && dpp.goods_location_id == entity.orig_goods_location_id && dpp.sku_id == entity.sku_id
                                        group dpp by new { dpp.sku_id, dpp.goods_location_id } into dg
                                        select new
                                        {
@@ -237,7 +237,7 @@ namespace ModernWMS.WMS.Services
             var process_locked_group_datas = from pd in processdetail_DBSet
                                              where pd.is_update_stock == false
                                              && pd.sku_id == entity.sku_id && pd.goods_location_id == entity.orig_goods_location_id
-                                             && pd.goods_owner_id == entity.goods_owner_id && pd.series_number == entity.series_number
+                                             && pd.goods_owner_id == entity.goods_owner_id && pd.serial_number == entity.serial_number
                                              group pd by new { pd.sku_id, pd.goods_location_id } into pdg
                                              select new
                                              {
@@ -247,7 +247,7 @@ namespace ModernWMS.WMS.Services
                                              };
             var move_locked_group_datas = from sm in DbSet.AsNoTracking()
                                           where sm.move_status == 0 && sm.sku_id == entity.sku_id && sm.orig_goods_location_id == entity.orig_goods_location_id
-                                          && sm.goods_owner_id == entity.goods_owner_id && sm.series_number == entity.series_number
+                                          && sm.goods_owner_id == entity.goods_owner_id && sm.serial_number == entity.serial_number
                                           group sm by new { sm.sku_id, goods_location_id = sm.orig_goods_location_id } into smg
                                           select new
                                           {
@@ -265,14 +265,14 @@ namespace ModernWMS.WMS.Services
                  join sm in move_locked_group_datas on new { sg.sku_id, sg.goods_location_id } equals new { sm.sku_id, goods_location_id = sm.goods_location_id } into sm_left
                  from sm in sm_left.DefaultIfEmpty()
                  where sg.sku_id == entity.sku_id && sg.goods_location_id == entity.orig_goods_location_id
-                 && sg.goods_owner_id == entity.goods_owner_id && sg.series_number == entity.series_number
+                 && sg.goods_owner_id == entity.goods_owner_id && sg.serial_number == entity.serial_number
                  select new
                  {
                      id = sg.id,
                      qty_available = sg.is_freeze ? 0 : (sg.qty - (dp.qty_locked == null ? 0 : dp.qty_locked) - (pl.qty_locked == null ? 0 : pl.qty_locked) - (sm.qty_locked == null ? 0 : sm.qty_locked)),
                  }
                 ).FirstOrDefaultAsync();
-            var dest_stock = await stock_DBSet.FirstOrDefaultAsync(t => t.goods_owner_id == entity.goods_owner_id && t.series_number == entity.series_number && t.goods_location_id == entity.dest_goods_location_id && t.sku_id == entity.sku_id);
+            var dest_stock = await stock_DBSet.FirstOrDefaultAsync(t => t.goods_owner_id == entity.goods_owner_id && t.serial_number == entity.serial_number && t.goods_location_id == entity.dest_goods_location_id && t.sku_id == entity.sku_id);
             if (orig_stock == null || orig_stock.qty_available < entity.qty)
             {
                 return (0, _stringLocalizer["qty_not_available"]);
@@ -319,8 +319,8 @@ namespace ModernWMS.WMS.Services
             entity.handle_time = DateTime.Now;
             entity.move_status = 1;
             entity.last_update_time = DateTime.Now;
-            var orig_stock = await stock_DBSet.FirstOrDefaultAsync(t => t.goods_owner_id == entity.goods_owner_id && t.series_number == entity.series_number && t.goods_location_id == entity.orig_goods_location_id && t.sku_id == entity.sku_id);
-            var dest_stock = await stock_DBSet.FirstOrDefaultAsync(t => t.goods_owner_id == entity.goods_owner_id && t.series_number == entity.series_number && t.goods_location_id == entity.dest_goods_location_id && t.sku_id != entity.sku_id);
+            var orig_stock = await stock_DBSet.FirstOrDefaultAsync(t => t.goods_owner_id == entity.goods_owner_id && t.serial_number == entity.serial_number && t.goods_location_id == entity.orig_goods_location_id && t.sku_id == entity.sku_id);
+            var dest_stock = await stock_DBSet.FirstOrDefaultAsync(t => t.goods_owner_id == entity.goods_owner_id && t.serial_number == entity.serial_number && t.goods_location_id == entity.dest_goods_location_id && t.sku_id != entity.sku_id);
             if (orig_stock != null)
             {
                 if (orig_stock.qty == entity.qty)

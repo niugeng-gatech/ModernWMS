@@ -542,7 +542,7 @@ namespace ModernWMS.WMS.Services
                     id = 0,
                     asn_id = v.asn_id,
                     sorted_qty = v.sorted_qty,
-                    series_number = v.series_number,
+                    serial_number = v.serial_number,
                     create_time = DateTime.Now,
                     creator = currentUser.user_name,
                     is_valid = true,
@@ -745,14 +745,14 @@ namespace ModernWMS.WMS.Services
             var data = await (from m in Asns.AsNoTracking()
                               join s in Asnsorts.AsNoTracking() on m.id equals s.asn_id
                               where m.id == id && s.putaway_qty < s.sorted_qty
-                              group new { m, s } by new { m.id, m.goods_owner_id, m.goods_owner_name, s.series_number }
+                              group new { m, s } by new { m.id, m.goods_owner_id, m.goods_owner_name, s.serial_number }
                        into g
                               select new AsnPendingPutawayViewModel
                               {
                                   asn_id = g.Key.id,
                                   goods_owner_id = g.Key.goods_owner_id,
                                   goods_owner_name = g.Key.goods_owner_name,
-                                  series_number = g.Key.series_number,
+                                  serial_number = g.Key.serial_number,
                                   sorted_qty = g.Sum(o => o.s.sorted_qty - o.s.putaway_qty)
                               }).ToListAsync();
             return data;
@@ -813,7 +813,7 @@ namespace ModernWMS.WMS.Services
             foreach (var viewModel in viewModels)
             {
                 // 根据sn码，将本次上架数量反写到分拣记录中。如果sn码是空的，则分摊进去
-                var sortList = sortEntities.Where(s => s.series_number == viewModel.series_number).ToList();
+                var sortList = sortEntities.Where(s => s.serial_number == viewModel.serial_number).ToList();
                 if (sortList.Any())
                 {
                     int left_putaway_qty = viewModel.putaway_qty;
@@ -844,7 +844,7 @@ namespace ModernWMS.WMS.Services
                 var stockEntity = await Stocks.FirstOrDefaultAsync(t => t.sku_id.Equals(entity.sku_id)
                                                                               && t.goods_location_id.Equals(viewModel.goods_location_id)
                                                                               && t.goods_owner_id.Equals(viewModel.goods_owner_id)
-                                                                              && t.series_number.Equals(viewModel.series_number)
+                                                                              && t.serial_number.Equals(viewModel.serial_number)
                                                                               );
                 if (stockEntity == null)
                 {
@@ -853,7 +853,7 @@ namespace ModernWMS.WMS.Services
                         sku_id = entity.sku_id,
                         goods_location_id = viewModel.goods_location_id,
                         goods_owner_id = entity.goods_owner_id,
-                        series_number = viewModel.series_number,
+                        serial_number = viewModel.serial_number,
                         qty = viewModel.putaway_qty,
                         is_freeze = false,
                         last_update_time = DateTime.Now,
