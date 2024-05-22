@@ -1,5 +1,6 @@
 
 using Microsoft.AspNetCore.Hosting;
+using ModernWMS.Core.Extentions;
 using NLog;
 using NLog.Web;
 
@@ -47,6 +48,7 @@ namespace ModernWMS
             })
             .ConfigureServices((context, services) =>
             {
+                services.AddHostedService<DatabaseKeepAlive>();
                 // Inject logger service
                 Microsoft.Extensions.Logging.ILogger logger = LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger("Startup");
 
