@@ -7,12 +7,16 @@ on:
   push:
     branches:
       - geng/develop04232024
+    paths:
+      - backend/**
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: windows-latest
-
+    defaults:
+      run:
+        working-directory: ./backend
     steps:
       - uses: actions/checkout@v4
 
