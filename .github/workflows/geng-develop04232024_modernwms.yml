@@ -7,26 +7,20 @@ on:
   push:
     branches:
       - geng/develop04232024
-    paths:
-      - backend/**
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: windows-latest
-    defaults:
-      run:
-        working-directory: ./backend
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up .NET Core
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.x'
-          include-prerelease: true
-        
+
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
@@ -34,7 +28,7 @@ jobs:
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: .net-app
           path: ${{env.DOTNET_ROOT}}/myapp
@@ -50,21 +44,22 @@ jobs:
 
     steps:
       - name: Download artifact from build job
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: .net-app
       
       - name: Login to Azure
-        uses: azure/login@v1
+        uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_545EEA79D2724593A41995075D7A786D }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_5138CA694BE24B1E8D68651AEEB83469 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_89E8960B7E0149239A7EFC39DB098F52 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_9E6699E2FEF04EE1B86D881108790D63 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_47AE1110E3AB4D42A54487F238F60ECB }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_F6E3682DF2194B49A0CE876360B8CE72 }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
+        uses: azure/webapps-deploy@v3
         with:
           app-name: 'modernwms'
           slot-name: 'Production'
           package: .
+          
